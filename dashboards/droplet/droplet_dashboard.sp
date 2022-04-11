@@ -91,6 +91,22 @@ dashboard "digitalocean_droplet_dashboard" {
       }
     }
 
+    chart {
+      title = "Monitoring Status"
+      query = query.digitalocean_droplet_by_monitoring_status
+      type  = "donut"
+      width = 2
+
+      series "Droplets" {
+        point "enabled" {
+          color = "ok"
+        }
+        point "disabled" {
+          color = "alert"
+        }
+      }
+    }
+
   }
 
   container {
@@ -251,6 +267,27 @@ query "digitalocean_droplet_by_availability_status" {
       droplets
     group by
       droplet_status;
+  EOQ
+}
+
+query "digitalocean_droplet_by_monitoring_status" {
+  sql = <<-EOQ
+    with droplets as (
+      select
+        case
+          when not features ? 'monitoring' then 'disabled'
+          else 'enabled'
+        end as backup_status
+      from
+        digitalocean_droplet
+    )
+    select
+      backup_status,
+      count(*) as "Droplets"
+    from
+      droplets
+    group by
+      backup_status;
   EOQ
 }
 
