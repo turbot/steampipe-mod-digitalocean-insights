@@ -125,13 +125,6 @@ dashboard "digitalocean_droplet_dashboard" {
       width = 3
     }
 
-    # chart {
-    #   title = "droplets by Class"
-    #   query = query.alicloud_rds_instance_by_class
-    #   type  = "column"
-    #   width = 4
-    # }
-
   }
 
 }

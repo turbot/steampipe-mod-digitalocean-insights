@@ -48,11 +48,8 @@ dashboard "digitalocean_droplet_age_report" {
   }
 
   table {
-    column "Account ID" {
-      display = "none"
-    }
-
-    column "ARN" {
+    
+    column "URN" {
       display = "none"
     }
 
