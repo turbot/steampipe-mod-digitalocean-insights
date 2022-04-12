@@ -22,7 +22,7 @@ dashboard "digitalocean_droplet_dashboard" {
     # Assessments
 
     card {
-      query = query.digitalocean_droplet_publically_accessible
+      query = query.digitalocean_droplet_publicly_accessible
       width = 2
     }
 
@@ -32,7 +32,7 @@ dashboard "digitalocean_droplet_dashboard" {
     }
 
     card {
-      query = query.digitalocean_droplet_not_active
+      query = query.digitalocean_droplet_monitoring_status_count
       width = 2
     }
 
@@ -70,22 +70,6 @@ dashboard "digitalocean_droplet_dashboard" {
           color = "ok"
         }
         point "disabled" {
-          color = "alert"
-        }
-      }
-    }
-
-    chart {
-      title = "Droplet Status"
-      query = query.digitalocean_droplet_by_availability_status
-      type  = "donut"
-      width = 2
-
-      series "Droplets" {
-        point "active" {
-          color = "ok"
-        }
-        point "inactive" {
           color = "alert"
         }
       }
@@ -166,11 +150,11 @@ query "digitalocean_droplet_total_size" {
   EOQ
 }
 
-query "digitalocean_droplet_publically_accessible" {
+query "digitalocean_droplet_publicly_accessible" {
   sql = <<-EOQ
     select
       count(*) as value,
-      'Publically Accessible' as label,
+      'Publicly Accessible' as label,
       case count(*) when 0 then 'ok' else 'alert' end as "type"
     from
       digitalocean_droplet
@@ -183,7 +167,7 @@ query "digitalocean_droplet_backup_disabled" {
   sql = <<-EOQ
     select
       count(*) as value,
-      'Backup Disabled' as label,
+      'Backups Disabled' as label,
       case count(*) when 0 then 'ok' else 'alert' end as "type"
     from
       digitalocean_droplet
@@ -192,16 +176,16 @@ query "digitalocean_droplet_backup_disabled" {
   EOQ
 }
 
-query "digitalocean_droplet_not_active" {
+query "digitalocean_droplet_monitoring_status_count" {
   sql = <<-EOQ
     select
       count(*) as value,
-      'Not Active' as label,
+      'Monitoring Disabled' as label,
       case count(*) when 0 then 'ok' else 'alert' end as "type"
     from
       digitalocean_droplet
     where
-      status not in ('active','new');
+      not features ? 'monitoring';
   EOQ
 }
 
@@ -246,27 +230,6 @@ query "digitalocean_droplet_by_backup_status" {
       droplets
     group by
       backup_status;
-  EOQ
-}
-
-query "digitalocean_droplet_by_availability_status" {
-  sql = <<-EOQ
-    with droplets as (
-      select
-        case
-          when status in ('active','new') then 'active'
-          else 'inactive'
-        end as droplet_status
-      from
-        digitalocean_droplet
-    )
-    select
-      droplet_status,
-      count(*) as "Droplets"
-    from
-      droplets
-    group by
-      droplet_status;
   EOQ
 }
 
