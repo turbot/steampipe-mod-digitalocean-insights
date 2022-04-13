@@ -96,7 +96,7 @@ query "digitalocean_snapshot_count" {
 query "digitalocean_snapshot_total_storage" {
   sql = <<-EOQ
     select 
-      sum(size_gigabytes) as "Total Storage(GB)" 
+      sum(size_gigabytes) as "Total Storage (GB)" 
     from
       digitalocean_snapshot;
   EOQ
