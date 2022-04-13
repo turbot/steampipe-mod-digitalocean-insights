@@ -139,7 +139,7 @@ query "digitalocean_droplet_count" {
 
 query "digitalocean_droplet_total_size" {
   sql = <<-EOQ
-    select sum(disk) as "Total Storage(GB)" from digitalocean_droplet;
+    select sum(disk) as "Total Storage (GB)" from digitalocean_droplet;
   EOQ
 }
 
