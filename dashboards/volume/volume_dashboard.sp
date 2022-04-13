@@ -125,7 +125,7 @@ query "digitalocean_volume_count" {
 query "digitalocean_volume_total_storage" {
   sql = <<-EOQ
     select 
-      sum(size_gigabytes) as "Total Storage(GB)" 
+      sum(size_gigabytes) as "Total Storage (GB)" 
     from 
       digitalocean_volume;
   EOQ
