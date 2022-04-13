@@ -194,7 +194,7 @@ query "digitalocean_volume_attached_droplets" {
       d.id as "Droplet ID",
       d.name as "Name",
       d.urn as "Droplet URN",
-      d.status as "Instance State"
+      d.status as "Droplet State"
     from
       digitalocean_volume as v,
       jsonb_array_elements(v.droplet_ids) as droplet_id,
