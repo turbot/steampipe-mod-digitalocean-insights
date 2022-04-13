@@ -1,4 +1,4 @@
-This dashboard answers the following questions for each instance:
+This dashboard answers the following questions:
 
 - How many droplets are in each account and region?
 - How much storage is allocated across all droplets?
