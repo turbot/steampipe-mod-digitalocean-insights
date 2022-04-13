@@ -48,9 +48,13 @@ dashboard "digitalocean_volume_age_report" {
   }
 
   table {
-    
+
     column "URN" {
       display = "none"
+    }
+
+    column "Volume ID" {
+      href = "${dashboard.digitalocean_volume_detail.url_path}?input.volume_urn={{.URN | @uri}}"
     }
 
     query = query.digitalocean_volume_age_table
@@ -121,7 +125,7 @@ query "digitalocean_volume_1_year_count" {
 query "digitalocean_volume_age_table" {
   sql = <<-EOQ
     select
-      i.id as "ID",
+      i.id as "Volume ID",
       i.name as "Name",
       i.filesystem_type as "Filesystem Type",
       now()::date - i.created_at::date as "Age in Days",
