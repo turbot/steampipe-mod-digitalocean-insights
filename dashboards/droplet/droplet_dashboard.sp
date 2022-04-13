@@ -60,7 +60,7 @@ dashboard "digitalocean_droplet_dashboard" {
     }
 
     chart {
-      title = "Backup Status"
+      title = "Backups Status"
       query = query.digitalocean_droplet_by_backup_status
       type  = "donut"
       width = 2
