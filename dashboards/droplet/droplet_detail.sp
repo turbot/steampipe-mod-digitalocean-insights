@@ -323,7 +323,7 @@ query "digitalocean_droplet_detail_vpc_details" {
       digitalocean_droplet 
     join 
       digitalocean_vpc vpc 
-      on vpc.id = vpc_uuid
+      on vpc.id = vpc_uuid;
   EOQ
 
   param "urn" {}
