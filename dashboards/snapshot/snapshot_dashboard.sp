@@ -49,7 +49,7 @@ dashboard "digitalocean_snapshot_dashboard" {
 
     chart {
       title = "Storage by Region"
-      query = query.digitalocean_storage_by_region
+      query = query.digitalocean_storage_snapshot_by_region
       type  = "column"
       width = 4
 
@@ -60,7 +60,7 @@ dashboard "digitalocean_snapshot_dashboard" {
 
     chart {
       title = "Storage by Resource Type"
-      query = query.digitalocean_storage_by_resource_type
+      query = query.digitalocean_storage_snapshot_by_resource_type
       type  = "column"
       width = 4
 
@@ -71,7 +71,7 @@ dashboard "digitalocean_snapshot_dashboard" {
 
     chart {
       title = "Storage by Age"
-      query = query.digitalocean_storage_creation_month
+      query = query.digitalocean_storage_snapshot_creation_month
       type  = "column"
       width = 4
 
@@ -86,17 +86,17 @@ dashboard "digitalocean_snapshot_dashboard" {
 
 query "digitalocean_snapshot_count" {
   sql = <<-EOQ
-    select 
-      count(*) as "Snapshot" 
-    from 
+    select
+      count(*) as "Snapshot"
+    from
       digitalocean_snapshot;
   EOQ
 }
 
 query "digitalocean_snapshot_total_storage" {
   sql = <<-EOQ
-    select 
-      sum(size_gigabytes) as "Total Storage (GB)" 
+    select
+      sum(size_gigabytes) as "Total Storage (GB)"
     from
       digitalocean_snapshot;
   EOQ
@@ -174,7 +174,7 @@ query "digitalocean_snapshot_creation_month" {
   EOQ
 }
 
-query "digitalocean_storage_by_region" {
+query "digitalocean_storage_snapshot_by_region" {
   sql = <<-EOQ
     select
       s_regions,
@@ -187,7 +187,7 @@ query "digitalocean_storage_by_region" {
   EOQ
 }
 
-query "digitalocean_storage_by_resource_type" {
+query "digitalocean_storage_snapshot_by_resource_type" {
   sql = <<-EOQ
     select
       resource_type,
@@ -199,7 +199,7 @@ query "digitalocean_storage_by_resource_type" {
   EOQ
 }
 
-query "digitalocean_storage_creation_month" {
+query "digitalocean_storage_snapshot_creation_month" {
   sql = <<-EOQ
     with snapshots as (
       select

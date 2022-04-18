@@ -1,9 +1,9 @@
-dashboard "digitalocean_volume_dashboard" {
+dashboard "digitalocean_block_storage_volume_dashboard" {
 
-  title         = "DigitalOcean Volume Dashboard"
-  documentation = file("./dashboards/volume/docs/volume_dashboard.md")
+  title         = "DigitalOcean Block Storage Volume Dashboard"
+  documentation = file("./dashboards/block_storage_volume/docs/block_storage_volume_dashboard.md")
 
-  tags = merge(local.volume_common_tags, {
+  tags = merge(local.block_storage_volume_common_tags, {
     type = "Dashboard"
   })
 
@@ -78,7 +78,7 @@ dashboard "digitalocean_volume_dashboard" {
 
     chart {
       title = "Storage by Region"
-      query = query.digitalocean_storage_by_region
+      query = query.digitalocean_storage_volume_by_region
       type  = "column"
       width = 4
 
@@ -100,7 +100,7 @@ dashboard "digitalocean_volume_dashboard" {
 
     chart {
       title = "Storage by Age"
-      query = query.digitalocean_storage_creation_month
+      query = query.digitalocean_storage_volume_creation_month
       type  = "column"
       width = 4
 
@@ -115,18 +115,18 @@ dashboard "digitalocean_volume_dashboard" {
 
 query "digitalocean_volume_count" {
   sql = <<-EOQ
-    select 
-      count(*) as "Volumes" 
-    from 
+    select
+      count(*) as "Volumes"
+    from
       digitalocean_volume;
   EOQ
 }
 
 query "digitalocean_volume_total_storage" {
   sql = <<-EOQ
-    select 
-      sum(size_gigabytes) as "Total Storage (GB)" 
-    from 
+    select
+      sum(size_gigabytes) as "Total Storage (GB)"
+    from
       digitalocean_volume;
   EOQ
 }
@@ -240,7 +240,7 @@ query "digitalocean_volume_creation_month" {
   EOQ
 }
 
-query "digitalocean_storage_by_region" {
+query "digitalocean_storage_volume_by_region" {
   sql = <<-EOQ
     select
       region_name,
@@ -266,7 +266,7 @@ query "digitalocean_storage_by_filesystem_type" {
   EOQ
 }
 
-query "digitalocean_storage_creation_month" {
+query "digitalocean_storage_volume_creation_month" {
   sql = <<-EOQ
     with volumes as (
       select
