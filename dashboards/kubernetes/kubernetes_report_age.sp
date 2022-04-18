@@ -11,7 +11,7 @@ dashboard "digitalocean_kubernetes_age_report" {
   container {
 
     card {
-      query = query.digitalocean_kubernetes_count
+      query = query.digitalocean_kubernetes_cluster_count
       width = 2
     }
 
@@ -48,7 +48,7 @@ dashboard "digitalocean_kubernetes_age_report" {
   }
 
   table {
-    
+
     column "URN" {
       display = "none"
     }

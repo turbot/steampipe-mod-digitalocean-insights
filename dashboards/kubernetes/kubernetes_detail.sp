@@ -245,7 +245,7 @@ query "digitalocean_kubernetes_detail_vpc_details" {
       vpc.id as "VPC ID",
       vpc.name as "VPC Name",
       vpc.ip_range as "IP Range",
-      vpc.created_at as "Created Time"
+      vpc.created_at as "Create Time"
     from
       digitalocean_kubernetes_cluster
     join

@@ -10,14 +10,14 @@ dashboard "digitalocean_kubernetes_dashboard" {
 
     #Analysis
     card {
-      query = query.digitalocean_kubernetes_count
+      query = query.digitalocean_kubernetes_cluster_count
       width = 2
     }
 
     # Assessments
 
     card {
-      query = query.digitalocean_kubernetes_not_running_count
+      query = query.digitalocean_kubernetes_cluster_degraded_count
       width = 2
     }
 
@@ -39,8 +39,8 @@ dashboard "digitalocean_kubernetes_dashboard" {
     title = "Assessments"
 
     chart {
-      title = "Status"
-      query = query.digitalocean_kubernetes_by_running_status
+      title = "Cluster Status"
+      query = query.digitalocean_kubernetes_status
       type  = "donut"
       width = 2
 
@@ -119,24 +119,25 @@ dashboard "digitalocean_kubernetes_dashboard" {
 
 # Card Queries
 
-query "digitalocean_kubernetes_count" {
+query "digitalocean_kubernetes_cluster_count" {
   sql = <<-EOQ
-    select count(*) as "Cluster" from digitalocean_kubernetes_cluster;
+    select count(*) as "Clusters" from digitalocean_kubernetes_cluster;
   EOQ
 }
 
-query "digitalocean_kubernetes_not_running_count" {
+query "digitalocean_kubernetes_cluster_degraded_count" {
   sql = <<-EOQ
     select
       count(*) as value,
-      'Not Running' as label,
+      'Degraded' as label,
       case count(*) when 0 then 'ok' else 'alert' end as "type"
     from
       digitalocean_kubernetes_cluster
     where
-      status <> 'running';
+      status = 'degraded';
   EOQ
 }
+
 
 query "digitalocean_kubernetes_auto_upgrade_count" {
   sql = <<-EOQ
@@ -164,26 +165,27 @@ query "digitalocean_kubernetes_surge_upgrade_count" {
   EOQ
 }
 
-query "digitalocean_kubernetes_by_running_status" {
+query "digitalocean_kubernetes_status" {
   sql = <<-EOQ
-    with cluster as (
-      select
-        case
-          when status <> 'running' then 'not running'
-          else 'running'
-        end as k_status
-      from
-        digitalocean_kubernetes_cluster
-    )
     select
-      k_status,
-      count(*) as "Clusters"
-    from
-      cluster
+      status,
+      count(*)
+    from (
+      select name,
+        case when status = 'degraded' then
+          'degraded'
+        else
+          'ok'
+        end status
+      from
+        digitalocean_kubernetes_cluster) as c
     group by
-      k_status;
+      status
+    order by
+      status;
   EOQ
 }
+
 
 query "digitalocean_kubernetes_by_auto_upgrade_status" {
   sql = <<-EOQ
