@@ -1,9 +1,9 @@
-dashboard "digitalocean_volume_detail" {
+dashboard "digitalocean_block_storage_volume_detail" {
 
-  title         = "DigitalOcean Volume Detail"
-  documentation = file("./dashboards/volume/docs/volume_detail.md")
+  title         = "DigitalOcean Block Storage Volume Detail"
+  documentation = file("./dashboards/block_storage_volume/docs/block_storage_volume_detail.md")
 
-  tags = merge(local.volume_common_tags, {
+  tags = merge(local.block_storage_volume_common_tags, {
     type = "Detail"
   })
 

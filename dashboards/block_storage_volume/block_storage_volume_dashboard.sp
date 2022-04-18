@@ -1,9 +1,9 @@
-dashboard "digitalocean_volume_dashboard" {
+dashboard "digitalocean_block_storage_volume_dashboard" {
 
-  title         = "DigitalOcean Volume Dashboard"
-  documentation = file("./dashboards/volume/docs/volume_dashboard.md")
+  title         = "DigitalOcean Block Storage Volume Dashboard"
+  documentation = file("./dashboards/block_storage_volume/docs/block_storage_volume_dashboard.md")
 
-  tags = merge(local.volume_common_tags, {
+  tags = merge(local.block_storage_volume_common_tags, {
     type = "Dashboard"
   })
 
