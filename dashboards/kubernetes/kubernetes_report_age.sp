@@ -129,7 +129,7 @@ query "digitalocean_kubernetes_age_table" {
       i.name as "Name",
       now()::date - i.created_at::date as "Age in Days",
       i.created_at as "Start Time",
-      i.status as "Status",
+      initcap(i.status) as "Status",
       i.region_slug as "Region",
       i.urn as "URN"
     from

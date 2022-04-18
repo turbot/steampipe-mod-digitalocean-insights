@@ -127,7 +127,7 @@ query "digitalocean_kubernetes_detail_status" {
   sql = <<-EOQ
     select
       'Status' as label,
-      status as value
+      initcap(status) as value
     from
       digitalocean_kubernetes_cluster
     where
@@ -140,10 +140,10 @@ query "digitalocean_kubernetes_detail_status" {
 query "digitalocean_kubernetes_detail_auto_upgrade_status" {
   sql = <<-EOQ
     select
-      'Auto Upgrade' as label,
+      'Automatic Upgrades' as label,
       case
-        when auto_upgrade then 'enabled'
-        else 'disabled'
+        when auto_upgrade then 'Enabled'
+        else 'Disabled'
       end as value,
       case
         when auto_upgrade then 'ok'
@@ -163,8 +163,8 @@ query "digitalocean_kubernetes_detail_surge_upgrade_status" {
     select
       'Surge Upgrade' as label,
       case
-        when surge_upgrade then 'enabled'
-        else 'disabled'
+        when surge_upgrade then 'Enabled'
+        else 'Disabled'
       end as value,
       case
         when surge_upgrade then 'ok'
@@ -220,10 +220,10 @@ query "digitalocean_kubernetes_details_attached_droplets" {
     select
       node_pool ->> 'name' as "Node Pool Name",
       node ->> 'name' as "Node Name",
-      node -> 'status' ->> 'state' "Node State",
+      initcap(node -> 'status' ->> 'state') "Node State",
       d.name as "Droplet Name",
       d.urn as "Droplet URN",
-      d.status as "Droplet State"
+      initcap(d.status) as "Droplet State"
     from
       digitalocean_kubernetes_cluster as kc,
       jsonb_array_elements(kc.node_pools) as node_pool,

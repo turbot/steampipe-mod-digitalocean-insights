@@ -55,7 +55,7 @@ dashboard "digitalocean_kubernetes_dashboard" {
     }
 
     chart {
-      title = "Auto Upgrade Status"
+      title = "Automatic Upgrades Status"
       query = query.digitalocean_kubernetes_by_auto_upgrade_status
       type  = "donut"
       width = 2
@@ -71,7 +71,7 @@ dashboard "digitalocean_kubernetes_dashboard" {
     }
 
     chart {
-      title = "Surge Upgrade Status"
+      title = "Surge Upgrades Status"
       query = query.digitalocean_kubernetes_by_surge_upgrade_status
       type  = "donut"
       width = 2
@@ -142,7 +142,7 @@ query "digitalocean_kubernetes_auto_upgrade_count" {
   sql = <<-EOQ
     select
       count(*) as value,
-      'Auto Upgrade Disabled' as label,
+      'Automatic Upgrades Disabled' as label,
       case count(*) when 0 then 'ok' else 'alert' end as "type"
     from
       digitalocean_kubernetes_cluster
