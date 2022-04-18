@@ -48,9 +48,13 @@ dashboard "digitalocean_droplet_age_report" {
   }
 
   table {
-    
+
     column "URN" {
       display = "none"
+    }
+
+    column "Droplet ID" {
+      href = "${dashboard.digitalocean_droplet_detail.url_path}?input.droplet_urn={{.'URN' | @uri}}"
     }
 
     query = query.digitalocean_droplet_age_table
@@ -121,7 +125,7 @@ query "digitalocean_droplet_1_year_count" {
 query "digitalocean_droplet_age_table" {
   sql = <<-EOQ
     select
-      i.id as "ID",
+      i.id as "Droplet ID",
       i.name as "Name",
       now()::date - i.created_at::date as "Age in Days",
       i.created_at as "Start Time",

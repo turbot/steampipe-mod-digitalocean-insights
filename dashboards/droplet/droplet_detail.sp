@@ -99,9 +99,9 @@ dashboard "digitalocean_droplet_detail" {
           display = "none"
         }
 
-        # column "Droplet ID" {
-        #   href = "${dashboard.digitalocean_droplet_detail.url_path}?input.droplet_urn={{.'URN' | @uri}}"
-        # }
+        column "Volume ID" {
+          href = "${dashboard.digitalocean_block_storage_volume_detail.url_path}?input.volume_urn={{.'Volume URN' | @uri}}"
+        }
       }
 
       table {
@@ -168,7 +168,7 @@ query "digitalocean_droplet_detail_status" {
   sql = <<-EOQ
     select
       'Status' as label,
-      status as value
+      initcap(status) as value
     from
       digitalocean_droplet
     where
@@ -246,7 +246,7 @@ query "digitalocean_droplet_detail_overview" {
     select
       name as "Name",
       id as "Droplet ID",
-      created_at as "Created Time",
+      created_at as "Create Time",
       title as "Title",
       region ->> 'name' as "Region",
       urn as "URN"
@@ -318,7 +318,7 @@ query "digitalocean_droplet_detail_vpc_details" {
       vpc.id as "VPC ID",
       vpc.name as "VPC Name",
       vpc.ip_range as "IP Range",
-      vpc.created_at as "Created Time"
+      vpc.created_at as "Create Time"
     from
       digitalocean_droplet 
     join 
@@ -334,7 +334,7 @@ query "digitalocean_droplet_detail_firewall_configuration" {
     select
       f.id as "Firewall ID", 
       f.name as "Firewall Name",
-      f.created_at as "Created Time"
+      f.created_at as "Create Time"
     from
       digitalocean_droplet dr,
       digitalocean_firewall f, 
