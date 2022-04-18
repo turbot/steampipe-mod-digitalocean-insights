@@ -53,6 +53,10 @@ dashboard "digitalocean_kubernetes_age_report" {
       display = "none"
     }
 
+    column "Cluster ID" {
+      href = "${dashboard.digitalocean_kubernetes_detail.url_path}?input.cluster_urn={{.URN | @uri}}"
+    }
+
     query = query.digitalocean_kubernetes_age_table
   }
 
@@ -121,7 +125,7 @@ query "digitalocean_kubernetes_1_year_count" {
 query "digitalocean_kubernetes_age_table" {
   sql = <<-EOQ
     select
-      i.id as "ID",
+      i.id as "Cluster ID",
       i.name as "Name",
       now()::date - i.created_at::date as "Age in Days",
       i.created_at as "Start Time",

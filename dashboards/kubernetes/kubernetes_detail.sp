@@ -7,7 +7,7 @@ dashboard "digitalocean_kubernetes_detail" {
     type = "Detail"
   })
 
-  input "kubernetes_urn" {
+  input "cluster_urn" {
     title = "Select a cluster:"
     query = query.digitalocean_kubernetes_input
     width = 4
@@ -19,7 +19,7 @@ dashboard "digitalocean_kubernetes_detail" {
       width = 2
       query = query.digitalocean_kubernetes_detail_status
       args = {
-        urn = self.input.kubernetes_urn.value
+        urn = self.input.cluster_urn.value
       }
     }
 
@@ -27,7 +27,7 @@ dashboard "digitalocean_kubernetes_detail" {
       width = 2
       query = query.digitalocean_kubernetes_detail_auto_upgrade_status
       args = {
-        urn = self.input.kubernetes_urn.value
+        urn = self.input.cluster_urn.value
       }
     }
 
@@ -35,7 +35,7 @@ dashboard "digitalocean_kubernetes_detail" {
       width = 2
       query = query.digitalocean_kubernetes_detail_surge_upgrade_status
       args = {
-        urn = self.input.kubernetes_urn.value
+        urn = self.input.cluster_urn.value
       }
     }
   }
@@ -52,7 +52,7 @@ dashboard "digitalocean_kubernetes_detail" {
         width = 6
         query = query.digitalocean_kubernetes_overview
         args = {
-          urn = self.input.kubernetes_urn.value
+          urn = self.input.cluster_urn.value
         }
       }
 
@@ -61,7 +61,7 @@ dashboard "digitalocean_kubernetes_detail" {
         width = 6
         query = query.digitalocean_kubernetes_tags
         args = {
-          urn = self.input.kubernetes_urn.value
+          urn = self.input.cluster_urn.value
         }
       }
     }
@@ -74,7 +74,7 @@ dashboard "digitalocean_kubernetes_detail" {
         title = "Node Pools Attached"
         query = query.digitalocean_kubernetes_details_attached_droplets
         args = {
-          urn = self.input.kubernetes_urn.value
+          urn = self.input.cluster_urn.value
         }
 
         column "Droplet URN" {
@@ -92,13 +92,13 @@ dashboard "digitalocean_kubernetes_detail" {
 
     container {
 
-      width = 6
+      width = 10
 
       table {
         title = "VPC Details"
         query = query.digitalocean_kubernetes_detail_vpc_details
         args = {
-          urn = self.input.kubernetes_urn.value
+          urn = self.input.cluster_urn.value
         }
       }
     }
