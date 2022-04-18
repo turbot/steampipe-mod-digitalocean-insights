@@ -155,7 +155,7 @@ query "digitalocean_kubernetes_surge_upgrade_count" {
   sql = <<-EOQ
     select
       count(*) as value,
-      'Surge Upgrade Disabled' as label,
+      'Surge Upgrades Disabled' as label,
       case count(*) when 0 then 'ok' else 'alert' end as "type"
     from
       digitalocean_kubernetes_cluster

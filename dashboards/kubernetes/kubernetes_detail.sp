@@ -161,7 +161,7 @@ query "digitalocean_kubernetes_detail_auto_upgrade_status" {
 query "digitalocean_kubernetes_detail_surge_upgrade_status" {
   sql = <<-EOQ
     select
-      'Surge Upgrade' as label,
+      'Surge Upgrades' as label,
       case
         when surge_upgrade then 'Enabled'
         else 'Disabled'
@@ -205,7 +205,7 @@ query "digitalocean_kubernetes_tags" {
       tag.value as "Value"
     from
       digitalocean_kubernetes_cluster
-      join jsonb_each_text(tags) tag on true 
+      join jsonb_each_text(tags) tag on true
     where
       urn = $1
     order by
@@ -241,15 +241,15 @@ query "digitalocean_kubernetes_details_attached_droplets" {
 
 query "digitalocean_kubernetes_detail_vpc_details" {
   sql = <<-EOQ
-    select 
+    select
       vpc.id as "VPC ID",
       vpc.name as "VPC Name",
       vpc.ip_range as "IP Range",
       vpc.created_at as "Created Time"
     from
-      digitalocean_kubernetes_cluster 
-    join 
-      digitalocean_vpc vpc 
+      digitalocean_kubernetes_cluster
+    join
+      digitalocean_vpc vpc
       on vpc.id = vpc_uuid;
   EOQ
 
