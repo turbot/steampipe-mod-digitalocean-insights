@@ -220,10 +220,10 @@ query "digitalocean_kubernetes_details_attached_droplets" {
     select
       node_pool ->> 'name' as "Node Pool Name",
       node ->> 'name' as "Node Name",
-      initcap(node -> 'status' ->> 'state') "Node State",
+      node -> 'status' ->> 'state' "Node State",
       d.name as "Droplet Name",
       d.urn as "Droplet URN",
-      initcap(d.status) as "Droplet State"
+      d.status as "Droplet State"
     from
       digitalocean_kubernetes_cluster as kc,
       jsonb_array_elements(kc.node_pools) as node_pool,
