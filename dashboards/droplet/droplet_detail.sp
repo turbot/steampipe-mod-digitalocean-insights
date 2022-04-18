@@ -209,7 +209,7 @@ query "digitalocean_droplet_detail_disk" {
 query "digitalocean_droplet_detail_total_vcpus" {
   sql = <<-EOQ
     select
-      'Total Virtual CPUs' as label,
+      'Total VCPUs' as label,
       vcpus as value
     from
       digitalocean_droplet
@@ -266,7 +266,7 @@ query "digitalocean_droplet_detail_tags" {
       tag.value as "Value"
     from
       digitalocean_droplet
-      join jsonb_each_text(tags) tag on true 
+      join jsonb_each_text(tags) tag on true
     where
       urn = $1
     order by
@@ -314,15 +314,15 @@ query "digitalocean_droplet_detail_features_enabled" {
 
 query "digitalocean_droplet_detail_vpc_details" {
   sql = <<-EOQ
-    select 
+    select
       vpc.id as "VPC ID",
       vpc.name as "VPC Name",
       vpc.ip_range as "IP Range",
       vpc.created_at as "Create Time"
     from
-      digitalocean_droplet 
-    join 
-      digitalocean_vpc vpc 
+      digitalocean_droplet
+    join
+      digitalocean_vpc vpc
       on vpc.id = vpc_uuid;
   EOQ
 
@@ -332,14 +332,14 @@ query "digitalocean_droplet_detail_vpc_details" {
 query "digitalocean_droplet_detail_firewall_configuration" {
   sql = <<-EOQ
     select
-      f.id as "Firewall ID", 
+      f.id as "Firewall ID",
       f.name as "Firewall Name",
       f.created_at as "Create Time"
     from
       digitalocean_droplet dr,
-      digitalocean_firewall f, 
-      jsonb_array_elements(droplet_ids) dr_id 
-    where 
+      digitalocean_firewall f,
+      jsonb_array_elements(droplet_ids) dr_id
+    where
       dr.id = dr_id::bigint
       and dr.urn = $1
     order by
