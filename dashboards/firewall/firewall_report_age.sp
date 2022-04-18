@@ -1,9 +1,9 @@
 dashboard "digitalocean_cloud_firewall_age_report" {
 
-  title         = "DigitalOcean Cloud Firewall Age Report"
-  documentation = file("./dashboards/cloud_firewall/docs/cloud_firewall_report_age.md")
+  title         = "DigitalOcean Firewall Age Report"
+  documentation = file("./dashboards/firewall/docs/firewall_report_age.md")
 
-  tags = merge(local.cloud_firewall_common_tags, {
+  tags = merge(local.firewall_common_tags, {
     type     = "Report"
     category = "Age"
   })
