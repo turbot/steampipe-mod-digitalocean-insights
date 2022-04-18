@@ -38,7 +38,7 @@ query "digitalocean_project_table" {
       id as "ID",
       name as "Name",
       is_default as "Is Default",
-      created_at as "Time Created"
+      created_at as "Create Time"
     from
       digitalocean_project;
   EOQ
