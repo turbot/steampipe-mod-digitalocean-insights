@@ -6,7 +6,10 @@ repository: "https://github.com/turbot/steampipe-mod-digitalocean-insights"
 
 Create dashboards and reports for your DigitalOcean resources using Steampipe.
 
-<!-- IMAGES TO DO -->
+<img src="https://raw.githubusercontent.com/turbot/steampipe-mod-digitalocean-insights/main/docs/images/digitalocean_blockstorage_volume_age_report.png" width="50%" type="thumbnail"/>
+<img src="https://raw.githubusercontent.com/turbot/steampipe-mod-digitalocean-insights/main/docs/images/digitalocean_droplet_dashboard.png" width="50%" type="thumbnail"/>
+<img src="https://raw.githubusercontent.com/turbot/steampipe-mod-digitalocean-insights/main/docs/images/digitalocean_firewall_detail.png" width="50%" type="thumbnail"/>
+<img src="https://raw.githubusercontent.com/turbot/steampipe-mod-digitalocean-insights/main/docs/images/digitalocean_kubernetes_dashboard.png" width="50%" type="thumbnail"/>
 
 ## Overview
 
@@ -16,10 +19,8 @@ Dashboards can help answer questions like:
 - How old are my resources?
 - Are there any publicly accessible resources?
 - Is encryption enabled and what keys are used for encryption?
-- Is versioning enabled?
-- What are the relationships between closely connected resources like IAM users, groups, and policies?
 
-Dashboards are available for 15+ services, including CloudTrail, EC2, IAM, RDS, S3, VPC, and more!
+Dashboards are available for BlockStorage, Database, Droplet, Firewall, Kubernetes and Snapshot services.
 
 ## References
 
