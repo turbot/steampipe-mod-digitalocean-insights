@@ -33,7 +33,7 @@ dashboard "digitalocean_droplet_detail" {
 
     card {
       width = 2
-      query = query.digitalocean_droplet_image
+      query = query.digitalocean_droplet_storage
       args = {
         urn = self.input.droplet_urn.value
       }
@@ -101,7 +101,6 @@ dashboard "digitalocean_droplet_detail" {
         args = {
           urn = self.input.droplet_urn.value
         }
-        width = 6
 
         column "Volume URN" {
           display = "none"
@@ -178,11 +177,10 @@ query "digitalocean_droplet_status" {
   param "urn" {}
 }
 
-query "digitalocean_droplet_image" {
+query "digitalocean_droplet_storage" {
   sql = <<-EOQ
     select
-      'Distribution Type' as label,
-      image ->> 'distribution' as value
+      disk as "Disk Storage (GB)"
     from
       digitalocean_droplet
     where
@@ -275,7 +273,7 @@ query "digitalocean_droplet_overview" {
       name as "Name",
       id as "Droplet ID",
       created_at as "Create Time",
-      disk as "Disk Storage (GB)",
+      image ->> 'distribution' as "Distribution Type",
       title as "Title",
       region ->> 'name' as "Region",
       urn as "URN"
@@ -310,6 +308,7 @@ query "digitalocean_droplet_attached_volumes" {
     select
       v.name as "Volume Name",
       v.id as "Volume ID",
+      v.created_at as "Create Time",
       v.urn as "Volume URN"
     from
       digitalocean_droplet as d,

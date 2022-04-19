@@ -47,7 +47,7 @@ dashboard "digitalocean_droplet_dashboard" {
       title = "Public/Private Access"
       query = query.digitalocean_droplet_by_public_access
       type  = "donut"
-      width = 2
+      width = 3
 
       series "Droplets" {
         point "private" {
@@ -63,7 +63,7 @@ dashboard "digitalocean_droplet_dashboard" {
       title = "Backups Status"
       query = query.digitalocean_droplet_by_backup_status
       type  = "donut"
-      width = 2
+      width = 3
 
       series "Droplets" {
         point "enabled" {
@@ -79,7 +79,7 @@ dashboard "digitalocean_droplet_dashboard" {
       title = "Monitoring Status"
       query = query.digitalocean_droplet_by_monitoring_status
       type  = "donut"
-      width = 2
+      width = 3
 
       series "Droplets" {
         point "enabled" {
