@@ -33,23 +33,23 @@ dashboard "digitalocean_droplet_detail" {
 
     card {
       width = 2
-      query = query.digitalocean_droplet_detail_disk
-      args = {
-        urn = self.input.droplet_urn.value
-      }
-    }
-
-    card {
-      width = 2
-      query = query.digitalocean_droplet_detail_total_vcpus
-      args = {
-        urn = self.input.droplet_urn.value
-      }
-    }
-
-    card {
-      width = 2
       query = query.digitalocean_droplet_detail_public_access
+      args = {
+        urn = self.input.droplet_urn.value
+      }
+    }
+
+    card {
+      width = 2
+      query = query.digitalocean_droplet_detail_backup_status
+      args = {
+        urn = self.input.droplet_urn.value
+      }
+    }
+
+    card {
+      width = 2
+      query = query.digitalocean_droplet_detail_monitoring_status
       args = {
         urn = self.input.droplet_urn.value
       }
@@ -88,7 +88,7 @@ dashboard "digitalocean_droplet_detail" {
       width = 6
 
       table {
-        title = "Attached Volumes"
+        title = "Attached To"
         query = query.digitalocean_droplet_detail_attached_volumes
         args = {
           urn = self.input.droplet_urn.value
@@ -99,19 +99,11 @@ dashboard "digitalocean_droplet_detail" {
           display = "none"
         }
 
-        column "Volume ID" {
+        column "Volume Name" {
           href = "${dashboard.digitalocean_block_storage_volume_detail.url_path}?input.volume_urn={{.'Volume URN' | @uri}}"
         }
       }
 
-      table {
-        title = "Features Enabled"
-        query = query.digitalocean_droplet_detail_features_enabled
-        args = {
-          urn = self.input.droplet_urn.value
-        }
-        width = 6
-      }
     }
   }
 
@@ -122,7 +114,7 @@ dashboard "digitalocean_droplet_detail" {
       width = 6
 
       table {
-        title = "Firewall Configuration"
+        title = "Firewall Details"
         query = query.digitalocean_droplet_detail_firewall_configuration
         args = {
           urn = self.input.droplet_urn.value
@@ -182,35 +174,7 @@ query "digitalocean_droplet_detail_image" {
   sql = <<-EOQ
     select
       'Distribution Type' as label,
-      image ->> 'description' as value
-    from
-      digitalocean_droplet
-    where
-      urn = $1;
-  EOQ
-
-  param "urn" {}
-}
-
-query "digitalocean_droplet_detail_disk" {
-  sql = <<-EOQ
-    select
-      'Disk Storage (GB)' as label,
-      disk as value
-    from
-      digitalocean_droplet
-    where
-      urn = $1;
-  EOQ
-
-  param "urn" {}
-}
-
-query "digitalocean_droplet_detail_total_vcpus" {
-  sql = <<-EOQ
-    select
-      'Total VCPUs' as label,
-      vcpus as value
+      image ->> 'distribution' as value
     from
       digitalocean_droplet
     where
@@ -229,7 +193,49 @@ query "digitalocean_droplet_detail_public_access" {
         else 'Disabled'
       end as value,
       case
-        when image ->> 'public' != 'true' then 'ok'
+        when image ->> 'public' = 'true' then 'alert'
+        else 'ok'
+      end as "type"
+    from
+      digitalocean_droplet
+    where
+      urn = $1;
+  EOQ
+
+  param "urn" {}
+}
+
+query "digitalocean_droplet_detail_backup_status" {
+  sql = <<-EOQ
+    select
+      'Backup Status' as label,
+      case
+        when features ? 'backups' then 'Enabled'
+        else 'Disabled'
+      end as value,
+      case
+        when features ? 'backups' then 'ok'
+        else 'alert'
+      end as "type"
+    from
+      digitalocean_droplet
+    where
+      urn = $1;
+  EOQ
+
+  param "urn" {}
+}
+
+query "digitalocean_droplet_detail_monitoring_status" {
+  sql = <<-EOQ
+    select
+      'Monitoring Status' as label,
+      case
+        when features ? 'monitoring' then 'Enabled'
+        else 'Disabled'
+      end as value,
+      case
+        when features ? 'monitoring' then 'ok'
         else 'alert'
       end as "type"
     from
@@ -249,6 +255,8 @@ query "digitalocean_droplet_detail_overview" {
       created_at as "Create Time",
       title as "Title",
       region ->> 'name' as "Region",
+      disk as "Disk Storage (GB)",
+      vcpus as "Total Virtual CPUs",
       urn as "URN"
     from
       digitalocean_droplet
@@ -279,8 +287,8 @@ query "digitalocean_droplet_detail_tags" {
 query "digitalocean_droplet_detail_attached_volumes" {
   sql = <<-EOQ
     select
+      v.name as "Volume Name",
       v.id as "Volume ID",
-      v.name as "Name",
       v.urn as "Volume URN"
     from
       digitalocean_droplet as d,
@@ -296,27 +304,11 @@ query "digitalocean_droplet_detail_attached_volumes" {
   param "urn" {}
 }
 
-query "digitalocean_droplet_detail_features_enabled" {
-  sql = <<-EOQ
-    select
-      feature as "Features"
-    from
-      digitalocean_droplet,
-      jsonb_array_elements_text(features) as feature
-    where
-      urn = $1
-    order by
-      feature;
-  EOQ
-
-  param "urn" {}
-}
-
 query "digitalocean_droplet_detail_vpc_details" {
   sql = <<-EOQ
     select
-      vpc.id as "VPC ID",
       vpc.name as "VPC Name",
+      vpc.id as "VPC ID",
       vpc.ip_range as "IP Range",
       vpc.created_at as "Create Time"
     from
@@ -332,8 +324,8 @@ query "digitalocean_droplet_detail_vpc_details" {
 query "digitalocean_droplet_detail_firewall_configuration" {
   sql = <<-EOQ
     select
-      f.id as "Firewall ID",
       f.name as "Firewall Name",
+      f.id as "Firewall ID",
       f.created_at as "Create Time"
     from
       digitalocean_droplet dr,
