@@ -25,7 +25,7 @@ dashboard "digitalocean_droplet_detail" {
 
     card {
       width = 2
-      query = query.digitalocean_droplet_total_vcpus
+      query = query.digitalocean_droplet_vcpus
       args = {
         urn = self.input.droplet_urn.value
       }
@@ -190,10 +190,10 @@ query "digitalocean_droplet_storage" {
   param "urn" {}
 }
 
-query "digitalocean_droplet_total_vcpus" {
+query "digitalocean_droplet_vcpus" {
   sql = <<-EOQ
     select
-      'Total vCPUs' as label,
+      'vCPUs' as label,
       vcpus as value
     from
       digitalocean_droplet
