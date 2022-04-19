@@ -48,7 +48,7 @@ dashboard "digitalocean_cloud_firewall_age_report" {
   }
 
   table {
-    
+
     column "URN" {
       display = "none"
     }
@@ -121,8 +121,8 @@ query "digitalocean_firewall_1_year_count" {
 query "digitalocean_firewall_age_table" {
   sql = <<-EOQ
     select
-      i.id as "Firewall ID",
       i.name as "Name",
+      i.id as "Firewall ID",
       now()::date - i.created_at::date as "Age in Days",
       i.created_at as "Start Time",
       i.status as "Status",

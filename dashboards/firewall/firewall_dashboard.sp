@@ -8,20 +8,20 @@ dashboard "digitalocean_cloud_firewall_dashboard" {
 
   container {
 
-    #Analysis
+    # Analysis
+
     card {
       query = query.digitalocean_firewall_count
       width = 2
     }
 
     card {
-      query = query.digitalocean_firewall_unrestricted_outbound_rules_count
+      query = query.digitalocean_firewall_unrestricted_inbound_rules_count
       width = 2
     }
 
-
     card {
-      query = query.digitalocean_firewall_unrestricted_inbound_rules_count
+      query = query.digitalocean_firewall_unrestricted_outbound_rules_count
       width = 2
     }
 
@@ -31,10 +31,10 @@ dashboard "digitalocean_cloud_firewall_dashboard" {
     title = "Assessment"
 
     chart {
-      title = "With Unrestricted Outbound (Excludes ICMP)"
+      title = "With Unrestricted Inbound (Excludes ICMP)"
       type  = "donut"
       width = 3
-      query = query.digitalocean_firewall_unrestricted_outbound_status
+      query = query.digitalocean_firewall_unrestricted_inbound_status
 
       series "Firewalls" {
         point "restricted" {
@@ -47,10 +47,10 @@ dashboard "digitalocean_cloud_firewall_dashboard" {
     }
 
     chart {
-      title = "With Unrestricted Inbound (Excludes ICMP)"
+      title = "With Unrestricted Outbound (Excludes ICMP)"
       type  = "donut"
       width = 3
-      query = query.digitalocean_firewall_unrestricted_inbound_status
+      query = query.digitalocean_firewall_unrestricted_outbound_status
 
       series "Firewalls" {
         point "restricted" {
@@ -159,7 +159,7 @@ query "digitalocean_firewall_unrestricted_outbound_status" {
         and i ->> 'protocol' <> 'icmp'
       group by id
     )
-    select 
+    select
       status,
       count(*) as "Firewalls"
     from
@@ -184,7 +184,7 @@ query "digitalocean_firewall_unrestricted_inbound_status" {
         and i ->> 'protocol' <> 'icmp'
       group by id
     )
-    select 
+    select
       status,
       count(*) as "Firewalls"
     from
@@ -195,8 +195,6 @@ query "digitalocean_firewall_unrestricted_inbound_status" {
     group by status;
   EOQ
 }
-
-
 
 # Analysis Queries
 
