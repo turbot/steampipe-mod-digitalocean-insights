@@ -9,6 +9,7 @@ dashboard "digitalocean_kubernetes_dashboard" {
   container {
 
     #Analysis
+
     card {
       query = query.digitalocean_kubernetes_cluster_count
       width = 2
@@ -45,10 +46,10 @@ dashboard "digitalocean_kubernetes_dashboard" {
       width = 2
 
       series "Clusters" {
-        point "running" {
+        point "ok" {
           color = "ok"
         }
-        point "not running" {
+        point "degraded" {
           color = "alert"
         }
       }
@@ -165,11 +166,13 @@ query "digitalocean_kubernetes_surge_upgrade_count" {
   EOQ
 }
 
+# Assessments Queries
+
 query "digitalocean_kubernetes_status" {
   sql = <<-EOQ
     select
       status,
-      count(*)
+      count(*) as "Clusters"
     from (
       select name,
         case when status = 'degraded' then
@@ -228,6 +231,8 @@ query "digitalocean_kubernetes_by_surge_upgrade_status" {
       u_status;
   EOQ
 }
+
+# Analysis Queries
 
 query "digitalocean_kubernetes_by_region" {
   sql = <<-EOQ

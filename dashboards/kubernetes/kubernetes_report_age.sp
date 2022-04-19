@@ -125,10 +125,10 @@ query "digitalocean_kubernetes_1_year_count" {
 query "digitalocean_kubernetes_age_table" {
   sql = <<-EOQ
     select
-      i.id as "Cluster ID",
       i.name as "Name",
+      i.id as "Cluster ID",
       now()::date - i.created_at::date as "Age in Days",
-      i.created_at as "Start Time",
+      i.created_at as "Create Time",
       i.status as "Status",
       i.region_slug as "Region",
       i.urn as "URN"

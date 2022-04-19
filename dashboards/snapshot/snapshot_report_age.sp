@@ -124,8 +124,8 @@ query "digitalocean_snapshot_1_year_count" {
 query "digitalocean_snapshot_age_table" {
   sql = <<-EOQ
     select
-      s.id as "ID",
       s.name as "Name",
+      s.id as "ID",
       now()::date - s.created_at::date as "Age in Days",
       s.created_at as "Create Time",
       s.resource_type as "Resource Type",

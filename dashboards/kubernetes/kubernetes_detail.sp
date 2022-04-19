@@ -182,13 +182,15 @@ query "digitalocean_kubernetes_detail_surge_upgrade_status" {
 query "digitalocean_kubernetes_overview" {
   sql = <<-EOQ
     select
+      name as "Name",
       id as "Kubernetes Cluster ID",
-      title as "Title",
-      region_slug as "Region",
+      created_at as "Create Time",
       cluster_subnet as "Cluster Subnet",
       service_subnet as "Service Subnet",
-      urn as "URN",
-      version_slug as "Version"
+      version_slug as "Version",
+      title as "Title",
+      region_slug as "Region",
+      urn as "URN"
     from
       digitalocean_kubernetes_cluster
     where
@@ -242,8 +244,8 @@ query "digitalocean_kubernetes_details_attached_droplets" {
 query "digitalocean_kubernetes_detail_vpc_details" {
   sql = <<-EOQ
     select
-      vpc.id as "VPC ID",
       vpc.name as "VPC Name",
+      vpc.id as "VPC ID",
       vpc.ip_range as "IP Range",
       vpc.created_at as "Create Time"
     from
