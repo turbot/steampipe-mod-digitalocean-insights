@@ -39,7 +39,7 @@ dashboard "digitalocean_database_dashboard" {
       type  = "donut"
       width = 4
 
-      series "Database" {
+      series "Clusters" {
         point "enabled" {
           color = "ok"
         }
@@ -55,7 +55,7 @@ dashboard "digitalocean_database_dashboard" {
       type  = "donut"
       width = 4
 
-      series "Database" {
+      series "Clusters" {
         point "enabled" {
           color = "ok"
         }
@@ -72,21 +72,21 @@ dashboard "digitalocean_database_dashboard" {
     title = "Analysis"
 
     chart {
-      title = "Databases by Region"
+      title = "Database Clusters by Region"
       query = query.digitalocean_database_by_region
       type  = "column"
       width = 4
     }
 
     chart {
-      title = "Databases by Engine"
+      title = "Database Clusters by Engine"
       query = query.digitalocean_database_by_engine
       type  = "column"
       width = 4
     }
 
     chart {
-      title = "Databases by Age"
+      title = "Database Clusters by Age"
       query = query.digitalocean_databases_creation_month
       type  = "column"
       width = 4
@@ -99,7 +99,7 @@ dashboard "digitalocean_database_dashboard" {
 query "digitalocean_database_count" {
   sql = <<-EOQ
     select 
-      count(*) as "Database" 
+      count(*) as "Clusters" 
     from 
       digitalocean_database;
   EOQ
@@ -146,7 +146,7 @@ query "digitalocean_droplet_by_ssl_status" {
     )
     select
       ssl_status,
-      count(*) as "Database"
+      count(*) as "Clusters"
     from
       database
     group by
@@ -167,7 +167,7 @@ query "digitalocean_droplet_by_firewall_status" {
     )
     select
       firewall_status,
-      count(*) as "Database"
+      count(*) as "Clusters"
     from
       database
     group by
@@ -181,7 +181,7 @@ query "digitalocean_database_by_region" {
   sql = <<-EOQ
     select
       region_slug,
-      count(d.*) as "Databases"
+      count(d.*) as "Clusters"
     from
       digitalocean_database as d
     group by
@@ -193,7 +193,7 @@ query "digitalocean_database_by_engine" {
   sql = <<-EOQ
     select
       engine,
-      count(d.*) as "Databases"
+      count(d.*) as "Clusters"
     from
       digitalocean_database as d
     group by
@@ -237,7 +237,7 @@ query "digitalocean_databases_creation_month" {
     )
     select
       months.month,
-      databases_by_month.count as "Databases"
+      databases_by_month.count as "Clusters"
     from
       months
       left join databases_by_month on months.month = databases_by_month.creation_month
