@@ -128,7 +128,6 @@ query "digitalocean_snapshot_age_table" {
       s.id as "ID",
       now()::date - s.created_at::date as "Age in Days",
       s.created_at as "Create Time",
-      s.resource_type as "Resource Type",
       s.regions as "Region"
     from
       digitalocean_snapshot as s

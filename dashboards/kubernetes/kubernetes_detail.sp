@@ -226,13 +226,11 @@ query "digitalocean_kubernetes_node_pool_details" {
     from
       digitalocean_kubernetes_cluster as kc,
       jsonb_array_elements(kc.node_pools) as node_pool,
-      jsonb_array_elements(node_pool -> 'nodes') as node,
-      digitalocean_droplet as d
+      jsonb_array_elements(node_pool -> 'nodes') as node
     where
-      d.id = (node ->> 'droplet_id')::bigint
-      and kc.urn = $1
+      kc.urn = $1
     order by
-      d.id;
+      node ->> 'name';
   EOQ
 
   param "urn" {}

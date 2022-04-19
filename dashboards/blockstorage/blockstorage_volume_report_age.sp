@@ -125,16 +125,16 @@ query "digitalocean_volume_1_year_count" {
 query "digitalocean_volume_age_table" {
   sql = <<-EOQ
     select
-      i.name as "Name",
-      i.id as "ID",
-      i.filesystem_type as "Filesystem Type",
-      now()::date - i.created_at::date as "Age in Days",
-      i.created_at as "Create Time",
-      i.region_name as "Region",
-      i.urn as "URN"
+      name as "Name",
+      id as "ID",
+      filesystem_type as "Filesystem Type",
+      now()::date - created_at::date as "Age in Days",
+      created_at as "Create Time",
+      region_name as "Region",
+      urn as "URN"
     from
-      digitalocean_volume as i
+      digitalocean_volume
     order by
-      i.id;
+      id;
   EOQ
 }

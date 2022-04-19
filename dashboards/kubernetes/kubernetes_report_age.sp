@@ -125,16 +125,16 @@ query "digitalocean_kubernetes_1_year_count" {
 query "digitalocean_kubernetes_age_table" {
   sql = <<-EOQ
     select
-      i.name as "Name",
-      i.id as "Cluster ID",
-      now()::date - i.created_at::date as "Age in Days",
-      i.created_at as "Create Time",
-      i.status as "Status",
-      i.region_slug as "Region",
-      i.urn as "URN"
+      name as "Name",
+      id as "Cluster ID",
+      now()::date - created_at::date as "Age in Days",
+      created_at as "Create Time",
+      status as "Status",
+      region_slug as "Region",
+      urn as "URN"
     from
-      digitalocean_kubernetes_cluster as i
+      digitalocean_kubernetes_cluster
     order by
-      i.id;
+      id;
   EOQ
 }
