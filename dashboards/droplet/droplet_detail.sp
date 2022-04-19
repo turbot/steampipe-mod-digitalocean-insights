@@ -25,7 +25,7 @@ dashboard "digitalocean_droplet_detail" {
 
     card {
       width = 2
-      query = query.digitalocean_droplet_image
+      query = query.digitalocean_droplet_total_vcpus
       args = {
         urn = self.input.droplet_urn.value
       }
@@ -33,7 +33,7 @@ dashboard "digitalocean_droplet_detail" {
 
     card {
       width = 2
-      query = query.digitalocean_droplet_total_vcpus
+      query = query.digitalocean_droplet_image
       args = {
         urn = self.input.droplet_urn.value
       }
