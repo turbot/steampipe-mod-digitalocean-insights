@@ -71,8 +71,8 @@ dashboard "digitalocean_kubernetes_detail" {
       width = 6
 
       table {
-        title = "Node Pools Attached"
-        query = query.digitalocean_kubernetes_details_attached_droplets
+        title = "Node Details"
+        query = query.digitalocean_kubernetes_node_pool_details
         args = {
           urn = self.input.cluster_urn.value
         }
@@ -217,15 +217,12 @@ query "digitalocean_kubernetes_tags" {
   param "urn" {}
 }
 
-query "digitalocean_kubernetes_details_attached_droplets" {
+query "digitalocean_kubernetes_node_pool_details" {
   sql = <<-EOQ
     select
-      node_pool ->> 'name' as "Node Pool Name",
-      node ->> 'name' as "Node Name",
-      node -> 'status' ->> 'state' "Node State",
-      d.name as "Droplet Name",
-      d.urn as "Droplet URN",
-      d.status as "Droplet State"
+      node ->> 'name' as "Name",
+      node -> 'status' ->> 'state' "State",
+      node_pool ->> 'name' as "Node Pool Name"
     from
       digitalocean_kubernetes_cluster as kc,
       jsonb_array_elements(kc.node_pools) as node_pool,
@@ -244,8 +241,8 @@ query "digitalocean_kubernetes_details_attached_droplets" {
 query "digitalocean_kubernetes_detail_vpc_details" {
   sql = <<-EOQ
     select
-      vpc.name as "VPC Name",
-      vpc.id as "VPC ID",
+      vpc.name as "Name",
+      vpc.id as "ID",
       vpc.ip_range as "IP Range",
       vpc.created_at as "Create Time"
     from

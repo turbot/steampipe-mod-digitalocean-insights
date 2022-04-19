@@ -53,7 +53,7 @@ dashboard "digitalocean_kubernetes_age_report" {
       display = "none"
     }
 
-    column "Cluster ID" {
+    column "Name" {
       href = "${dashboard.digitalocean_kubernetes_detail.url_path}?input.cluster_urn={{.URN | @uri}}"
     }
 

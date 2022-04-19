@@ -48,7 +48,7 @@ dashboard "digitalocean_database_age_report" {
   }
 
   table {
-    
+
     column "URN" {
       display = "none"
     }
@@ -123,9 +123,8 @@ query "digitalocean_database_age_table" {
     select
       i.name as "Name",
       i.id as "ID",
-      i.engine as "Engine",
       now()::date - i.created_at::date as "Age in Days",
-      i.created_at as "Start Time",
+      i.created_at as "Create Time",
       i.status as "Status",
       i.region_slug as "Region",
       i.urn as "URN"

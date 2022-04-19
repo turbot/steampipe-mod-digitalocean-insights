@@ -1,9 +1,9 @@
-dashboard "digitalocean_block_storage_volume_age_report" {
+dashboard "digitalocean_blockstorage_volume_age_report" {
 
   title         = "DigitalOcean Block Storage Volume Age Report"
-  documentation = file("./dashboards/block_storage_volume/docs/block_storage_volume_report_age.md")
+  documentation = file("./dashboards/blockstorage/docs/blockstorage_volume_report_age.md")
 
-  tags = merge(local.block_storage_volume_common_tags, {
+  tags = merge(local.blockstorage_volume_common_tags, {
     type     = "Report"
     category = "Age"
   })
@@ -54,7 +54,7 @@ dashboard "digitalocean_block_storage_volume_age_report" {
     }
 
     column "Name" {
-      href = "${dashboard.digitalocean_block_storage_volume_detail.url_path}?input.volume_urn={{.URN | @uri}}"
+      href = "${dashboard.digitalocean_blockstorage_volume_detail.url_path}?input.volume_urn={{.URN | @uri}}"
     }
 
     query = query.digitalocean_volume_age_table

@@ -35,8 +35,8 @@ query "digitalocean_project_count" {
 query "digitalocean_project_table" {
   sql = <<-EOQ
     select
-      id as "Project ID",
       name as "Name",
+      id as "ID",
       is_default as "Is Default",
       created_at as "Create Time"
     from

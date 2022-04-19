@@ -1,9 +1,9 @@
-dashboard "digitalocean_block_storage_volume_detail" {
+dashboard "digitalocean_blockstorage_volume_detail" {
 
   title         = "DigitalOcean Block Storage Volume Detail"
-  documentation = file("./dashboards/block_storage_volume/docs/block_storage_volume_detail.md")
+  documentation = file("./dashboards/blockstorage/docs/blockstorage_volume_detail.md")
 
-  tags = merge(local.block_storage_volume_common_tags, {
+  tags = merge(local.blockstorage_volume_common_tags, {
     type = "Detail"
   })
 
@@ -164,7 +164,7 @@ query "digitalocean_volume_overview" {
     select
       name as "Name",
       id as "ID",
-      created_at as "Created Time",
+      created_at as "Create Time",
       title as "Title",
       region_name as "Region",
       urn as "URN"
