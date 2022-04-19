@@ -319,7 +319,7 @@ query "digitalocean_droplet_attached_volumes" {
       v.id = volume_id
       and d.urn = $1
     order by
-      v.id;
+      v.name;
   EOQ
 
   param "urn" {}
@@ -333,10 +333,14 @@ query "digitalocean_droplet_vpc_details" {
       vpc.ip_range as "IP Range",
       vpc.created_at as "Create Time"
     from
-      digitalocean_droplet
+      digitalocean_droplet dr
     join
       digitalocean_vpc vpc
-      on vpc.id = vpc_uuid;
+      on vpc.id = vpc_uuid
+    where
+      dr.urn = $1
+    order by
+      vpc.name;
   EOQ
 
   param "urn" {}
@@ -356,7 +360,7 @@ query "digitalocean_droplet_firewall_configuration" {
       dr.id = dr_id::bigint
       and dr.urn = $1
     order by
-      f.id;
+      f.name;
   EOQ
 
   param "urn" {}
