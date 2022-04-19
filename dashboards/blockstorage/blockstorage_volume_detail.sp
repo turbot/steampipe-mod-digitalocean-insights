@@ -1,9 +1,9 @@
-dashboard "digitalocean_block_storage_volume_detail" {
+dashboard "digitalocean_blockstorage_volume_detail" {
 
   title         = "DigitalOcean Block Storage Volume Detail"
-  documentation = file("./dashboards/block_storage_volume/docs/block_storage_volume_detail.md")
+  documentation = file("./dashboards/blockstorage/docs/blockstorage_volume_detail.md")
 
-  tags = merge(local.block_storage_volume_common_tags, {
+  tags = merge(local.blockstorage_volume_common_tags, {
     type = "Detail"
   })
 
@@ -81,9 +81,11 @@ dashboard "digitalocean_block_storage_volume_detail" {
           display = "none"
         }
 
-        column "Droplet ID" {
+        column "Droplet Name" {
+
           # href = "${dashboard.digitalocean_droplet_detail.url_path}?input.droplet_urn={{.'Droplet URN' | @uri}}"
           // cyclic dependency prevents use of url_path, hardcode for now
+
           href = "/digitalocean_insights.dashboard.digitalocean_droplet_detail?input.droplet_urn={{.'Droplet URN' | @uri}}"
         }
       }
@@ -160,7 +162,9 @@ query "digitalocean_volume_attached_droplets_count" {
 query "digitalocean_volume_overview" {
   sql = <<-EOQ
     select
-      id as "Volume ID",
+      name as "Name",
+      id as "ID",
+      created_at as "Create Time",
       title as "Title",
       region_name as "Region",
       urn as "URN"
@@ -176,15 +180,15 @@ query "digitalocean_volume_overview" {
 query "digitalocean_volume_tags" {
   sql = <<-EOQ
     select
-      tag ->> 'Key' as "Key",
-      tag ->> 'Value' as "Value"
+      tag.key as "Key",
+      tag.value as "Value"
     from
-      digitalocean_volume,
-      jsonb_array_elements(tags_src) as tag
+      digitalocean_volume
+      join jsonb_each_text(tags) tag on true
     where
       urn = $1
     order by
-      tag ->> 'Key';
+      tag.key;
   EOQ
 
   param "urn" {}
@@ -193,8 +197,9 @@ query "digitalocean_volume_tags" {
 query "digitalocean_volume_attached_droplets" {
   sql = <<-EOQ
     select
+      d.name as "Droplet Name",
       d.id as "Droplet ID",
-      d.name as "Name",
+      d.created_at as "Create Time",
       d.urn as "Droplet URN",
       d.status as "Droplet State"
     from

@@ -107,7 +107,7 @@ dashboard "digitalocean_droplet_detail" {
         }
 
         column "Volume Name" {
-          href = "${dashboard.digitalocean_block_storage_volume_detail.url_path}?input.volume_urn={{.'Volume URN' | @uri}}"
+          href = "${dashboard.digitalocean_blockstorage_volume_detail.url_path}?input.volume_urn={{.'Volume URN' | @uri}}"
         }
       }
 
@@ -125,6 +125,17 @@ dashboard "digitalocean_droplet_detail" {
         query = query.digitalocean_droplet_firewall_configuration
         args = {
           urn = self.input.droplet_urn.value
+        }
+
+        column "URN" {
+          display = "none"
+        }
+
+        column "Name" {
+
+          # href = "${dashboard.digitalocean_droplet_detail.url_path}?input.droplet_urn={{.'Droplet URN' | @uri}}"
+          // cyclic dependency prevents use of url_path, hardcode for now
+          href = "/digitalocean_insights.dashboard.digitalocean_firewall_detail?input.firewall_urn={{.'URN' | @uri}}"
         }
       }
 
@@ -327,8 +338,8 @@ query "digitalocean_droplet_attached_volumes" {
 query "digitalocean_droplet_vpc_details" {
   sql = <<-EOQ
     select
-      vpc.name as "VPC Name",
-      vpc.id as "VPC ID",
+      vpc.name as "Name",
+      vpc.id as "ID",
       vpc.ip_range as "IP Range",
       vpc.created_at as "Create Time"
     from
@@ -348,9 +359,10 @@ query "digitalocean_droplet_vpc_details" {
 query "digitalocean_droplet_firewall_configuration" {
   sql = <<-EOQ
     select
-      f.name as "Firewall Name",
-      f.id as "Firewall ID",
-      f.created_at as "Create Time"
+      f.name as "Name",
+      f.id as "ID",
+      f.created_at as "Create Time",
+      f.urn as "URN"
     from
       digitalocean_droplet dr,
       digitalocean_firewall f,

@@ -53,7 +53,7 @@ dashboard "digitalocean_kubernetes_age_report" {
       display = "none"
     }
 
-    column "Cluster ID" {
+    column "Name" {
       href = "${dashboard.digitalocean_kubernetes_detail.url_path}?input.cluster_urn={{.URN | @uri}}"
     }
 
@@ -125,16 +125,16 @@ query "digitalocean_kubernetes_1_year_count" {
 query "digitalocean_kubernetes_age_table" {
   sql = <<-EOQ
     select
-      i.id as "Cluster ID",
-      i.name as "Name",
-      now()::date - i.created_at::date as "Age in Days",
-      i.created_at as "Start Time",
-      i.status as "Status",
-      i.region_slug as "Region",
-      i.urn as "URN"
+      name as "Name",
+      id as "Cluster ID",
+      now()::date - created_at::date as "Age in Days",
+      created_at as "Create Time",
+      status as "Status",
+      region_slug as "Region",
+      urn as "URN"
     from
-      digitalocean_kubernetes_cluster as i
+      digitalocean_kubernetes_cluster
     order by
-      i.id;
+      id;
   EOQ
 }

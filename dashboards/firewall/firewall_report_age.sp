@@ -53,6 +53,10 @@ dashboard "digitalocean_cloud_firewall_age_report" {
       display = "none"
     }
 
+    column "Name" {
+      href = "${dashboard.digitalocean_firewall_detail.url_path}?input.firewall_urn={{.'URN' | @uri}}"
+    }
+
     query = query.digitalocean_firewall_age_table
   }
 
@@ -121,15 +125,15 @@ query "digitalocean_firewall_1_year_count" {
 query "digitalocean_firewall_age_table" {
   sql = <<-EOQ
     select
-      i.name as "Name",
-      i.id as "Firewall ID",
-      now()::date - i.created_at::date as "Age in Days",
-      i.created_at as "Start Time",
-      i.status as "Status",
-      i.urn as "URN"
+      name as "Name",
+      id as "ID",
+      now()::date - created_at::date as "Age in Days",
+      created_at as "Create Time",
+      status as "Status",
+      urn as "URN"
     from
-      digitalocean_firewall as i
+      digitalocean_firewall
     order by
-      i.id;
+      name;
   EOQ
 }

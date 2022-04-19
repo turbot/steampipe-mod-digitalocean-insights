@@ -71,19 +71,19 @@ dashboard "digitalocean_kubernetes_detail" {
       width = 6
 
       table {
-        title = "Node Pools Attached"
-        query = query.digitalocean_kubernetes_details_attached_droplets
+        title = "Node Details"
+        query = query.digitalocean_kubernetes_node_pool_details
         args = {
           urn = self.input.cluster_urn.value
         }
 
-        column "Droplet URN" {
+        column "URN" {
           display = "none"
         }
 
-        # column "Droplet ID" {
-        #   href = "${dashboard.digitalocean_droplet_detail.url_path}?input.droplet_urn={{.'URN' | @uri}}"
-        # }
+        column "Name" {
+          href = "${dashboard.digitalocean_droplet_detail.url_path}?input.droplet_urn={{.'URN' | @uri}}"
+        }
       }
     }
   }
@@ -182,13 +182,15 @@ query "digitalocean_kubernetes_detail_surge_upgrade_status" {
 query "digitalocean_kubernetes_overview" {
   sql = <<-EOQ
     select
+      name as "Name",
       id as "Kubernetes Cluster ID",
-      title as "Title",
-      region_slug as "Region",
+      created_at as "Create Time",
       cluster_subnet as "Cluster Subnet",
       service_subnet as "Service Subnet",
-      urn as "URN",
-      version_slug as "Version"
+      version_slug as "Version",
+      title as "Title",
+      region_slug as "Region",
+      urn as "URN"
     from
       digitalocean_kubernetes_cluster
     where
@@ -215,25 +217,21 @@ query "digitalocean_kubernetes_tags" {
   param "urn" {}
 }
 
-query "digitalocean_kubernetes_details_attached_droplets" {
+query "digitalocean_kubernetes_node_pool_details" {
   sql = <<-EOQ
     select
+      node ->> 'name' as "Name",
+      node -> 'status' ->> 'state' "State",
       node_pool ->> 'name' as "Node Pool Name",
-      node ->> 'name' as "Node Name",
-      node -> 'status' ->> 'state' "Node State",
-      d.name as "Droplet Name",
-      d.urn as "Droplet URN",
-      d.status as "Droplet State"
+      'do:droplet:' || (node ->> 'droplet_id') as "URN"
     from
       digitalocean_kubernetes_cluster as kc,
       jsonb_array_elements(kc.node_pools) as node_pool,
-      jsonb_array_elements(node_pool -> 'nodes') as node,
-      digitalocean_droplet as d
+      jsonb_array_elements(node_pool -> 'nodes') as node
     where
-      d.id = (node ->> 'droplet_id')::bigint
-      and kc.urn = $1
+      kc.urn = $1
     order by
-      d.id;
+      node ->> 'name';
   EOQ
 
   param "urn" {}
@@ -242,8 +240,8 @@ query "digitalocean_kubernetes_details_attached_droplets" {
 query "digitalocean_kubernetes_detail_vpc_details" {
   sql = <<-EOQ
     select
-      vpc.id as "VPC ID",
-      vpc.name as "VPC Name",
+      vpc.name as "Name",
+      vpc.id as "ID",
       vpc.ip_range as "IP Range",
       vpc.created_at as "Create Time"
     from

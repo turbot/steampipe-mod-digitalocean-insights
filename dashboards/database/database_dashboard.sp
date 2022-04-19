@@ -38,7 +38,7 @@ dashboard "digitalocean_database_dashboard" {
       title = "SSL Status"
       query = query.digitalocean_droplet_by_ssl_status
       type  = "donut"
-      width = 4
+      width = 3
 
       series "Clusters" {
         point "enabled" {
@@ -54,7 +54,7 @@ dashboard "digitalocean_database_dashboard" {
       title = "Firewall Status"
       query = query.digitalocean_droplet_by_firewall_status
       type  = "donut"
-      width = 4
+      width = 3
 
       series "Clusters" {
         point "enabled" {

@@ -48,7 +48,7 @@ dashboard "digitalocean_database_age_report" {
   }
 
   table {
-    
+
     column "URN" {
       display = "none"
     }
@@ -121,17 +121,16 @@ query "digitalocean_database_1_year_count" {
 query "digitalocean_database_age_table" {
   sql = <<-EOQ
     select
-      i.name as "Name",
-      i.id as "ID",
-      i.engine as "Engine",
-      now()::date - i.created_at::date as "Age in Days",
-      i.created_at as "Start Time",
-      i.status as "Status",
-      i.region_slug as "Region",
-      i.urn as "URN"
+      name as "Name",
+      id as "ID",
+      now()::date - created_at::date as "Age in Days",
+      created_at as "Create Time",
+      status as "Status",
+      region_slug as "Region",
+      urn as "URN"
     from
-      digitalocean_database as i
+      digitalocean_database
     order by
-      i.name;
+      name;
   EOQ
 }

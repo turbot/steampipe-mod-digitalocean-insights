@@ -9,6 +9,7 @@ dashboard "digitalocean_droplet_dashboard" {
   container {
 
     #Analysis
+    
     card {
       query = query.digitalocean_droplet_count
       width = 2
