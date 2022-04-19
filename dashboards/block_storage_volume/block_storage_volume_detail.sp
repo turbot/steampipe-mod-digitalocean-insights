@@ -81,9 +81,11 @@ dashboard "digitalocean_block_storage_volume_detail" {
           display = "none"
         }
 
-        # column "Droplet ID" {
-        #   href = "${dashboard.digitalocean_droplet_detail.url_path}?input.droplet_urn={{.'URN' | @uri}}"
-        # }
+        column "Droplet ID" {
+          # href = "${dashboard.digitalocean_droplet_detail.url_path}?input.droplet_urn={{.'Droplet URN' | @uri}}"
+          // cyclic dependency prevents use of url_path, hardcode for now
+          href = "/digitalocean_insights.dashboard.digitalocean_droplet_detail?input.droplet_urn={{.'Droplet URN' | @uri}}"
+        }
       }
     }
   }
