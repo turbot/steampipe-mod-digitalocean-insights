@@ -193,7 +193,7 @@ query "digitalocean_droplet_storage" {
 query "digitalocean_droplet_total_vcpus" {
   sql = <<-EOQ
     select
-      'Total Virtual CPUs' as label,
+      'Total vCPUs' as label,
       vcpus as value
     from
       digitalocean_droplet
