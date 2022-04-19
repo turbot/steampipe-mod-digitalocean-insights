@@ -9,7 +9,7 @@ dashboard "digitalocean_droplet_detail" {
 
   input "droplet_urn" {
     title = "Select a droplet:"
-    query = query.digitalocean_droplet_detail_input
+    query = query.digitalocean_droplet_input
     width = 4
   }
 
@@ -17,7 +17,7 @@ dashboard "digitalocean_droplet_detail" {
 
     card {
       width = 2
-      query = query.digitalocean_droplet_detail_status
+      query = query.digitalocean_droplet_status
       args = {
         urn = self.input.droplet_urn.value
       }
@@ -25,7 +25,7 @@ dashboard "digitalocean_droplet_detail" {
 
     card {
       width = 2
-      query = query.digitalocean_droplet_detail_image
+      query = query.digitalocean_droplet_image
       args = {
         urn = self.input.droplet_urn.value
       }
@@ -33,7 +33,7 @@ dashboard "digitalocean_droplet_detail" {
 
     card {
       width = 2
-      query = query.digitalocean_droplet_detail_public_access
+      query = query.digitalocean_droplet_total_vcpus
       args = {
         urn = self.input.droplet_urn.value
       }
@@ -41,7 +41,7 @@ dashboard "digitalocean_droplet_detail" {
 
     card {
       width = 2
-      query = query.digitalocean_droplet_detail_backup_status
+      query = query.digitalocean_droplet_public_access
       args = {
         urn = self.input.droplet_urn.value
       }
@@ -49,7 +49,15 @@ dashboard "digitalocean_droplet_detail" {
 
     card {
       width = 2
-      query = query.digitalocean_droplet_detail_monitoring_status
+      query = query.digitalocean_droplet_backup_status
+      args = {
+        urn = self.input.droplet_urn.value
+      }
+    }
+
+    card {
+      width = 2
+      query = query.digitalocean_droplet_monitoring_status
       args = {
         urn = self.input.droplet_urn.value
       }
@@ -67,7 +75,7 @@ dashboard "digitalocean_droplet_detail" {
         title = "Overview"
         type  = "line"
         width = 6
-        query = query.digitalocean_droplet_detail_overview
+        query = query.digitalocean_droplet_overview
         args = {
           urn = self.input.droplet_urn.value
         }
@@ -76,7 +84,7 @@ dashboard "digitalocean_droplet_detail" {
       table {
         title = "Tags"
         width = 6
-        query = query.digitalocean_droplet_detail_tags
+        query = query.digitalocean_droplet_tags
         args = {
           urn = self.input.droplet_urn.value
         }
@@ -89,7 +97,7 @@ dashboard "digitalocean_droplet_detail" {
 
       table {
         title = "Attached To"
-        query = query.digitalocean_droplet_detail_attached_volumes
+        query = query.digitalocean_droplet_attached_volumes
         args = {
           urn = self.input.droplet_urn.value
         }
@@ -115,7 +123,7 @@ dashboard "digitalocean_droplet_detail" {
 
       table {
         title = "Firewall Details"
-        query = query.digitalocean_droplet_detail_firewall_configuration
+        query = query.digitalocean_droplet_firewall_configuration
         args = {
           urn = self.input.droplet_urn.value
         }
@@ -129,7 +137,7 @@ dashboard "digitalocean_droplet_detail" {
 
       table {
         title = "VPC Details"
-        query = query.digitalocean_droplet_detail_vpc_details
+        query = query.digitalocean_droplet_vpc_details
         args = {
           urn = self.input.droplet_urn.value
         }
@@ -140,7 +148,7 @@ dashboard "digitalocean_droplet_detail" {
 
 }
 
-query "digitalocean_droplet_detail_input" {
+query "digitalocean_droplet_input" {
   sql = <<-EOQ
     select
       title as label,
@@ -156,7 +164,7 @@ query "digitalocean_droplet_detail_input" {
   EOQ
 }
 
-query "digitalocean_droplet_detail_status" {
+query "digitalocean_droplet_status" {
   sql = <<-EOQ
     select
       'Status' as label,
@@ -170,7 +178,7 @@ query "digitalocean_droplet_detail_status" {
   param "urn" {}
 }
 
-query "digitalocean_droplet_detail_image" {
+query "digitalocean_droplet_image" {
   sql = <<-EOQ
     select
       'Distribution Type' as label,
@@ -184,7 +192,21 @@ query "digitalocean_droplet_detail_image" {
   param "urn" {}
 }
 
-query "digitalocean_droplet_detail_public_access" {
+query "digitalocean_droplet_total_vcpus" {
+  sql = <<-EOQ
+    select
+      'Total Virtual CPUs' as label,
+      vcpus as value
+    from
+      digitalocean_droplet
+    where
+      urn = $1;
+  EOQ
+
+  param "urn" {}
+}
+
+query "digitalocean_droplet_public_access" {
   sql = <<-EOQ
     select
       'Public Access' as label,
@@ -205,7 +227,7 @@ query "digitalocean_droplet_detail_public_access" {
   param "urn" {}
 }
 
-query "digitalocean_droplet_detail_backup_status" {
+query "digitalocean_droplet_backup_status" {
   sql = <<-EOQ
     select
       'Backup Status' as label,
@@ -226,7 +248,7 @@ query "digitalocean_droplet_detail_backup_status" {
   param "urn" {}
 }
 
-query "digitalocean_droplet_detail_monitoring_status" {
+query "digitalocean_droplet_monitoring_status" {
   sql = <<-EOQ
     select
       'Monitoring Status' as label,
@@ -247,16 +269,15 @@ query "digitalocean_droplet_detail_monitoring_status" {
   param "urn" {}
 }
 
-query "digitalocean_droplet_detail_overview" {
+query "digitalocean_droplet_overview" {
   sql = <<-EOQ
     select
       name as "Name",
       id as "Droplet ID",
       created_at as "Create Time",
+      disk as "Disk Storage (GB)",
       title as "Title",
       region ->> 'name' as "Region",
-      disk as "Disk Storage (GB)",
-      vcpus as "Total Virtual CPUs",
       urn as "URN"
     from
       digitalocean_droplet
@@ -267,7 +288,7 @@ query "digitalocean_droplet_detail_overview" {
   param "urn" {}
 }
 
-query "digitalocean_droplet_detail_tags" {
+query "digitalocean_droplet_tags" {
   sql = <<-EOQ
     select
       tag.key as "Key",
@@ -284,7 +305,7 @@ query "digitalocean_droplet_detail_tags" {
   param "urn" {}
 }
 
-query "digitalocean_droplet_detail_attached_volumes" {
+query "digitalocean_droplet_attached_volumes" {
   sql = <<-EOQ
     select
       v.name as "Volume Name",
@@ -304,7 +325,7 @@ query "digitalocean_droplet_detail_attached_volumes" {
   param "urn" {}
 }
 
-query "digitalocean_droplet_detail_vpc_details" {
+query "digitalocean_droplet_vpc_details" {
   sql = <<-EOQ
     select
       vpc.name as "VPC Name",
@@ -321,7 +342,7 @@ query "digitalocean_droplet_detail_vpc_details" {
   param "urn" {}
 }
 
-query "digitalocean_droplet_detail_firewall_configuration" {
+query "digitalocean_droplet_firewall_configuration" {
   sql = <<-EOQ
     select
       f.name as "Firewall Name",
