@@ -135,6 +135,6 @@ query "digitalocean_droplet_age_table" {
     from
       digitalocean_droplet as i
     order by
-      i.id;
+      i.name;
   EOQ
 }
