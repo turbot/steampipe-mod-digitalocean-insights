@@ -76,29 +76,30 @@ dashboard "digitalocean_database_dashboard" {
       title = "Database Clusters by Region"
       query = query.digitalocean_database_by_region
       type  = "column"
-      width = 4
+      width = 3
     }
 
     chart {
       title = "Database Clusters by DB Engine"
       query = query.digitalocean_database_by_engine
       type  = "column"
-      width = 4
-    }
-
-    chart {
-      title = "Database Clusters by Status"
-      query = query.digitalocean_database_by_status
-      type  = "column"
-      width = 4
+      width = 3
     }
 
     chart {
       title = "Database Clusters by Age"
       query = query.digitalocean_databases_creation_month
       type  = "column"
-      width = 4
+      width = 3
     }
+
+    chart {
+      title = "Database Clusters by Status"
+      query = query.digitalocean_database_by_status
+      type  = "column"
+      width = 3
+    }
+
   }
 }
 
@@ -209,18 +210,6 @@ query "digitalocean_database_by_engine" {
   EOQ
 }
 
-query "digitalocean_database_by_status" {
-  sql = <<-EOQ
-    select
-      status,
-      count(d.*) as "Clusters"
-    from
-      digitalocean_database as d
-    group by
-      status;
-  EOQ
-}
-
 query "digitalocean_databases_creation_month" {
   sql = <<-EOQ
     with databases as (
@@ -263,5 +252,17 @@ query "digitalocean_databases_creation_month" {
       left join databases_by_month on months.month = databases_by_month.creation_month
     order by
       months.month;
+  EOQ
+}
+
+query "digitalocean_database_by_status" {
+  sql = <<-EOQ
+    select
+      status,
+      count(d.*) as "Clusters"
+    from
+      digitalocean_database as d
+    group by
+      status;
   EOQ
 }
