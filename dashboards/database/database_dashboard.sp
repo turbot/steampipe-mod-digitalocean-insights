@@ -86,6 +86,13 @@ dashboard "digitalocean_database_dashboard" {
     }
 
     chart {
+      title = "Database Clusters by Status"
+      query = query.digitalocean_database_by_status
+      type  = "column"
+      width = 4
+    }
+
+    chart {
       title = "Database Clusters by Age"
       query = query.digitalocean_databases_creation_month
       type  = "column"
@@ -198,6 +205,18 @@ query "digitalocean_database_by_engine" {
       digitalocean_database as d
     group by
       engine;
+  EOQ
+}
+
+query "digitalocean_database_by_status" {
+  sql = <<-EOQ
+    select
+      status,
+      count(d.*) as "Clusters"
+    from
+      digitalocean_database as d
+    group by
+      status;
   EOQ
 }
 
