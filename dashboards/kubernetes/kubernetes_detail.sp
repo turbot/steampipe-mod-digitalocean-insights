@@ -77,13 +77,13 @@ dashboard "digitalocean_kubernetes_detail" {
           urn = self.input.cluster_urn.value
         }
 
-        column "Droplet URN" {
+        column "URN" {
           display = "none"
         }
 
-        # column "Droplet ID" {
-        #   href = "${dashboard.digitalocean_droplet_detail.url_path}?input.droplet_urn={{.'URN' | @uri}}"
-        # }
+        column "Name" {
+          href = "${dashboard.digitalocean_droplet_detail.url_path}?input.droplet_urn={{.'URN' | @uri}}"
+        }
       }
     }
   }
@@ -222,7 +222,8 @@ query "digitalocean_kubernetes_node_pool_details" {
     select
       node ->> 'name' as "Name",
       node -> 'status' ->> 'state' "State",
-      node_pool ->> 'name' as "Node Pool Name"
+      node_pool ->> 'name' as "Node Pool Name",
+      'do:droplet:' || (node ->> 'droplet_id') as "URN"
     from
       digitalocean_kubernetes_cluster as kc,
       jsonb_array_elements(kc.node_pools) as node_pool,
