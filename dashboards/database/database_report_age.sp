@@ -121,8 +121,8 @@ query "digitalocean_database_1_year_count" {
 query "digitalocean_database_age_table" {
   sql = <<-EOQ
     select
-      i.id as "ID",
       i.name as "Name",
+      i.id as "ID",
       i.engine as "Engine",
       now()::date - i.created_at::date as "Age in Days",
       i.created_at as "Start Time",
@@ -132,6 +132,6 @@ query "digitalocean_database_age_table" {
     from
       digitalocean_database as i
     order by
-      i.id;
+      i.name;
   EOQ
 }

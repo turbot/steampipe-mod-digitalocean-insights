@@ -10,6 +10,7 @@ dashboard "digitalocean_database_dashboard" {
   container {
 
     # Analysis
+
     card {
       query = query.digitalocean_database_count
       width = 2
@@ -79,7 +80,7 @@ dashboard "digitalocean_database_dashboard" {
     }
 
     chart {
-      title = "Database Clusters by Engine"
+      title = "Database Clusters by DB Engine"
       query = query.digitalocean_database_by_engine
       type  = "column"
       width = 4
