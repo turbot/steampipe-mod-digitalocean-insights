@@ -208,7 +208,7 @@ query "digitalocean_droplet_detail_public_access" {
 query "digitalocean_droplet_detail_backup_status" {
   sql = <<-EOQ
     select
-      'Backup Status' as label,
+      'Backups' as label,
       case
         when features ? 'backups' then 'Enabled'
         else 'Disabled'
@@ -229,7 +229,7 @@ query "digitalocean_droplet_detail_backup_status" {
 query "digitalocean_droplet_detail_monitoring_status" {
   sql = <<-EOQ
     select
-      'Monitoring Status' as label,
+      'Monitoring' as label,
       case
         when features ? 'monitoring' then 'Enabled'
         else 'Disabled'
@@ -255,8 +255,6 @@ query "digitalocean_droplet_detail_overview" {
       created_at as "Create Time",
       title as "Title",
       region ->> 'name' as "Region",
-      disk as "Disk Storage (GB)",
-      vcpus as "Total Virtual CPUs",
       urn as "URN"
     from
       digitalocean_droplet
