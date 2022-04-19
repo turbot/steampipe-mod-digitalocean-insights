@@ -1,6 +1,6 @@
 # DigitalOcean Insights
 
-An DigitalOcean dashboarding tool that can be used to view dashboards and reports across all of your DigitalOcean accounts.
+An DigitalOcean dashboarding tool that can be used to view dashboards and reports across all of your DigitalOcean projects.
 
 <!-- TO DO -->
 
