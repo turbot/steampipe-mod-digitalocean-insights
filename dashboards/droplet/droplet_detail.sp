@@ -230,7 +230,7 @@ query "digitalocean_droplet_public_access" {
 query "digitalocean_droplet_backup_status" {
   sql = <<-EOQ
     select
-      'Backup Status' as label,
+      'Backups' as label,
       case
         when features ? 'backups' then 'Enabled'
         else 'Disabled'
@@ -251,7 +251,7 @@ query "digitalocean_droplet_backup_status" {
 query "digitalocean_droplet_monitoring_status" {
   sql = <<-EOQ
     select
-      'Monitoring Status' as label,
+      'Monitoring' as label,
       case
         when features ? 'monitoring' then 'Enabled'
         else 'Disabled'
