@@ -18,7 +18,6 @@ Dashboards can help answer questions like:
 - How many resources do I have?
 - How old are my resources?
 - Are there any publicly accessible resources?
-- Is encryption enabled and what keys are used for encryption?
 
 Dashboards are available for BlockStorage, Database, Droplet, Firewall, Kubernetes and Snapshot services.
 

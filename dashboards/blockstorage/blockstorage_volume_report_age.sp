@@ -127,7 +127,6 @@ query "digitalocean_volume_age_table" {
     select
       name as "Name",
       id as "ID",
-      filesystem_type as "Filesystem Type",
       now()::date - created_at::date as "Age in Days",
       created_at as "Create Time",
       region_name as "Region",
@@ -135,6 +134,6 @@ query "digitalocean_volume_age_table" {
     from
       digitalocean_volume
     order by
-      id;
+      name;
   EOQ
 }

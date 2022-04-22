@@ -183,13 +183,13 @@ query "digitalocean_kubernetes_overview" {
   sql = <<-EOQ
     select
       name as "Name",
-      id as "Kubernetes Cluster ID",
+      id as "ID",
       created_at as "Create Time",
       cluster_subnet as "Cluster Subnet",
       service_subnet as "Service Subnet",
-      version_slug as "Version",
+      version_slug as "Version Slug",
       title as "Title",
-      region_slug as "Region",
+      region_slug as "Region Slug",
       urn as "URN"
     from
       digitalocean_kubernetes_cluster
@@ -248,7 +248,9 @@ query "digitalocean_kubernetes_detail_vpc_details" {
       digitalocean_kubernetes_cluster
     join
       digitalocean_vpc vpc
-      on vpc.id = vpc_uuid;
+      on vpc.id = vpc_uuid
+    order by
+      vpc.name;
   EOQ
 
   param "urn" {}

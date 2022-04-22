@@ -1,6 +1,6 @@
 # DigitalOcean Insights
 
-An DigitalOcean dashboarding tool that can be used to view dashboards and reports across all of your DigitalOcean projects.
+A DigitalOcean dashboarding tool that can be used to view dashboards and reports across all of your DigitalOcean projects.
 
 ![image](https://raw.githubusercontent.com/turbot/steampipe-mod-digitalocean-insights/main/docs/images/digitalocean_droplet_dashboard.png)
 
@@ -11,7 +11,6 @@ Dashboards can help answer questions like:
 - How many resources do I have?
 - How old are my resources?
 - Are there any publicly accessible resources?
-- Is encryption enabled and what keys are used for encryption?
 
 Dashboards are available for BlockStorage, Database, Droplet, Firewall, Kubernetes and Snapshot services.
 

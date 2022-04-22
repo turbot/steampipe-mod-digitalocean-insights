@@ -1,7 +1,7 @@
-dashboard "digitalocean_database_dashboard" {
+dashboard "digitalocean_database_cluster_dashboard" {
 
-  title         = "DigitalOcean Database Dashboard"
-  documentation = file("./dashboards/database/docs/database_dashboard.md")
+  title         = "DigitalOcean Database Cluster Dashboard"
+  documentation = file("./dashboards/database/docs/database_cluster_dashboard.md")
 
   tags = merge(local.database_common_tags, {
     type = "Dashboard"
@@ -12,19 +12,19 @@ dashboard "digitalocean_database_dashboard" {
     # Analysis
 
     card {
-      query = query.digitalocean_database_count
+      query = query.digitalocean_database_cluster_count
       width = 2
     }
 
     # Assessment
 
     card {
-      query = query.digitalocean_database_ssl_enabled_count
+      query = query.digitalocean_database_cluster_ssl_enabled_count
       width = 2
     }
 
     card {
-      query = query.digitalocean_database_firewall_enabled_count
+      query = query.digitalocean_database_cluster_firewall_enabled_count
       width = 2
     }
 
@@ -74,28 +74,28 @@ dashboard "digitalocean_database_dashboard" {
 
     chart {
       title = "Database Clusters by Region"
-      query = query.digitalocean_database_by_region
+      query = query.digitalocean_database_cluster_by_region
       type  = "column"
       width = 3
     }
 
     chart {
       title = "Database Clusters by DB Engine"
-      query = query.digitalocean_database_by_engine
+      query = query.digitalocean_database_cluster_by_engine
       type  = "column"
       width = 3
     }
 
     chart {
       title = "Database Clusters by Age"
-      query = query.digitalocean_databases_creation_month
+      query = query.digitalocean_database_cluster_by_creation_month
       type  = "column"
       width = 3
     }
 
     chart {
       title = "Database Clusters by Status"
-      query = query.digitalocean_database_by_status
+      query = query.digitalocean_database_cluster_by_status
       type  = "column"
       width = 3
     }
@@ -105,7 +105,7 @@ dashboard "digitalocean_database_dashboard" {
 
 # Card Queries
 
-query "digitalocean_database_count" {
+query "digitalocean_database_cluster_count" {
   sql = <<-EOQ
     select 
       count(*) as "Clusters" 
@@ -114,7 +114,7 @@ query "digitalocean_database_count" {
   EOQ
 }
 
-query "digitalocean_database_ssl_enabled_count" {
+query "digitalocean_database_cluster_ssl_enabled_count" {
   sql = <<-EOQ
     select
       count(*) as value,
@@ -127,7 +127,7 @@ query "digitalocean_database_ssl_enabled_count" {
   EOQ
 }
 
-query "digitalocean_database_firewall_enabled_count" {
+query "digitalocean_database_cluster_firewall_enabled_count" {
   sql = <<-EOQ
     select
       count(*) as value,
@@ -186,7 +186,7 @@ query "digitalocean_droplet_by_firewall_status" {
 
 # Analytics Queries
 
-query "digitalocean_database_by_region" {
+query "digitalocean_database_cluster_by_region" {
   sql = <<-EOQ
     select
       region_slug,
@@ -198,7 +198,7 @@ query "digitalocean_database_by_region" {
   EOQ
 }
 
-query "digitalocean_database_by_engine" {
+query "digitalocean_database_cluster_by_engine" {
   sql = <<-EOQ
     select
       engine,
@@ -210,7 +210,7 @@ query "digitalocean_database_by_engine" {
   EOQ
 }
 
-query "digitalocean_databases_creation_month" {
+query "digitalocean_database_cluster_by_creation_month" {
   sql = <<-EOQ
     with databases as (
       select
@@ -255,7 +255,7 @@ query "digitalocean_databases_creation_month" {
   EOQ
 }
 
-query "digitalocean_database_by_status" {
+query "digitalocean_database_cluster_by_status" {
   sql = <<-EOQ
     select
       status,

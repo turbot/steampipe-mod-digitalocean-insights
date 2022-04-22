@@ -126,15 +126,15 @@ query "digitalocean_kubernetes_age_table" {
   sql = <<-EOQ
     select
       name as "Name",
-      id as "Cluster ID",
+      id as "ID",
       now()::date - created_at::date as "Age in Days",
       created_at as "Create Time",
       status as "Status",
-      region_slug as "Region",
+      region_slug as "Region Slug",
       urn as "URN"
     from
       digitalocean_kubernetes_cluster
     order by
-      id;
+      name;
   EOQ
 }

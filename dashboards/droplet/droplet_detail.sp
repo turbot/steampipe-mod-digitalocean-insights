@@ -96,7 +96,7 @@ dashboard "digitalocean_droplet_detail" {
       width = 6
 
       table {
-        title = "Attached To"
+        title = "Attached Volumes"
         query = query.digitalocean_droplet_attached_volumes
         args = {
           urn = self.input.droplet_urn.value
@@ -317,10 +317,10 @@ query "digitalocean_droplet_tags" {
 query "digitalocean_droplet_attached_volumes" {
   sql = <<-EOQ
     select
-      v.name as "Volume Name",
-      v.id as "Volume ID",
+      v.name as "Name",
+      v.id as "ID",
       v.created_at as "Create Time",
-      v.urn as "Volume URN"
+      v.urn as "URN"
     from
       digitalocean_droplet as d,
       jsonb_array_elements_text(d.volume_ids) as volume_id,
