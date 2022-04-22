@@ -247,7 +247,9 @@ query "digitalocean_firewall_attached" {
       digitalocean_firewall,
       jsonb_array_elements_text(droplet_ids) as d
     where
-      urn = $1);
+      urn = $1)
+    order by
+      name;
   EOQ
 
   param "urn" {}

@@ -45,7 +45,7 @@ dashboard "digitalocean_droplet_dashboard" {
     title = "Assessments"
 
     chart {
-      title = "Public/Private Access"
+      title = "Public/Private"
       query = query.digitalocean_droplet_by_public_access
       type  = "donut"
       width = 3

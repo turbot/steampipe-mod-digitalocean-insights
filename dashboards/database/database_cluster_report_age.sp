@@ -1,7 +1,7 @@
 dashboard "digitalocean_database_age_report" {
 
-  title         = "DigitalOcean Database Age Report"
-  documentation = file("./dashboards/database/docs/database_report_age.md")
+  title         = "DigitalOcean Database Cluster Age Report"
+  documentation = file("./dashboards/database/docs/database_cluster_report_age.md")
 
   tags = merge(local.database_common_tags, {
     type     = "Report"

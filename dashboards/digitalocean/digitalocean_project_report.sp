@@ -40,6 +40,8 @@ query "digitalocean_project_table" {
       is_default as "Is Default",
       created_at as "Create Time"
     from
-      digitalocean_project;
+      digitalocean_project
+    order by
+      name;
   EOQ
 }

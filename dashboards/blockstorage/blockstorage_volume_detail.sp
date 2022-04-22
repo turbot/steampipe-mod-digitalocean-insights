@@ -201,7 +201,7 @@ query "digitalocean_volume_attached_droplets" {
       d.id as "Droplet ID",
       d.created_at as "Create Time",
       d.urn as "Droplet URN",
-      d.status as "Droplet State"
+      d.status as "Droplet Status"
     from
       digitalocean_volume as v,
       jsonb_array_elements(v.droplet_ids) as droplet_id,
@@ -210,7 +210,7 @@ query "digitalocean_volume_attached_droplets" {
       d.id = droplet_id::bigint
       and v.urn = $1
     order by
-      d.id;
+      d.name;
   EOQ
 
   param "urn" {}

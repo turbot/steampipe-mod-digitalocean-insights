@@ -128,10 +128,10 @@ query "digitalocean_snapshot_age_table" {
       s.id as "ID",
       now()::date - s.created_at::date as "Age in Days",
       s.created_at as "Create Time",
-      s.regions as "Region"
+      s.regions as "Regions"
     from
       digitalocean_snapshot as s
     order by
-      s.id;
+      s.name;
   EOQ
 }

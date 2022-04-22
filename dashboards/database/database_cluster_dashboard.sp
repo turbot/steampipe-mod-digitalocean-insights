@@ -1,7 +1,7 @@
 dashboard "digitalocean_database_dashboard" {
 
-  title         = "DigitalOcean Database Dashboard"
-  documentation = file("./dashboards/database/docs/database_dashboard.md")
+  title         = "DigitalOcean Database Cluster Dashboard"
+  documentation = file("./dashboards/database/docs/database_cluster_dashboard.md")
 
   tags = merge(local.database_common_tags, {
     type = "Dashboard"
