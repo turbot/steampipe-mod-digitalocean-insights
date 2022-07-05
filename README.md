@@ -1,4 +1,4 @@
-# DigitalOcean Insights
+# DigitalOcean Insights Mod for Steampipe
 
 A DigitalOcean dashboarding tool that can be used to view dashboards and reports across all of your DigitalOcean projects.
 
