@@ -53,33 +53,38 @@ dashboard "droplet_detail" {
 
   }
 
-  with "blockstorage_volumes" {
-    query = query.droplet_blockstorage_volumes
+  with "blockstorage_volumes_for_droplet_droplet" {
+    query = query.blockstorage_volumes_for_droplet_droplet
     args  = [self.input.droplet_urn.value]
   }
 
-  with "from_image_images" {
-    query = query.droplet_from_image_images
+  with "image_images_for_droplet_droplet" {
+    query = query.image_images_for_droplet_droplet
     args  = [self.input.droplet_urn.value]
   }
 
-  with "network_firewalls" {
-    query = query.droplet_network_firewalls
+  with "network_firewalls_for_droplet_droplet" {
+    query = query.network_firewalls_for_droplet_droplet
     args  = [self.input.droplet_urn.value]
   }
 
-  with "network_floating_ips" {
-    query = query.droplet_network_floating_ips
+  with "network_floating_ips_for_droplet_droplet" {
+    query = query.network_floating_ips_for_droplet_droplet
     args  = [self.input.droplet_urn.value]
   }
 
-  with "network_load_balancers" {
-    query = query.droplet_network_load_balancers
+  with "network_load_balancers_for_droplet_droplet" {
+    query = query.network_load_balancers_for_droplet_droplet
     args  = [self.input.droplet_urn.value]
   }
 
-  with "network_vpcs" {
-    query = query.droplet_network_vpcs
+  with "network_vpcs_for_droplet_droplet" {
+    query = query.network_vpcs_for_droplet_droplet
+    args  = [self.input.droplet_urn.value]
+  }
+
+  with "snapshot_snapshots_for_droplet_droplet" {
+    query = query.snapshot_snapshots_for_droplet_droplet
     args  = [self.input.droplet_urn.value]
   }
 
@@ -93,7 +98,7 @@ dashboard "droplet_detail" {
       node {
         base = node.blockstorage_volume
         args = {
-          blockstorage_volume_urns = with.blockstorage_volumes.rows[*].volume_urn
+          blockstorage_volume_urns = with.blockstorage_volumes_for_droplet_droplet.rows[*].volume_urn
         }
       }
 
@@ -107,35 +112,42 @@ dashboard "droplet_detail" {
       node {
         base = node.image_image
         args = {
-          image_image_urns = with.from_image_images.rows[*].image_urn
+          image_image_urns = with.image_images_for_droplet_droplet.rows[*].image_urn
         }
       }
 
       node {
         base = node.network_firewall
         args = {
-          network_firewall_urns = with.network_firewalls.rows[*].firewall_urn
+          network_firewall_urns = with.network_firewalls_for_droplet_droplet.rows[*].firewall_urn
         }
       }
 
       node {
         base = node.network_floating_ip
         args = {
-          network_floating_ip_urns = with.network_floating_ips.rows[*].floating_ip_urn
+          network_floating_ip_urns = with.network_floating_ips_for_droplet_droplet.rows[*].floating_ip_urn
         }
       }
 
       node {
         base = node.network_load_balancer
         args = {
-          network_load_balancer_urns = with.network_load_balancers.rows[*].lb_urn
+          network_load_balancer_urns = with.network_load_balancers_for_droplet_droplet.rows[*].lb_urn
         }
       }
 
       node {
         base = node.network_vpc
         args = {
-          network_vpc_urns = with.network_vpcs.rows[*].vpc_urn
+          network_vpc_urns = with.network_vpcs_for_droplet_droplet.rows[*].vpc_urn
+        }
+      }
+
+      node {
+        base = node.snapshot_snapshot
+        args = {
+          snapshot_snapshot_ids = with.snapshot_snapshots_for_droplet_droplet.rows[*].snapshot_id
         }
       }
 
@@ -175,9 +187,16 @@ dashboard "droplet_detail" {
       }
 
       edge {
+        base = edge.droplet_droplet_to_snapshot_snapshot
+        args = {
+          droplet_droplet_urns = [self.input.droplet_urn.value]
+        }
+      }
+
+      edge {
         base = edge.image_image_to_droplet_droplet
         args = {
-          image_image_urns = with.from_image_images.rows[*].image_urn
+          image_image_urns = with.image_images_for_droplet_droplet.rows[*].image_urn
         }
       }
 
@@ -288,7 +307,7 @@ query "droplet_input" {
 
 # With queries
 
-query "droplet_blockstorage_volumes" {
+query "blockstorage_volumes_for_droplet_droplet" {
   sql = <<-EOQ
     with volume_droplet_ids as (
       select
@@ -308,7 +327,7 @@ query "droplet_blockstorage_volumes" {
   EOQ
 }
 
-query "droplet_from_image_images" {
+query "image_images_for_droplet_droplet" {
   sql = <<-EOQ
     with droplet_images as (
       select
@@ -323,13 +342,12 @@ query "droplet_from_image_images" {
       digitalocean_image as i,
       droplet_images as d
     where
-      i.public = true
-      and i.id::text = iid
+      i.id::text = iid
       and d.urn = $1;
   EOQ
 }
 
-query "droplet_network_firewalls" {
+query "network_firewalls_for_droplet_droplet" {
   sql = <<-EOQ
     with firewall_droplet_ids as (
       select
@@ -349,7 +367,7 @@ query "droplet_network_firewalls" {
   EOQ
 }
 
-query "droplet_network_floating_ips" {
+query "network_floating_ips_for_droplet_droplet" {
   sql = <<-EOQ
     select
       f.urn as floating_ip_urn
@@ -362,7 +380,7 @@ query "droplet_network_floating_ips" {
   EOQ
 }
 
-query "droplet_network_load_balancers" {
+query "network_load_balancers_for_droplet_droplet" {
   sql = <<-EOQ
     with lb_droplet_ids as (
       select
@@ -382,7 +400,7 @@ query "droplet_network_load_balancers" {
   EOQ
 }
 
-query "droplet_network_vpcs" {
+query "network_vpcs_for_droplet_droplet" {
   sql = <<-EOQ
     select
       v.urn as vpc_urn
@@ -392,6 +410,18 @@ query "droplet_network_vpcs" {
     where
       d.vpc_uuid = v.id
       and d.urn = $1;
+  EOQ
+}
+
+query "snapshot_snapshots_for_droplet_droplet" {
+  sql = <<-EOQ
+    select
+      sid as snapshot_id
+    from
+      digitalocean_droplet,
+      jsonb_array_elements(snapshot_ids) as sid
+    where
+      urn = $1;
   EOQ
 }
 

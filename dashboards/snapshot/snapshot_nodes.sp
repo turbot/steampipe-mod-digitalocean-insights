@@ -14,7 +14,7 @@ node "snapshot_snapshot" {
         'Region', regions
       ) as properties
     from
-      digitalocean_image
+      digitalocean_snapshot
     where
       id = any($1);
   EOQ

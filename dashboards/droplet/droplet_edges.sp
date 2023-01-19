@@ -109,3 +109,20 @@ edge "droplet_droplet_to_network_vpc" {
 
   param "droplet_droplet_urns" {}
 }
+
+edge "droplet_droplet_to_snapshot_snapshot" {
+  title = "vpc"
+
+  sql = <<-EOQ
+    select
+      urn as from_id,
+      sid as to_id
+    from
+      digitalocean_droplet,
+      jsonb_array_elements(snapshot_ids) as sid
+    where
+      urn = any($1);
+  EOQ
+
+  param "droplet_droplet_urns" {}
+}
