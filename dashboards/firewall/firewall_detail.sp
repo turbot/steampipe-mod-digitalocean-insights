@@ -83,7 +83,7 @@ dashboard "digitalocean_firewall_detail" {
         }
 
         column "Droplet Name" {
-          href = "${dashboard.digitalocean_droplet_detail.url_path}?input.droplet_urn={{.'URN' | @uri}}"
+          href = "${dashboard.droplet_detail.url_path}?input.droplet_urn={{.'URN' | @uri}}"
         }
       }
 

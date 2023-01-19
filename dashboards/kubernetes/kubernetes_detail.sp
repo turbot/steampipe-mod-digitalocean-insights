@@ -82,7 +82,7 @@ dashboard "digitalocean_kubernetes_detail" {
         }
 
         column "Name" {
-          href = "${dashboard.digitalocean_droplet_detail.url_path}?input.droplet_urn={{.'URN' | @uri}}"
+          href = "${dashboard.droplet_detail.url_path}?input.droplet_urn={{.'URN' | @uri}}"
         }
       }
     }
