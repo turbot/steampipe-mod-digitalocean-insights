@@ -1,13 +1,13 @@
 locals {
-  vpc_common_tags = {
-    service = "DigitalOcean/VPC"
+  network_common_tags = {
+    service = "DigitalOcean/Network"
   }
 }
 
 category "network_firewall" {
   title = "Network Firewall"
   color = local.networking_color
-  # href  = "/digitalocean_insights.dashboard.snapshot_detail?input.droplet_urn={{.properties.'ID' | @uri}}"
+  href  = "/digitalocean_insights.dashboard.firewall_detail?input.firewall_urn={{.properties.'URN' | @uri}}"
   icon = "local_fire_department"
 }
 
