@@ -1,7 +1,7 @@
 dashboard "digitalocean_network_vpc_detail" {
 
   title = "DigitalOcean VPC Detail"
-  # documentation = file("./dashboards/network/docs/network_vpc_detail.md")
+  documentation = file("./dashboards/network/docs/network_vpc_detail.md")
 
   tags = merge(local.network_common_tags, {
     type = "Detail"
