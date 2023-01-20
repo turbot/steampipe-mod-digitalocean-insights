@@ -1,4 +1,4 @@
-dashboard "digitalocean_network_firewall_detail" {
+dashboard "network_firewall_detail" {
 
   title         = "DigitalOcean Firewall Detail"
   documentation = file("./dashboards/network/docs/network_firewall_detail.md")
@@ -9,7 +9,7 @@ dashboard "digitalocean_network_firewall_detail" {
 
   input "firewall_urn" {
     title = "Select a firewall:"
-    query = query.digitalocean_firewall_input
+    query = query.network_firewall_input
     width = 4
   }
 
@@ -17,19 +17,19 @@ dashboard "digitalocean_network_firewall_detail" {
 
     card {
       width = 2
-      query = query.digitalocean_firewall_status
+      query = query.network_firewall_status
       args  = [self.input.firewall_urn.value]
     }
 
     card {
       width = 2
-      query = query.digitalocean_firewall_unrestricted_inbound_rules
+      query = query.network_firewall_unrestricted_inbound_rules
       args  = [self.input.firewall_urn.value]
     }
 
     card {
       width = 2
-      query = query.digitalocean_firewall_unrestricted_outbound_rules
+      query = query.network_firewall_unrestricted_outbound_rules
       args  = [self.input.firewall_urn.value]
     }
 
@@ -37,6 +37,11 @@ dashboard "digitalocean_network_firewall_detail" {
 
   with "droplet_droplets_for_network_firewall" {
     query = query.droplet_droplets_for_network_firewall
+    args  = [self.input.firewall_urn.value]
+  }
+
+  with "network_load_balancers_for_network_firewall" {
+    query = query.network_load_balancers_for_network_firewall
     args  = [self.input.firewall_urn.value]
   }
 
@@ -61,6 +66,13 @@ dashboard "digitalocean_network_firewall_detail" {
         }
       }
 
+      node {
+        base = node.network_load_balancer
+        args = {
+          network_load_balancer_urns = with.network_load_balancers_for_network_firewall.rows[*].lb_urn
+        }
+      }
+
       edge {
         base = edge.network_firewall_to_droplet_droplet
         args = {
@@ -82,14 +94,14 @@ dashboard "digitalocean_network_firewall_detail" {
         title = "Overview"
         type  = "line"
         width = 6
-        query = query.digitalocean_firewall_overview
+        query = query.network_firewall_overview
         args  = [self.input.firewall_urn.value]
       }
 
       table {
         title = "Tags"
         width = 6
-        query = query.digitalocean_firewall_tags
+        query = query.network_firewall_tags
         args  = [self.input.firewall_urn.value]
       }
     }
@@ -100,7 +112,7 @@ dashboard "digitalocean_network_firewall_detail" {
 
       table {
         title = "Attached To"
-        query = query.digitalocean_firewall_attached
+        query = query.network_firewall_attached
         args  = [self.input.firewall_urn.value]
 
         column "URN" {
@@ -121,14 +133,14 @@ dashboard "digitalocean_network_firewall_detail" {
     flow {
       title = "Inbound Rules Analysis"
       width = 6
-      query = query.digitalocean_firewall_inbound_analysis
+      query = query.network_firewall_inbound_analysis
       args  = [self.input.firewall_urn.value]
     }
 
     flow {
       title = "Outbound Rules Analysis"
       width = 6
-      query = query.digitalocean_firewall_outbound_analysis
+      query = query.network_firewall_outbound_analysis
       args  = [self.input.firewall_urn.value]
     }
 
@@ -138,7 +150,7 @@ dashboard "digitalocean_network_firewall_detail" {
 
 # Input queries
 
-query "digitalocean_firewall_input" {
+query "network_firewall_input" {
   sql = <<-EOQ
     select
       title as label,
@@ -154,6 +166,26 @@ query "digitalocean_firewall_input" {
 }
 
 # With queries
+
+query "network_load_balancers_for_network_firewall" {
+  sql = <<-EOQ
+    with firewall_rules as (
+      select
+        jsonb_array_elements(inbound_rules) -> 'sources' ->> 'load_balancer_uids' as ir,
+        jsonb_array_elements(outbound_rules) -> 'destinations' ->> 'load_balancer_uids' as or
+      from
+        digitalocean_firewall
+    )
+    select
+      l.urn as lb_urn
+    from
+      firewall_rules as f,
+      digitalocean_load_balancer as l
+    where
+      ir = l.id or ir = l.id
+      and f.urn = $1;
+  EOQ
+}
 
 query "droplet_droplets_for_network_firewall" {
   sql = <<-EOQ
@@ -177,7 +209,7 @@ query "droplet_droplets_for_network_firewall" {
 
 # Card queries
 
-query "digitalocean_firewall_status" {
+query "network_firewall_status" {
   sql = <<-EOQ
     select
       initcap(status) as "Status"
@@ -188,7 +220,7 @@ query "digitalocean_firewall_status" {
   EOQ
 }
 
-query "digitalocean_firewall_unrestricted_inbound_rules" {
+query "network_firewall_unrestricted_inbound_rules" {
   sql = <<-EOQ
     with inbound_fw as (
       select
@@ -213,7 +245,7 @@ query "digitalocean_firewall_unrestricted_inbound_rules" {
   EOQ
 }
 
-query "digitalocean_firewall_unrestricted_outbound_rules" {
+query "network_firewall_unrestricted_outbound_rules" {
   sql = <<-EOQ
     with outbound_fw as (
       select
@@ -238,7 +270,7 @@ query "digitalocean_firewall_unrestricted_outbound_rules" {
   EOQ
 }
 
-query "digitalocean_firewall_overview" {
+query "network_firewall_overview" {
   sql = <<-EOQ
     select
       title as "Title",
@@ -252,7 +284,7 @@ query "digitalocean_firewall_overview" {
   EOQ
 }
 
-query "digitalocean_firewall_tags" {
+query "network_firewall_tags" {
   sql = <<-EOQ
     select
       tag.key as "Key",
@@ -267,7 +299,7 @@ query "digitalocean_firewall_tags" {
   EOQ
 }
 
-query "digitalocean_firewall_attached" {
+query "network_firewall_attached" {
   sql = <<-EOQ
     select
       name as "Droplet Name",
@@ -290,7 +322,7 @@ query "digitalocean_firewall_attached" {
   EOQ
 }
 
-query "digitalocean_firewall_inbound_analysis" {
+query "network_firewall_inbound_analysis" {
   sql = <<-EOQ
     with rules as (
       select
@@ -363,7 +395,7 @@ query "digitalocean_firewall_inbound_analysis" {
   EOQ
 }
 
-query "digitalocean_firewall_outbound_analysis" {
+query "network_firewall_outbound_analysis" {
   sql = <<-EOQ
     with rules as (
       select

@@ -1,4 +1,4 @@
-dashboard "digitalocean_cloud_firewall_age_report" {
+dashboard "network_firewall_age_report" {
 
   title         = "DigitalOcean Firewall Age Report"
   documentation = file("./dashboards/network/docs/network_firewall_report_age.md")
@@ -11,38 +11,38 @@ dashboard "digitalocean_cloud_firewall_age_report" {
   container {
 
     card {
-      query = query.digitalocean_firewall_count
+      query = query.network_firewall_count
       width = 2
     }
 
     card {
       type  = "info"
       width = 2
-      query = query.digitalocean_firewall_24_hours_count
+      query = query.network_firewall_24_hours_count
     }
 
     card {
       type  = "info"
       width = 2
-      query = query.digitalocean_firewall_30_days_count
+      query = query.network_firewall_30_days_count
     }
 
     card {
       type  = "info"
       width = 2
-      query = query.digitalocean_firewall_30_90_days_count
+      query = query.network_firewall_30_90_days_count
     }
 
     card {
       width = 2
       type  = "info"
-      query = query.digitalocean_firewall_90_365_days_count
+      query = query.network_firewall_90_365_days_count
     }
 
     card {
       width = 2
       type  = "info"
-      query = query.digitalocean_firewall_1_year_count
+      query = query.network_firewall_1_year_count
     }
 
   }
@@ -54,15 +54,15 @@ dashboard "digitalocean_cloud_firewall_age_report" {
     }
 
     column "Name" {
-      href = "${dashboard.digitalocean_network_firewall_detail.url_path}?input.firewall_urn={{.'URN' | @uri}}"
+      href = "${dashboard.network_firewall_detail.url_path}?input.firewall_urn={{.'URN' | @uri}}"
     }
 
-    query = query.digitalocean_firewall_age_table
+    query = query.network_firewall_age_table
   }
 
 }
 
-query "digitalocean_firewall_24_hours_count" {
+query "network_firewall_24_hours_count" {
   sql = <<-EOQ
     select
       count(*) as value,
@@ -74,7 +74,7 @@ query "digitalocean_firewall_24_hours_count" {
   EOQ
 }
 
-query "digitalocean_firewall_30_days_count" {
+query "network_firewall_30_days_count" {
   sql = <<-EOQ
     select
       count(*) as value,
@@ -86,7 +86,7 @@ query "digitalocean_firewall_30_days_count" {
   EOQ
 }
 
-query "digitalocean_firewall_30_90_days_count" {
+query "network_firewall_30_90_days_count" {
   sql = <<-EOQ
     select
       count(*) as value,
@@ -98,7 +98,7 @@ query "digitalocean_firewall_30_90_days_count" {
   EOQ
 }
 
-query "digitalocean_firewall_90_365_days_count" {
+query "network_firewall_90_365_days_count" {
   sql = <<-EOQ
     select
       count(*) as value,
@@ -110,7 +110,7 @@ query "digitalocean_firewall_90_365_days_count" {
   EOQ
 }
 
-query "digitalocean_firewall_1_year_count" {
+query "network_firewall_1_year_count" {
   sql = <<-EOQ
     select
       count(*) as value,
@@ -122,7 +122,7 @@ query "digitalocean_firewall_1_year_count" {
   EOQ
 }
 
-query "digitalocean_firewall_age_table" {
+query "network_firewall_age_table" {
   sql = <<-EOQ
     select
       name as "Name",

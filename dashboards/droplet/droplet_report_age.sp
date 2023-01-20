@@ -11,7 +11,7 @@ dashboard "digitalocean_droplet_age_report" {
   container {
 
     card {
-      query = query.digitalocean_droplet_count
+      query = query.droplet_count
       width = 2
     }
 
