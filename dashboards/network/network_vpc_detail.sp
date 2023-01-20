@@ -9,7 +9,7 @@ dashboard "digitalocean_network_vpc_detail" {
 
   input "vpc_urn" {
     title = "Select a VPC:"
-    query = query.vpc_input
+    query = query.network_vpc_input
     width = 4
   }
 
@@ -17,13 +17,13 @@ dashboard "digitalocean_network_vpc_detail" {
 
     card {
       width = 2
-      query = query.vpc_is_default
+      query = query.network_vpc_is_default
       args  = [self.input.vpc_urn.value]
     }
 
     card {
       width = 2
-      query = query.vpc_ip_range
+      query = query.network_vpc_ip_range
       args  = [self.input.vpc_urn.value]
     }
 
@@ -151,14 +151,14 @@ dashboard "digitalocean_network_vpc_detail" {
           title = "Overview"
           type  = "line"
           width = 6
-          query = query.vpc_overview
+          query = query.network_vpc_overview
           args  = [self.input.vpc_urn.value]
         }
 
         table {
           title = "Tags"
           width = 6
-          query = query.vpc_tags
+          query = query.network_vpc_tags
           args  = [self.input.vpc_urn.value]
         }
       }
@@ -169,7 +169,7 @@ dashboard "digitalocean_network_vpc_detail" {
 
         table {
           title = "Attached Resources"
-          query = query.vpc_association
+          query = query.network_vpc_association
           args  = [self.input.vpc_urn.value]
 
           column "link" {
@@ -184,7 +184,7 @@ dashboard "digitalocean_network_vpc_detail" {
 
         table {
           title = "Network Details"
-          query = query.vpc_network_details
+          query = query.network_vpc_network_details
           args  = [self.input.vpc_urn.value]
 
         }
@@ -198,7 +198,7 @@ dashboard "digitalocean_network_vpc_detail" {
 
 # Input queries
 
-query "vpc_input" {
+query "network_vpc_input" {
   sql = <<-EOQ
     select
       title as label,
@@ -282,7 +282,7 @@ query "network_load_balancers_for_network_vpc" {
 
 # Card queries
 
-query "vpc_is_default" {
+query "network_vpc_is_default" {
   sql = <<-EOQ
     select
       'Default VPC' as label,
@@ -296,7 +296,7 @@ query "vpc_is_default" {
 
 }
 
-query "vpc_ip_range" {
+query "network_vpc_ip_range" {
   sql = <<-EOQ
     select
       'IP Range' as label,
@@ -310,7 +310,7 @@ query "vpc_ip_range" {
 
 ## Other detail page queries
 
-query "vpc_overview" {
+query "network_vpc_overview" {
   sql = <<-EOQ
     select
       title as "Title",
@@ -326,7 +326,7 @@ query "vpc_overview" {
   EOQ
 }
 
-query "vpc_tags" {
+query "network_vpc_tags" {
   sql = <<-EOQ
     select
       tag.key as "Key",
@@ -341,7 +341,7 @@ query "vpc_tags" {
   EOQ
 }
 
-query "vpc_association" {
+query "network_vpc_association" {
   sql = <<-EOQ
     -- Droplets
     select
@@ -372,7 +372,7 @@ query "vpc_association" {
   EOQ
 }
 
-query "vpc_network_details" {
+query "network_vpc_network_details" {
   sql = <<-EOQ
     -- Load Balancers
     select
