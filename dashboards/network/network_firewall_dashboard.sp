@@ -1,6 +1,6 @@
 dashboard "digitalocean_cloud_firewall_dashboard" {
   title         = "DigitalOcean Firewall Dashboard"
-  documentation = file("./dashboards/network/docs/firewall_dashboard.md")
+  documentation = file("./dashboards/network/docs/network_firewall_dashboard.md")
 
   tags = merge(local.network_common_tags, {
     type = "Dashboard"

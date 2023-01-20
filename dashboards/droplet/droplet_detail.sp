@@ -266,7 +266,7 @@ dashboard "droplet_detail" {
 
           # href = "${dashboard.digitalocean_droplet_detail.url_path}?input.droplet_urn={{.'Droplet URN' | @uri}}"
           // cyclic dependency prevents use of url_path, hardcode for now
-          href = "/digitalocean_insights.dashboard.digitalocean_firewall_detail?input.firewall_urn={{.'URN' | @uri}}"
+          href = "/digitalocean_insights.dashboard.digitalocean_network_firewall_detail?input.firewall_urn={{.'URN' | @uri}}"
         }
       }
 
@@ -278,7 +278,7 @@ dashboard "droplet_detail" {
 
       table {
         title = "VPC Details"
-        query = query.droplet_vpc_details
+        query = query.droplet_network_vpc_details
         args  = [self.input.droplet_urn.value]
       }
     }
@@ -572,7 +572,7 @@ query "droplet_attached_volumes" {
   EOQ
 }
 
-query "droplet_vpc_details" {
+query "droplet_network_vpc_details" {
   sql = <<-EOQ
     select
       vpc.name as "Name",

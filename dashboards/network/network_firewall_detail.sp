@@ -1,7 +1,7 @@
-dashboard "digitalocean_firewall_detail" {
+dashboard "digitalocean_network_firewall_detail" {
 
   title         = "DigitalOcean Firewall Detail"
-  documentation = file("./dashboards/network/docs/firewall_detail.md")
+  documentation = file("./dashboards/network/docs/network_firewall_detail.md")
 
   tags = merge(local.network_common_tags, {
     type = "Detail"
@@ -18,19 +18,19 @@ dashboard "digitalocean_firewall_detail" {
     card {
       width = 2
       query = query.digitalocean_firewall_status
-      args = [self.input.firewall_urn.value]
+      args  = [self.input.firewall_urn.value]
     }
 
     card {
       width = 2
       query = query.digitalocean_firewall_unrestricted_inbound_rules
-      args = [self.input.firewall_urn.value]
+      args  = [self.input.firewall_urn.value]
     }
 
     card {
       width = 2
       query = query.digitalocean_firewall_unrestricted_outbound_rules
-      args = [self.input.firewall_urn.value]
+      args  = [self.input.firewall_urn.value]
     }
 
   }
@@ -83,14 +83,14 @@ dashboard "digitalocean_firewall_detail" {
         type  = "line"
         width = 6
         query = query.digitalocean_firewall_overview
-        args = [self.input.firewall_urn.value]
+        args  = [self.input.firewall_urn.value]
       }
 
       table {
         title = "Tags"
         width = 6
         query = query.digitalocean_firewall_tags
-        args = [self.input.firewall_urn.value]
+        args  = [self.input.firewall_urn.value]
       }
     }
 
@@ -101,7 +101,7 @@ dashboard "digitalocean_firewall_detail" {
       table {
         title = "Attached To"
         query = query.digitalocean_firewall_attached
-        args = [self.input.firewall_urn.value]
+        args  = [self.input.firewall_urn.value]
 
         column "URN" {
           display = "none"
@@ -122,14 +122,14 @@ dashboard "digitalocean_firewall_detail" {
       title = "Inbound Rules Analysis"
       width = 6
       query = query.digitalocean_firewall_inbound_analysis
-      args = [self.input.firewall_urn.value]
+      args  = [self.input.firewall_urn.value]
     }
 
     flow {
       title = "Outbound Rules Analysis"
       width = 6
       query = query.digitalocean_firewall_outbound_analysis
-      args = [self.input.firewall_urn.value]
+      args  = [self.input.firewall_urn.value]
     }
 
   }

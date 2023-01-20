@@ -7,8 +7,8 @@ locals {
 category "network_firewall" {
   title = "Network Firewall"
   color = local.networking_color
-  href  = "/digitalocean_insights.dashboard.firewall_detail?input.firewall_urn={{.properties.'URN' | @uri}}"
-  icon = "local_fire_department"
+  href  = "/digitalocean_insights.dashboard.network_firewall_detail?input.firewall_urn={{.properties.'URN' | @uri}}"
+  icon  = "local_fire_department"
 }
 
 category "network_floating_ip" {

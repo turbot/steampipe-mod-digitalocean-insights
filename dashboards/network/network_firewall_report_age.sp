@@ -1,7 +1,7 @@
 dashboard "digitalocean_cloud_firewall_age_report" {
 
   title         = "DigitalOcean Firewall Age Report"
-  documentation = file("./dashboards/network/docs/firewall_report_age.md")
+  documentation = file("./dashboards/network/docs/network_firewall_report_age.md")
 
   tags = merge(local.network_common_tags, {
     type     = "Report"
@@ -54,7 +54,7 @@ dashboard "digitalocean_cloud_firewall_age_report" {
     }
 
     column "Name" {
-      href = "${dashboard.digitalocean_firewall_detail.url_path}?input.firewall_urn={{.'URN' | @uri}}"
+      href = "${dashboard.digitalocean_network_firewall_detail.url_path}?input.firewall_urn={{.'URN' | @uri}}"
     }
 
     query = query.digitalocean_firewall_age_table

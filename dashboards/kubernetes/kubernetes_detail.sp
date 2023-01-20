@@ -96,7 +96,7 @@ dashboard "digitalocean_kubernetes_detail" {
 
       table {
         title = "VPC Details"
-        query = query.digitalocean_kubernetes_detail_vpc_details
+        query = query.digitalocean_kubernetes_detail_network_vpc_details
         args = {
           urn = self.input.cluster_urn.value
         }
@@ -237,7 +237,7 @@ query "digitalocean_kubernetes_node_pool_details" {
   param "urn" {}
 }
 
-query "digitalocean_kubernetes_detail_vpc_details" {
+query "digitalocean_kubernetes_detail_network_vpc_details" {
   sql = <<-EOQ
     select
       vpc.name as "Name",
