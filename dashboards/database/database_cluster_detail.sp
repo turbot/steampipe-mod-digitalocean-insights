@@ -1,14 +1,14 @@
 dashboard "database_cluster_detail" {
 
   title = "DigitalOcean Database Cluster Detail"
-  # documentation = file("./dashboards/network/docs/network_firewall_detail.md")
+  documentation = file("./dashboards/database/docs/database_cluster_detail.md")
 
   tags = merge(local.database_common_tags, {
     type = "Detail"
   })
 
   input "database_cluster_urn" {
-    title = "Select a database:"
+    title = "Select a database cluster:"
     query = query.database_cluster_input
     width = 4
   }

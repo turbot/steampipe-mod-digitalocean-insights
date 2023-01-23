@@ -362,7 +362,7 @@ query "network_vpc_association" {
       d.title as "Title",
       'digitalocean_database' as "Type",
       d.urn as "URN",
-      null as link
+      '${dashboard.database_cluster_detail.url_path}?input.database_cluster_urn=' || d.urn as link
     from
       digitalocean_database as d,
       digitalocean_vpc as v
@@ -400,5 +400,3 @@ query "network_vpc_network_details" {
       and v.urn = $1;
   EOQ
 }
-
-

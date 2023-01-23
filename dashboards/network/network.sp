@@ -14,20 +14,18 @@ category "network_firewall" {
 category "network_floating_ip" {
   title = "Network Floating IP"
   color = local.networking_color
-  # href  = "/digitalocean_insights.dashboard.snapshot_detail?input.droplet_urn={{.properties.'ID' | @uri}}"
   icon = "swipe_right_alt"
 }
 
 category "network_load_balancer" {
   title = "Network Load Balancer"
   color = local.networking_color
-  # href  = "/digitalocean_insights.dashboard.snapshot_detail?input.droplet_urn={{.properties.'ID' | @uri}}"
   icon = "mediation"
 }
 
 category "network_vpc" {
   title = "Network VPC"
   color = local.networking_color
-  # href  = "/digitalocean_insights.dashboard.snapshot_detail?input.droplet_urn={{.properties.'ID' | @uri}}"
+  href  = "/digitalocean_insights.dashboard.network_vpc_detail?input.vpc_urn={{.properties.'URN' | @uri}}"
   icon = "cloud"
 }

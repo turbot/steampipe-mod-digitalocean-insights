@@ -14,6 +14,5 @@ category "kubernetes_cluster" {
 category "kubernetes_cluster_node" {
   title = "Kubernetes Cluster Node"
   color = local.containers_color
-  # href  = "/digitalocean_insights.dashboard.droplet_detail?input.droplet_urn={{.properties.'URN' | @uri}}"
   icon  = "device_hub"
 }

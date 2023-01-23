@@ -91,7 +91,6 @@ edge "droplet_droplet_to_network_load_balancer" {
   param "droplet_droplet_urns" {}
 }
 
-
 edge "droplet_droplet_to_network_vpc" {
   title = "vpc"
 

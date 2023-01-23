@@ -1,6 +1,6 @@
 dashboard "snapshot_detail" {
 
-  title         = "DigitalOcean Snapshote Detail"
+  title         = "DigitalOcean Snapshot Detail"
   documentation = file("./dashboards/snapshot/docs/snapshot_detail.md")
 
   tags = merge(local.snapshot_common_tags, {
@@ -178,7 +178,7 @@ dashboard "snapshot_detail" {
         }
 
         column "Volume Name" {
-          href = "/digitalocean_insights.dashboard.blockstorage_volume_detail?input.volume_urn={{.'Droplet URN' | @uri}}"
+          href = "/digitalocean_insights.dashboard.blockstorage_volume_detail?input.volume_urn={{.'Volume URN' | @uri}}"
         }
       }
     }

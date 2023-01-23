@@ -7,6 +7,6 @@ locals {
 category "blockstorage_volume" {
   title = "Blockstorage Volume"
   color = local.compute_color
-  href  = "/digitalocean_insights.dashboard.blockstorage_volume_detail?input.volume_urn={{.properties.'ID' | @uri}}"
+  href  = "/digitalocean_insights.dashboard.blockstorage_volume_detail?input.volume_urn={{.properties.'URN' | @uri}}"
   icon  = "hard_drive"
 }

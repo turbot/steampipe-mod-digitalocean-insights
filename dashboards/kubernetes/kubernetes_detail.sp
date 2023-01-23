@@ -146,6 +146,10 @@ dashboard "kubernetes_cluster_detail" {
         title = "VPC Details"
         query = query.kubernetes_cluster_network_vpc_details
         args = [self.input.cluster_urn.value]
+
+        column "Name" {
+          href = "${dashboard.network_vpc_detail.url_path}?input.vpc_urn={{.'URN' | @uri}}"
+        }
       }
     }
 

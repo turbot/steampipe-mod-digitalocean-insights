@@ -116,7 +116,7 @@ dashboard "blockstorage_volume_detail" {
       width = 6
 
       table {
-        title = "Attached To"
+        title = "Attached Droplet"
         query = query.blockstorage_volume_attached_droplets
         args = [self.input.volume_urn.value]
 
@@ -125,7 +125,7 @@ dashboard "blockstorage_volume_detail" {
         }
 
         column "Droplet Name" {
-          href = "/digitalocean_insights.dashboard.digitalocean_droplet_detail?input.droplet_urn={{.'Droplet URN' | @uri}}"
+          href = "/digitalocean_insights.dashboard.droplet_detail?input.droplet_urn={{.'Droplet URN' | @uri}}"
         }
       }
     }
@@ -183,11 +183,18 @@ query "target_snapshot_snapshots_for_blockstorage_volume" {
 
 # Card queries
 
-query "blockstorage_volume_storage" {
+query "blockstorage_volume_attached_droplets_count" {
   sql = <<-EOQ
     select
-      'Storage (GB)' as label,
-      sum(size_gigabytes) as value
+      'Attached Droplets' as label,
+      case
+        when droplet_ids is null then 0
+        else jsonb_array_length(droplet_ids)
+      end as value,
+      case
+        when jsonb_array_length(droplet_ids) > 0 then 'ok'
+        else 'alert'
+      end as "type"
     from
       digitalocean_volume
     where
@@ -207,18 +214,11 @@ query "blockstorage_volume_filesystem_type" {
   EOQ
 }
 
-query "blockstorage_volume_attached_droplets_count" {
+query "blockstorage_volume_storage" {
   sql = <<-EOQ
     select
-      'Attached Droplets' as label,
-      case
-        when droplet_ids is null then 0
-        else jsonb_array_length(droplet_ids)
-      end as value,
-      case
-        when jsonb_array_length(droplet_ids) > 0 then 'ok'
-        else 'alert'
-      end as "type"
+      'Storage (GB)' as label,
+      sum(size_gigabytes) as value
     from
       digitalocean_volume
     where

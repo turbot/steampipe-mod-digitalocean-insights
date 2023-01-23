@@ -1,4 +1,4 @@
-dashboard "digitalocean_snapshot_age_report" {
+dashboard "snapshot_age_report" {
 
   title         = "DigitalOcean Snapshots Age Report"
   documentation = file("./dashboards/snapshot/docs/snapshot_report_age.md")
@@ -11,57 +11,58 @@ dashboard "digitalocean_snapshot_age_report" {
   container {
 
     card {
-      query = query.digitalocean_snapshot_count
+      query = query.snapshot_count
       width = 2
     }
 
     card {
       type  = "info"
       width = 2
-      query = query.digitalocean_snapshot_24_hours_count
+      query = query.snapshot_24_hours_count
     }
 
     card {
       type  = "info"
       width = 2
-      query = query.digitalocean_snapshot_30_days_count
+      query = query.snapshot_30_days_count
     }
 
     card {
       type  = "info"
       width = 2
-      query = query.digitalocean_snapshot_30_90_days_count
+      query = query.snapshot_30_90_days_count
     }
 
     card {
       width = 2
       type  = "info"
-      query = query.digitalocean_snapshot_90_365_days_count
+      query = query.snapshot_90_365_days_count
     }
 
     card {
       width = 2
       type  = "info"
-      query = query.digitalocean_snapshot_1_year_count
+      query = query.snapshot_1_year_count
     }
 
   }
 
   table {
-    column "Account ID" {
+
+    column "URN" {
       display = "none"
     }
 
-    column "ARN" {
-      display = "none"
+    column "Name" {
+      href = "${dashboard.snapshot_detail.url_path}?input.snapshot_urn={{.'URN' | @uri}}"
     }
 
-    query = query.digitalocean_snapshot_age_table
+    query = query.snapshot_age_table
   }
 
 }
 
-query "digitalocean_snapshot_24_hours_count" {
+query "snapshot_24_hours_count" {
   sql = <<-EOQ
     select
       count(*) as value,
@@ -73,7 +74,7 @@ query "digitalocean_snapshot_24_hours_count" {
   EOQ
 }
 
-query "digitalocean_snapshot_30_days_count" {
+query "snapshot_30_days_count" {
   sql = <<-EOQ
     select
       count(*) as value,
@@ -85,7 +86,7 @@ query "digitalocean_snapshot_30_days_count" {
   EOQ
 }
 
-query "digitalocean_snapshot_30_90_days_count" {
+query "snapshot_30_90_days_count" {
   sql = <<-EOQ
     select
       count(*) as value,
@@ -97,7 +98,7 @@ query "digitalocean_snapshot_30_90_days_count" {
   EOQ
 }
 
-query "digitalocean_snapshot_90_365_days_count" {
+query "snapshot_90_365_days_count" {
   sql = <<-EOQ
     select
       count(*) as value,
@@ -109,7 +110,7 @@ query "digitalocean_snapshot_90_365_days_count" {
   EOQ
 }
 
-query "digitalocean_snapshot_1_year_count" {
+query "snapshot_1_year_count" {
   sql = <<-EOQ
     select
       count(*) as value,
@@ -121,7 +122,7 @@ query "digitalocean_snapshot_1_year_count" {
   EOQ
 }
 
-query "digitalocean_snapshot_age_table" {
+query "snapshot_age_table" {
   sql = <<-EOQ
     select
       s.name as "Name",

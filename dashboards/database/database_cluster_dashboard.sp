@@ -44,7 +44,7 @@ dashboard "database_cluster_dashboard" {
         point "enabled" {
           color = "ok"
         }
-        point "disbled" {
+        point "disabled" {
           color = "alert"
         }
       }
@@ -60,7 +60,7 @@ dashboard "database_cluster_dashboard" {
         point "enabled" {
           color = "ok"
         }
-        point "disbled" {
+        point "disabled" {
           color = "alert"
         }
       }

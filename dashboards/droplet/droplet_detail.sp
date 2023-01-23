@@ -240,7 +240,7 @@ dashboard "droplet_detail" {
         }
 
         column "Volume Name" {
-          href = "${dashboard.blockstorage_volume_detail.url_path}?input.volume_urn={{.'Volume URN' | @uri}}"
+          href = "/digitalocean_insights.dashboard.blockstorage_volume_detail?input.volume_urn={{.'Volume URN' | @uri}}"
         }
       }
 
@@ -258,15 +258,12 @@ dashboard "droplet_detail" {
         query = query.droplet_firewall_configuration
         args  = [self.input.droplet_urn.value]
 
-        column "URN" {
+        column "Firewall URN" {
           display = "none"
         }
 
-        column "Name" {
-
-          # href = "${dashboard.digitalocean_droplet_detail.url_path}?input.droplet_urn={{.'Droplet URN' | @uri}}"
-          // cyclic dependency prevents use of url_path, hardcode for now
-          href = "/digitalocean_insights.dashboard.network_firewall_detail?input.firewall_urn={{.'URN' | @uri}}"
+        column "Firewall Name" {
+          href = "/digitalocean_insights.dashboard.network_firewall_detail?input.firewall_urn={{.'Firewall URN' | @uri}}"
         }
       }
 
@@ -280,6 +277,14 @@ dashboard "droplet_detail" {
         title = "VPC Details"
         query = query.droplet_network_vpc_details
         args  = [self.input.droplet_urn.value]
+
+        column "VPC URN" {
+          display = "none"
+        }
+
+        column "VPC Name" {
+          href = "/digitalocean_insights.dashboard.network_vpc_detail?input.vpc_urn={{.'VPC URN' | @uri}}"
+        }
       }
     }
 
@@ -558,10 +563,10 @@ query "droplet_tags" {
 query "droplet_attached_volumes" {
   sql = <<-EOQ
     select
-      v.name as "Name",
-      v.id as "ID",
+      v.name as "Volume Name",
+      v.id as "Volume ID",
       v.created_at as "Create Time",
-      v.urn as "URN"
+      v.urn as "Volume URN"
     from
       digitalocean_droplet as d,
       jsonb_array_elements_text(d.volume_ids) as volume_id,
@@ -577,8 +582,9 @@ query "droplet_attached_volumes" {
 query "droplet_network_vpc_details" {
   sql = <<-EOQ
     select
-      vpc.name as "Name",
-      vpc.id as "ID",
+      vpc.name as "VPC Name",
+      vpc.urn as "VPC URN",
+      vpc.id as "VPC ID",
       vpc.ip_range as "IP Range",
       vpc.created_at as "Create Time"
     from
@@ -596,10 +602,10 @@ query "droplet_network_vpc_details" {
 query "droplet_firewall_configuration" {
   sql = <<-EOQ
     select
-      f.name as "Name",
-      f.id as "ID",
+      f.name as "Firewall Name",
+      f.id as "Firewall ID",
       f.created_at as "Create Time",
-      f.urn as "URN"
+      f.urn as "Firewall URN"
     from
       digitalocean_droplet dr,
       digitalocean_firewall f,

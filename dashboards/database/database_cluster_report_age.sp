@@ -53,6 +53,10 @@ dashboard "database_cluster_age_report" {
       display = "none"
     }
 
+    column "Name" {
+      href = "${dashboard.database_cluster_detail.url_path}?input.cluster_urn={{.URN | @uri}}"
+    }
+
     query = query.database_cluster_age_table
   }
 
