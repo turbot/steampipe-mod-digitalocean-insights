@@ -147,7 +147,7 @@ dashboard "droplet_detail" {
       node {
         base = node.snapshot_snapshot
         args = {
-          snapshot_snapshot_ids = with.snapshot_snapshots_for_droplet_droplet.rows[*].snapshot_id
+          snapshot_snapshot_urns = with.snapshot_snapshots_for_droplet_droplet.rows[*].snapshot_urn
         }
       }
 
@@ -416,12 +416,14 @@ query "network_vpcs_for_droplet_droplet" {
 query "snapshot_snapshots_for_droplet_droplet" {
   sql = <<-EOQ
     select
-      sid as snapshot_id
+      s.akas::text as snapshot_urn
     from
-      digitalocean_droplet,
-      jsonb_array_elements(snapshot_ids) as sid
+      digitalocean_droplet as d,
+      jsonb_array_elements(snapshot_ids) as sid,
+      digitalocean_snapshot as s
     where
-      urn = $1;
+      s.id = sid::text
+      and d.urn = $1;
   EOQ
 }
 

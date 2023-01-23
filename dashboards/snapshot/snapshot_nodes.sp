@@ -3,7 +3,7 @@ node "snapshot_snapshot" {
 
   sql = <<-EOQ
     select
-      id as id,
+      akas::text as id,
       title as title,
       jsonb_build_object(
         'Name', name,
@@ -16,9 +16,9 @@ node "snapshot_snapshot" {
     from
       digitalocean_snapshot
     where
-      id = any($1);
+      akas::text = any($1);
   EOQ
 
-  param "snapshot_snapshot_ids" {}
+  param "snapshot_snapshot_urns" {}
 }
 

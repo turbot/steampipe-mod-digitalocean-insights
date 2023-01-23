@@ -34,6 +34,61 @@ dashboard "blockstorage_volume_detail" {
     }
   }
 
+  with "droplet_droplets_for_blockstorage_volume" {
+      query = query.droplet_droplets_for_blockstorage_volume
+      args  = [self.input.volume_urn.value]
+  }
+
+  with "target_snapshot_snapshots_for_blockstorage_volume" {
+      query = query.target_snapshot_snapshots_for_blockstorage_volume
+      args  = [self.input.volume_urn.value]
+  }
+
+  container {
+
+    graph {
+      title     = "Relationships"
+      type      = "graph"
+      direction = "TD"
+
+      node {
+        base = node.blockstorage_volume
+        args = {
+          blockstorage_volume_urns = [self.input.volume_urn.value]
+        }
+      }
+
+      node {
+        base = node.droplet_droplet
+        args = {
+          droplet_droplet_urns = with.droplet_droplets_for_blockstorage_volume.rows[*].droplet_urn
+        }
+      }
+
+      node {
+        base = node.snapshot_snapshot
+        args = {
+          snapshot_snapshot_urns = with.target_snapshot_snapshots_for_blockstorage_volume.rows[*].snapshot_urn
+        }
+      }
+
+      edge {
+        base = edge.blockstorage_volume_to_snapshot_snapshot
+        args = {
+          blockstorage_volume_urns = [self.input.volume_urn.value]
+        }
+      }
+
+      edge {
+        base = edge.droplet_droplet_to_blockstorage_volume
+        args = {
+          droplet_droplet_urns = with.droplet_droplets_for_blockstorage_volume.rows[*].droplet_urn
+        }
+      }
+
+    }
+  }
+
   container {
 
     container {
@@ -82,6 +137,8 @@ dashboard "blockstorage_volume_detail" {
 
 }
 
+# Input queries
+
 query "blockstorage_volume_input" {
   sql = <<-EOQ
     select
@@ -97,6 +154,38 @@ query "blockstorage_volume_input" {
       title;
   EOQ
 }
+
+# With queries
+
+query "droplet_droplets_for_blockstorage_volume" {
+  sql = <<-EOQ
+    select
+      d.urn as droplet_urn
+    from
+      digitalocean_volume as v,
+      jsonb_array_elements(v.droplet_ids) as droplet_id,
+      digitalocean_droplet as d
+    where
+      d.id = droplet_id::bigint
+      and v.urn = $1;
+  EOQ
+}
+
+query "target_snapshot_snapshots_for_blockstorage_volume" {
+  sql = <<-EOQ
+    select
+      s.akas::text as snapshot_urn
+    from
+      digitalocean_volume as v,
+      digitalocean_snapshot as s
+    where
+      s.resource_id = v.id
+      and s.resource_type = 'volume'
+      and v.urn = $1;
+  EOQ
+}
+
+# Card queries
 
 query "blockstorage_volume_storage" {
   sql = <<-EOQ
@@ -140,6 +229,8 @@ query "blockstorage_volume_attached_droplets_count" {
       urn = $1;
   EOQ
 }
+
+# Other detail page queries
 
 query "blockstorage_volume_overview" {
   sql = <<-EOQ

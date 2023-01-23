@@ -16,8 +16,7 @@ edge "image_image_to_droplet_droplet" {
       digitalocean_image as i,
       droplet_images as d
     where
-      i.public = true
-      and i.id::text = iid
+      i.id::text = iid
       and i.urn = any($1);
   EOQ
 

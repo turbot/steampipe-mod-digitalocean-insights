@@ -111,17 +111,18 @@ edge "droplet_droplet_to_network_vpc" {
 }
 
 edge "droplet_droplet_to_snapshot_snapshot" {
-  title = "vpc"
+  title = "snapshot"
 
   sql = <<-EOQ
     select
-      urn as from_id,
-      sid as to_id
+      d.urn as from_id,
+      s.akas::text as to_id
     from
-      digitalocean_droplet,
-      jsonb_array_elements(snapshot_ids) as sid
+      digitalocean_droplet as d,
+      jsonb_array_elements(snapshot_ids) as sid,
+      digitalocean_snapshot as s
     where
-      urn = any($1);
+      d.urn = any($1);
   EOQ
 
   param "droplet_droplet_urns" {}
