@@ -54,7 +54,7 @@ dashboard "network_vpc_age_report" {
     }
 
     column "Name" {
-      href = "${dashboard.digitalocean_network_vpc_detail.url_path}?input.vpc_urn={{.'URN' | @uri}}"
+      href = "${dashboard.network_vpc_detail.url_path}?input.vpc_urn={{.'URN' | @uri}}"
     }
 
     query = query.network_vpc_age_table

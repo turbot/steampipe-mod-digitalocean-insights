@@ -1,4 +1,4 @@
-dashboard "digitalocean_network_vpc_detail" {
+dashboard "network_vpc_detail" {
 
   title = "DigitalOcean VPC Detail"
   documentation = file("./dashboards/network/docs/network_vpc_detail.md")

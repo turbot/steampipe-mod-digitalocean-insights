@@ -1,4 +1,4 @@
-dashboard "digitalocean_blockstorage_volume_detail" {
+dashboard "blockstorage_volume_detail" {
 
   title         = "DigitalOcean Block Storage Volume Detail"
   documentation = file("./dashboards/blockstorage/docs/blockstorage_volume_detail.md")
@@ -9,7 +9,7 @@ dashboard "digitalocean_blockstorage_volume_detail" {
 
   input "volume_urn" {
     title = "Select a volume:"
-    query = query.digitalocean_volume_input
+    query = query.blockstorage_volume_input
     width = 4
   }
 
@@ -17,26 +17,20 @@ dashboard "digitalocean_blockstorage_volume_detail" {
 
     card {
       width = 2
-      query = query.digitalocean_volume_storage
-      args = {
-        urn = self.input.volume_urn.value
-      }
+      query = query.blockstorage_volume_storage
+      args = [self.input.volume_urn.value]
     }
 
     card {
       width = 2
-      query = query.digitalocean_volume_filesystem_type
-      args = {
-        urn = self.input.volume_urn.value
-      }
+      query = query.blockstorage_volume_filesystem_type
+      args = [self.input.volume_urn.value]
     }
 
     card {
       width = 2
-      query = query.digitalocean_volume_attached_droplets_count
-      args = {
-        urn = self.input.volume_urn.value
-      }
+      query = query.blockstorage_volume_attached_droplets_count
+      args = [self.input.volume_urn.value]
     }
   }
 
@@ -50,19 +44,15 @@ dashboard "digitalocean_blockstorage_volume_detail" {
         title = "Overview"
         type  = "line"
         width = 6
-        query = query.digitalocean_volume_overview
-        args = {
-          urn = self.input.volume_urn.value
-        }
+        query = query.blockstorage_volume_overview
+        args = [self.input.volume_urn.value]
       }
 
       table {
         title = "Tags"
         width = 6
-        query = query.digitalocean_volume_tags
-        args = {
-          urn = self.input.volume_urn.value
-        }
+        query = query.blockstorage_volume_tags
+        args = [self.input.volume_urn.value]
       }
     }
 
@@ -72,10 +62,8 @@ dashboard "digitalocean_blockstorage_volume_detail" {
 
       table {
         title = "Attached To"
-        query = query.digitalocean_volume_attached_droplets
-        args = {
-          urn = self.input.volume_urn.value
-        }
+        query = query.blockstorage_volume_attached_droplets
+        args = [self.input.volume_urn.value]
 
         column "Droplet URN" {
           display = "none"
@@ -94,7 +82,7 @@ dashboard "digitalocean_blockstorage_volume_detail" {
 
 }
 
-query "digitalocean_volume_input" {
+query "blockstorage_volume_input" {
   sql = <<-EOQ
     select
       title as label,
@@ -110,7 +98,7 @@ query "digitalocean_volume_input" {
   EOQ
 }
 
-query "digitalocean_volume_storage" {
+query "blockstorage_volume_storage" {
   sql = <<-EOQ
     select
       'Storage (GB)' as label,
@@ -120,11 +108,9 @@ query "digitalocean_volume_storage" {
     where
       urn = $1;
   EOQ
-
-  param "urn" {}
 }
 
-query "digitalocean_volume_filesystem_type" {
+query "blockstorage_volume_filesystem_type" {
   sql = <<-EOQ
     select
       'Filesystem Type' as label,
@@ -134,11 +120,9 @@ query "digitalocean_volume_filesystem_type" {
     where
       urn = $1;
   EOQ
-
-  param "urn" {}
 }
 
-query "digitalocean_volume_attached_droplets_count" {
+query "blockstorage_volume_attached_droplets_count" {
   sql = <<-EOQ
     select
       'Attached Droplets' as label,
@@ -155,11 +139,9 @@ query "digitalocean_volume_attached_droplets_count" {
     where
       urn = $1;
   EOQ
-
-  param "urn" {}
 }
 
-query "digitalocean_volume_overview" {
+query "blockstorage_volume_overview" {
   sql = <<-EOQ
     select
       name as "Name",
@@ -173,11 +155,9 @@ query "digitalocean_volume_overview" {
     where
       urn = $1
   EOQ
-
-  param "urn" {}
 }
 
-query "digitalocean_volume_tags" {
+query "blockstorage_volume_tags" {
   sql = <<-EOQ
     select
       tag.key as "Key",
@@ -190,11 +170,9 @@ query "digitalocean_volume_tags" {
     order by
       tag.key;
   EOQ
-
-  param "urn" {}
 }
 
-query "digitalocean_volume_attached_droplets" {
+query "blockstorage_volume_attached_droplets" {
   sql = <<-EOQ
     select
       d.name as "Droplet Name",
@@ -212,6 +190,4 @@ query "digitalocean_volume_attached_droplets" {
     order by
       d.name;
   EOQ
-
-  param "urn" {}
 }

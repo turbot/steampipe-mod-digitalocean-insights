@@ -240,7 +240,7 @@ dashboard "droplet_detail" {
         }
 
         column "Volume Name" {
-          href = "${dashboard.digitalocean_blockstorage_volume_detail.url_path}?input.volume_urn={{.'Volume URN' | @uri}}"
+          href = "${dashboard.blockstorage_volume_detail.url_path}?input.volume_urn={{.'Volume URN' | @uri}}"
         }
       }
 
@@ -266,7 +266,7 @@ dashboard "droplet_detail" {
 
           # href = "${dashboard.digitalocean_droplet_detail.url_path}?input.droplet_urn={{.'Droplet URN' | @uri}}"
           // cyclic dependency prevents use of url_path, hardcode for now
-          href = "/digitalocean_insights.dashboard.digitalocean_network_firewall_detail?input.firewall_urn={{.'URN' | @uri}}"
+          href = "/digitalocean_insights.dashboard.network_firewall_detail?input.firewall_urn={{.'URN' | @uri}}"
         }
       }
 
