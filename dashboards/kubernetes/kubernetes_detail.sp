@@ -1,7 +1,7 @@
 dashboard "kubernetes_cluster_detail" {
 
   title         = "DigitalOcean Kubernetes Cluster Detail"
-  documentation = file("./dashboards/kubernetes/docs/kubernetes_detail.md")
+  documentation = file("./dashboards/kubernetes/docs/kubernetes_cluster_detail.md")
 
   tags = merge(local.kubernetes_common_tags, {
     type = "Detail"

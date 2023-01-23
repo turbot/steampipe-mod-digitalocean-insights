@@ -1,7 +1,7 @@
 dashboard "kubernetes_cluster_age_report" {
 
   title         = "DigitalOcean Kubernetes Cluster Age Report"
-  documentation = file("./dashboards/kubernetes/docs/kubernetes_report_age.md")
+  documentation = file("./dashboards/kubernetes/docs/kubernetes_cluster_report_age.md")
 
   tags = merge(local.kubernetes_common_tags, {
     type     = "Report"
