@@ -40,10 +40,10 @@ dashboard "network_firewall_detail" {
     args  = [self.input.firewall_urn.value]
   }
 
-  with "network_load_balancers_for_network_firewall" {
-    query = query.network_load_balancers_for_network_firewall
-    args  = [self.input.firewall_urn.value]
-  }
+  # with "network_load_balancers_for_network_firewall" {
+  #   query = query.network_load_balancers_for_network_firewall
+  #   args  = [self.input.firewall_urn.value]
+  # }
 
   container {
 
@@ -66,12 +66,12 @@ dashboard "network_firewall_detail" {
         }
       }
 
-      node {
-        base = node.network_load_balancer
-        args = {
-          network_load_balancer_urns = with.network_load_balancers_for_network_firewall.rows[*].lb_urn
-        }
-      }
+      # node {
+      #   base = node.network_load_balancer
+      #   args = {
+      #     network_load_balancer_urns = with.network_load_balancers_for_network_firewall.rows[*].lb_urn
+      #   }
+      # }
 
       edge {
         base = edge.network_firewall_to_droplet_droplet
@@ -167,25 +167,25 @@ query "network_firewall_input" {
 
 # With queries
 
-query "network_load_balancers_for_network_firewall" {
-  sql = <<-EOQ
-    with firewall_rules as (
-      select
-        jsonb_array_elements(inbound_rules) -> 'sources' ->> 'load_balancer_uids' as ir,
-        jsonb_array_elements(outbound_rules) -> 'destinations' ->> 'load_balancer_uids' as or
-      from
-        digitalocean_firewall
-    )
-    select
-      l.urn as lb_urn
-    from
-      firewall_rules as f,
-      digitalocean_load_balancer as l
-    where
-      ir = l.id or ir = l.id
-      and f.urn = $1;
-  EOQ
-}
+# query "network_load_balancers_for_network_firewall" {
+#   sql = <<-EOQ
+#     with firewall_rules as (
+#       select
+#         jsonb_array_elements(inbound_rules) -> 'sources' ->> 'load_balancer_uids' as ir,
+#         jsonb_array_elements(outbound_rules) -> 'destinations' ->> 'load_balancer_uids' as or
+#       from
+#         digitalocean_firewall
+#     )
+#     select
+#       l.urn as lb_urn
+#     from
+#       firewall_rules as f,
+#       digitalocean_load_balancer as l
+#     where
+#       ir = l.id or ir = l.id
+#       and f.urn = $1;
+#   EOQ
+# }
 
 query "droplet_droplets_for_network_firewall" {
   sql = <<-EOQ
