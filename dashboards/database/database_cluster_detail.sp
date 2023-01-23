@@ -1,6 +1,6 @@
-dashboard "digitalocean_database_cluster_detail" {
+dashboard "database_cluster_detail" {
 
-  title = "DigitalOcean Database Detail"
+  title = "DigitalOcean Database Cluster Detail"
   # documentation = file("./dashboards/network/docs/network_firewall_detail.md")
 
   tags = merge(local.database_common_tags, {
@@ -9,136 +9,137 @@ dashboard "digitalocean_database_cluster_detail" {
 
   input "database_cluster_urn" {
     title = "Select a database:"
-    query = query.database_input
+    query = query.database_cluster_input
     width = 4
   }
 
-  #   container {
+    container {
 
-  #     card {
-  #       width = 2
-  #       query = query.digitalocean_firewall_status
-  #       args = [self.input.database_urn.value]
-  #     }
+      card {
+        width = 2
+        query = query.database_cluster_node_count
+        args = [self.input.database_cluster_urn.value]
+      }
 
-  #     card {
-  #       width = 2
-  #       query = query.digitalocean_firewall_unrestricted_inbound_rules
-  #       args = [self.input.database_urn.value]
-  #     }
+      card {
+        width = 2
+        query = query.database_cluster_connection_port
+        args = [self.input.database_cluster_urn.value]
+      }
 
-  #     card {
-  #       width = 2
-  #       query = query.digitalocean_firewall_unrestricted_outbound_rules
-  #       args = [self.input.database_urn.value]
-  #     }
+      card {
+        width = 2
+        query = query.database_cluster_engine_version
+        args = [self.input.database_cluster_urn.value]
+      }
 
-  #   }
+      card {
+        width = 2
+        query = query.database_cluster_ssl_enabled
+        args = [self.input.database_cluster_urn.value]
+      }
 
-  #   with "droplet_droplets_for_network_firewall" {
-  #     query = query.droplet_droplets_for_network_firewall
-  #     args  = [self.input.database_urn.value]
-  #   }
+      card {
+        width = 2
+        query = query.database_cluster_firewall_enabled
+        args = [self.input.database_cluster_urn.value]
+      }
 
-  #   container {
+      card {
+        width = 2
+        query = query.database_cluster_maintenance_window_pending
+        args = [self.input.database_cluster_urn.value]
+      }
 
-  #     graph {
-  #       title     = "Relationships"
-  #       type      = "graph"
-  #       direction = "TD"
+    }
 
-  #       node {
-  #         base = node.droplet_droplet
-  #         args = {
-  #           droplet_droplet_urns = with.droplet_droplets_for_network_firewall.rows[*].droplet_urn
-  #         }
-  #       }
+    with "network_vpcs_for_database_cluster" {
+      query = query.network_vpcs_for_database_cluster
+      args  = [self.input.database_cluster_urn.value]
+    }
 
-  #       node {
-  #         base = node.network_firewall
-  #         args = {
-  #           network_database_urns = [self.input.database_urn.value]
-  #         }
-  #       }
+    container {
 
-  #       edge {
-  #         base = edge.network_firewall_to_droplet_droplet
-  #         args = {
-  #           network_database_urns = [self.input.database_urn.value]
-  #         }
-  #       }
+      graph {
+        title     = "Relationships"
+        type      = "graph"
+        direction = "TD"
 
+        node {
+          base = node.database_cluster
+          args = {
+            database_cluster_urns = [self.input.database_cluster_urn.value]
+          }
+        }
 
-  #     }
-  #   }
+        node {
+          base = node.network_vpc
+          args = {
+            network_vpc_urns = with.network_vpcs_for_database_cluster.rows[*].vpc_urn
+          }
+        }
 
-  #   container {
+        edge {
+          base = edge.database_cluster_to_network_vpc
+          args = {
+            database_cluster_urns = [self.input.database_cluster_urn.value]
+          }
+        }
 
-  #     container {
+      }
+    }
 
-  #       width = 6
+    container {
 
-  #       table {
-  #         title = "Overview"
-  #         type  = "line"
-  #         width = 6
-  #         query = query.digitalocean_firewall_overview
-  #         args = [self.input.database_urn.value]
-  #       }
+      container {
 
-  #       table {
-  #         title = "Tags"
-  #         width = 6
-  #         query = query.digitalocean_firewall_tags
-  #         args = [self.input.database_urn.value]
-  #       }
-  #     }
+        width = 6
 
-  #     container {
+        table {
+          title = "Overview"
+          type  = "line"
+          width = 6
+          query = query.database_cluster_overview
+          args = [self.input.database_cluster_urn.value]
+        }
 
-  #       width = 6
+        table {
+          title = "Tags"
+          width = 6
+          query = query.database_cluster_tags
+          args = [self.input.database_cluster_urn.value]
+        }
+      }
 
-  #       table {
-  #         title = "Attached To"
-  #         query = query.digitalocean_firewall_attached
-  #         args = [self.input.database_urn.value]
+      container {
 
-  #         column "URN" {
-  #           display = "none"
-  #         }
+        width = 6
 
-  #         column "Droplet Name" {
-  #           href = "${dashboard.droplet_detail.url_path}?input.droplet_urn={{.'URN' | @uri}}"
-  #         }
-  #       }
+        table {
+          title = "Maintenance Window Details"
+          query = query.database_cluster_maintenance_window
+          args = [self.input.database_cluster_urn.value]
+        }
 
-  #     }
+      }
 
-  #   }
+    }
 
-  #   container {
+    container {
 
-  #     flow {
-  #       title = "Inbound Rules Analysis"
-  #       width = 6
-  #       query = query.digitalocean_firewall_inbound_analysis
-  #       args = [self.input.database_urn.value]
-  #     }
+      table {
+        title = "Private Connection Details"
+        query = query.database_cluster_private_connection
+        args  = [self.input.database_cluster_urn.value]
+      }
+    }
 
-  #     flow {
-  #       title = "Outbound Rules Analysis"
-  #       width = 6
-  #       query = query.digitalocean_firewall_outbound_analysis
-  #       args = [self.input.database_urn.value]
-  #     }
+  }
 
-  #   }
-
-}
 
 # # Input queries
 
-query "database_input" {
+query "database_cluster_input" {
   sql = <<-EOQ
     select
       title as label,
@@ -155,290 +156,152 @@ query "database_input" {
 
 # # With queries
 
-# query "droplet_droplets_for_network_firewall" {
-#   sql = <<-EOQ
-#     with firewall_droplet_ids as (
-#       select
-#         jsonb_array_elements(droplet_ids) as did,
-#         urn
-#       from
-#         digitalocean_firewall
-#     )
-#     select
-#       d.urn as droplet_urn
-#     from
-#       firewall_droplet_ids as f,
-#       digitalocean_droplet as d
-#     where
-#       d.id::text = did::text
-#       and f.urn = $1;
-#   EOQ
-# }
+query "network_vpcs_for_database_cluster" {
+  sql = <<-EOQ
+    select
+      v.urn as vpc_urn
+    from
+      digitalocean_database as d,
+      digitalocean_vpc as v
+    where
+      v.id = d.private_network_uuid
+      and d.urn = $1;
+  EOQ
+}
 
 # # Card queries
 
-# query "digitalocean_firewall_status" {
-#   sql = <<-EOQ
-#     select
-#       initcap(status) as "Status"
-#     from
-#       digitalocean_firewall
-#     where
-#       urn = $1;
-#   EOQ
-# }
+query "database_cluster_node_count" {
+  sql = <<-EOQ
+    select
+      'Nodes' as label,
+      num_nodes as value
+    from
+      digitalocean_database
+    where
+      urn = $1;
+  EOQ
+}
 
-# query "digitalocean_firewall_unrestricted_inbound_rules" {
-#   sql = <<-EOQ
-#     with inbound_fw as (
-#       select
-#         id
-#       from
-#         digitalocean_firewall,
-#         jsonb_array_elements(inbound_rules) as i
-#       where
-#         i -> 'sources' -> 'addresses' = '["0.0.0.0/0","::/0"]'
-#         and i ->> 'protocol' <> 'icmp'
-#         group by id
-#     )
-#     select
-#       'Inbound (Excludes ICMP)' as label,
-#       case when i.id is null then 'Restricted' else 'Unrestricted' end as value,
-#       case when i.id is null then 'ok' else 'alert' end as type
-#       from
-#         digitalocean_firewall as d
-#         left join inbound_fw as i on d.id = i.id
-#       where
-#         d.urn = $1;
-#   EOQ
-# }
+query "database_cluster_connection_port" {
+  sql = <<-EOQ
+    select
+      connection_port as "Connection Port"
+    from
+      digitalocean_database
+    where
+      urn = $1;
+  EOQ
+}
 
-# query "digitalocean_firewall_unrestricted_outbound_rules" {
-#   sql = <<-EOQ
-#     with outbound_fw as (
-#       select
-#         id
-#       from
-#         digitalocean_firewall,
-#         jsonb_array_elements(outbound_rules) as i
-#       where
-#         i -> 'destinations' -> 'addresses' = '["0.0.0.0/0","::/0"]'
-#         and i ->> 'protocol' <> 'icmp'
-#       group by id
-#     )
-#     select
-#       'Outbound (Excludes ICMP)' as label,
-#       case when o.id is null then 'Restricted' else 'Unrestricted' end as value,
-#        case when o.id is null then 'ok' else 'alert' end as type
-#       from
-#         digitalocean_firewall as d
-#         left join outbound_fw as o on d.id = o.id
-#       where
-#         d.urn = $1;
-#   EOQ
-# }
+query "database_cluster_ssl_enabled" {
+  sql = <<-EOQ
+    select
+      'SSL' as label,
+      case when connection_ssl then 'Enabled' else 'Disabled' end as value,
+      case when connection_ssl then 'ok' else 'alert' end as type
+    from
+      digitalocean_database
+    where
+      urn = $1;
+  EOQ
+}
 
-# query "digitalocean_firewall_overview" {
-#   sql = <<-EOQ
-#     select
-#       title as "Title",
-#       id as "ID",
-#       created_at as "Create Time",
-#       urn as "URN"
-#     from
-#       digitalocean_firewall
-#     where
-#       urn = $1;
-#   EOQ
-# }
+query "database_cluster_firewall_enabled" {
+  sql = <<-EOQ
+    select
+      'Firewall' as label,
+      case when jsonb_array_length(firewall_rules) = 0 then 'Disabled' else 'Enabled' end as value,
+      case when jsonb_array_length(firewall_rules) = 0 then 'alert' else 'ok' end as type
+    from
+      digitalocean_database
+    where
+      urn = $1;
+  EOQ
+}
 
-# query "digitalocean_firewall_tags" {
-#   sql = <<-EOQ
-#     select
-#       tag.key as "Key",
-#       tag.value as "Value"
-#     from
-#       digitalocean_firewall
-#       join jsonb_each_text(tags) tag on true
-#     where
-#       urn = $1
-#     order by
-#       tag.key;
-#   EOQ
-# }
+query "database_cluster_maintenance_window_pending" {
+  sql = <<-EOQ
+    select
+      'Maintenance Window' as label,
+      case when maintenance_window_pending then 'Not Pending' else 'Pending' end as value,
+      case when maintenance_window_pending then 'ok' else 'alert' end as type
+    from
+      digitalocean_database
+    where
+      urn = $1;
+  EOQ
+}
 
-# query "digitalocean_firewall_attached" {
-#   sql = <<-EOQ
-#     select
-#       name as "Droplet Name",
-#       id as "Droplet ID",
-#       created_at as "Create Time",
-#       urn as "URN"
-#     from
-#       digitalocean_droplet
-#     where
-#       id::text in (
-#     select
-#       d
-#     from
-#       digitalocean_firewall,
-#       jsonb_array_elements_text(droplet_ids) as d
-#     where
-#       urn = $1)
-#     order by
-#       name;
-#   EOQ
-# }
+query "database_cluster_engine_version" {
+  sql = <<-EOQ
+    select
+      'Engine Version' as label,
+      version as value
+    from
+      digitalocean_database
+    where
+      urn = $1;
+  EOQ
+}
 
-# query "digitalocean_firewall_inbound_analysis" {
-#   sql = <<-EOQ
-#     with rules as (
-#       select
-#         urn,
-#         title,
-#         id,
-#         i ->> 'protocol' as protocol_number,
-#         cidr as cidr_block,
-#         i ->> 'ports' as ports,
-#         case
-#           when i->>'protocol' = 'icmp' and i ->> 'ports' = '0' then 'All ICMP'
-#           when i->>'protocol' = 'tcp' and i ->> 'ports' = '0' then 'All TCP'
-#           when i->>'protocol' = 'udp' and i ->> 'ports' = '0' then 'All UDP'
-#           when i->>'protocol' = 'tcp' and i ->> 'ports' <> '0' then concat(i ->> 'ports', '/TCP')
-#           when i->>'protocol' = 'udp' and i ->> 'ports' <> '0' then concat(i ->> 'ports', '/UDP')
-#             else concat('Procotol: ', i->>'protocol')
-#         end as rule_description
-#       from
-#         digitalocean_firewall,
-#         jsonb_array_elements(inbound_rules) as i,
-#         jsonb_array_elements_text(i -> 'sources' -> 'addresses') as cidr
-#       where
-#         urn = $1
-#     )
+query "database_cluster_overview" {
+  sql = <<-EOQ
+    select
+      title as "Title",
+      id as "ID",
+      created_at as "Create Time",
+      size_slug as "Size",
+      name as "Name",
+      status as "Status",
+      region_slug as "Region",
+      urn as "URN"
+    from
+      digitalocean_database
+    where
+      urn = $1;
+  EOQ
+}
 
-#     -- CIDR Nodes
-#     select
-#       distinct cidr_block as id,
-#       cidr_block as title,
-#       'cidr_block' as category,
-#       null as from_id,
-#       null as to_id
-#     from rules
+query "database_cluster_tags" {
+  sql = <<-EOQ
+    select
+      tag.key as "Key",
+      tag.value as "Value"
+    from
+      digitalocean_database
+      join jsonb_each_text(tags) tag on true
+    where
+      urn = $1
+    order by
+      tag.key;
+  EOQ
+}
 
-#     -- Rule Nodes
-#     union select
-#       concat(title,'_',rule_description) as id,
-#       rule_description as title,
-#       'rule' as category,
-#       null as from_id,
-#       null as to_id
-#     from rules
+query "database_cluster_maintenance_window" {
+  sql = <<-EOQ
+    select
+      maintenance_window_day as "Day",
+      maintenance_window_description as "Description",
+      maintenance_window_hour as "Hour",
+      maintenance_window_pending as "Pending Status"
+    from
+      digitalocean_database
+    where
+      urn = $1;
+  EOQ
+}
 
-#     -- Firewall Nodes
-#     union select
-#       distinct title as id,
-#       title as title,
-#       'inbound' as category,
-#       null as from_id,
-#       null as to_id
-#     from rules
-
-#     -- ip -> rule edge
-#     union select
-#       null as id,
-#       null as title,
-#       protocol_number as category,
-#       cidr_block as from_id,
-#       concat(title,'_',rule_description) as to_id
-#     from rules
-
-#     -- rule -> Firewall edge
-#     union select
-#       null as id,
-#       null as title,
-#       protocol_number as category,
-#       concat(title,'_',rule_description) as from_id,
-#       title as to_id
-#     from rules
-#   EOQ
-# }
-
-# query "digitalocean_firewall_outbound_analysis" {
-#   sql = <<-EOQ
-#     with rules as (
-#       select
-#         urn,
-#         title,
-#         id,
-#         r ->> 'protocol' as protocol_number,
-#         cidr as cidr_block,
-#         r ->> 'ports' as ports,
-#         case
-#           when r->>'protocol' = 'icmp' and r ->> 'ports' = '0' then 'All ICMP'
-#           when r->>'protocol' = 'tcp' and r ->> 'ports' = '0' then 'All TCP'
-#           when r->>'protocol' = 'udp' and r ->> 'ports' = '0' then 'All UDP'
-#           when r->>'protocol' = 'tcp' and r ->> 'ports' <> '0' then concat(r ->> 'ports', '/TCP')
-#           when r->>'protocol' = 'udp' and r ->> 'ports' <> '0' then concat(r ->> 'ports', '/UDP')
-#             else concat('Procotol: ', r->>'protocol')
-#         end as rule_description
-#       from
-#         digitalocean_firewall,
-#         jsonb_array_elements(outbound_rules) as r,
-#         jsonb_array_elements_text(r -> 'destinations' -> 'addresses') as cidr
-#       where
-#         urn = $1
-#     )
-
-#     select
-#       distinct title as id,
-#       title as title,
-#       'inbound' as category,
-#       null as from_id,
-#       null as to_id,
-#       0 as depth
-#     from rules
-
-#     -- Rule Nodes
-#     union select
-#       concat(title,'_',rule_description) as id,
-#       rule_description as title,
-#       'rule' as category,
-#       null as from_id,
-#       null as to_id,
-#       1 as depth
-#     from rules
-
-#     -- CIDR Nodes
-#     union select
-#       distinct cidr_block as id,
-#       cidr_block as title,
-#       'cidr_block' as category,
-#       null as from_id,
-#       null as to_id,
-#       2 as depth
-#     from rules
-
-#     -- rule -> Firewall edge
-#     union select
-#       null as id,
-#       null as title,
-#       protocol_number as category,
-#       concat(title,'_',rule_description) as from_id,
-#       title as to_id,
-#       null as depth
-#     from rules
-
-#     -- ip -> rule edge
-#     union select
-#       null as id,
-#       null as title,
-#       protocol_number as category,
-#       cidr_block as from_id,
-#       concat(title,'_',rule_description) as from_id,
-#       null as depth
-#     from rules
-
-#   EOQ
-# }
-
-
+query "database_cluster_private_connection" {
+  sql = <<-EOQ
+    select
+      private_connection_host as "Host",
+      private_connection_port as "Port",
+      private_connection_ssl as "SSL Enabled",
+      private_connection_uri as "URI"
+    from
+      digitalocean_database
+    where
+      urn = $1;
+  EOQ
+}
