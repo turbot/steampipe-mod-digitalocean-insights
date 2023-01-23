@@ -11,7 +11,8 @@ node "snapshot_snapshot" {
         'Created At', created_at,
         'Minimum Disk Size', min_disk_size,
         'Resource Type', resource_type,
-        'Region', regions
+        'Region', regions,
+        'URN', akas::text
       ) as properties
     from
       digitalocean_snapshot

@@ -125,10 +125,6 @@ dashboard "blockstorage_volume_detail" {
         }
 
         column "Droplet Name" {
-
-          # href = "${dashboard.digitalocean_droplet_detail.url_path}?input.droplet_urn={{.'Droplet URN' | @uri}}"
-          // cyclic dependency prevents use of url_path, hardcode for now
-
           href = "/digitalocean_insights.dashboard.digitalocean_droplet_detail?input.droplet_urn={{.'Droplet URN' | @uri}}"
         }
       }
