@@ -22,28 +22,31 @@ node "kubernetes_cluster" {
   param "kubernetes_cluster_urns" {}
 }
 
-node "kubernetes_node_pool" {
-  category = category.kubernetes_node_pool
+node "kubernetes_cluster_node" {
+  category = category.kubernetes_cluster_node
 
   sql = <<-EOQ
     select
-      urn as id,
-      title as title,
+      d.urn as id,
+      d.title as title,
       jsonb_build_object(
-        'Name', name,
-        'ID', id,
-        'URN', urn,
-        'Created At', created_at,
-        'Memory', memory,
-        'Virtual CPU Count', vcpus,
-        'Region', region ->> 'name'
+        'Name', d.name,
+        'ID', d.id,
+        'URN', d.urn,
+        'Created At', d.created_at,
+        'Memory', d.memory,
+        'Virtual CPU Count', d.vcpus,
+        'Region', d.region ->> 'name'
       ) as properties
     from
-      digitalocean_droplet
+      digitalocean_droplet as d,
+      digitalocean_kubernetes_cluster as k,
+      jsonb_array_elements(k.node_pools) as node_pool,
+      jsonb_array_elements(node_pool -> 'nodes') as node
     where
-      tags_src is not null
-      and urn = any($1);
+      d.id::text = node ->> 'droplet_id'
+      and d.urn = any($1);
   EOQ
 
-  param "kubernetes_node_pool_urns" {}
+  param "kubernetes_cluster_node_urns" {}
 }
