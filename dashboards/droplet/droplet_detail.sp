@@ -421,7 +421,7 @@ query "network_vpcs_for_droplet_droplet" {
 query "snapshot_snapshots_for_droplet_droplet" {
   sql = <<-EOQ
     select
-      s.akas::text as snapshot_urn
+      s.id as snapshot_urn
     from
       digitalocean_droplet as d,
       jsonb_array_elements(snapshot_ids) as sid,

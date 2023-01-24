@@ -17,13 +17,13 @@ dashboard "network_vpc_detail" {
 
     card {
       width = 2
-      query = query.network_vpc_is_default
+      query = query.network_vpc_ip_range
       args  = [self.input.vpc_urn.value]
     }
 
     card {
       width = 2
-      query = query.network_vpc_ip_range
+      query = query.network_vpc_is_default
       args  = [self.input.vpc_urn.value]
     }
 

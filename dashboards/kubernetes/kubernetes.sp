@@ -14,5 +14,5 @@ category "kubernetes_cluster" {
 category "kubernetes_cluster_node" {
   title = "Kubernetes Cluster Node"
   color = local.containers_color
-  icon  = "device_hub"
+  icon  = "memory"
 }

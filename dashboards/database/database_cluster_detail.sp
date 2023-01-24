@@ -17,13 +17,13 @@ dashboard "database_cluster_detail" {
 
       card {
         width = 2
-        query = query.database_cluster_node_count
+        query = query.database_cluster_status
         args = [self.input.database_cluster_urn.value]
       }
 
       card {
         width = 2
-        query = query.database_cluster_connection_port
+        query = query.database_cluster_node_count
         args = [self.input.database_cluster_urn.value]
       }
 
@@ -45,12 +45,16 @@ dashboard "database_cluster_detail" {
         args = [self.input.database_cluster_urn.value]
       }
 
-      card {
-        width = 2
-        query = query.database_cluster_maintenance_window_pending
-        args = [self.input.database_cluster_urn.value]
-      }
+    }
 
+    with "droplet_droplets_for_database_cluster" {
+      query = query.droplet_droplets_for_database_cluster
+      args  = [self.input.database_cluster_urn.value]
+    }
+
+    with "kubernetes_clusters_for_database_cluster" {
+      query = query.kubernetes_clusters_for_database_cluster
+      args  = [self.input.database_cluster_urn.value]
     }
 
     with "network_vpcs_for_database_cluster" {
@@ -73,6 +77,20 @@ dashboard "database_cluster_detail" {
         }
 
         node {
+          base = node.droplet_droplet
+          args = {
+            droplet_droplet_urns = with.droplet_droplets_for_database_cluster.rows[*].droplet_urn
+          }
+        }
+
+        node {
+          base = node.kubernetes_cluster
+          args = {
+            kubernetes_cluster_urns = with.kubernetes_clusters_for_database_cluster.rows[*].cluster_urn
+          }
+        }
+
+        node {
           base = node.network_vpc
           args = {
             network_vpc_urns = with.network_vpcs_for_database_cluster.rows[*].vpc_urn
@@ -83,6 +101,20 @@ dashboard "database_cluster_detail" {
           base = edge.database_cluster_to_network_vpc
           args = {
             database_cluster_urns = [self.input.database_cluster_urn.value]
+          }
+        }
+
+        edge {
+          base = edge.droplet_droplet_to_database_cluster
+          args = {
+            droplet_droplet_urns = with.droplet_droplets_for_database_cluster.rows[*].droplet_urn
+          }
+        }
+
+        edge {
+          base = edge.kubernetes_cluster_to_database_cluster
+          args = {
+            kubernetes_cluster_urns = with.kubernetes_clusters_for_database_cluster.rows[*].cluster_urn
           }
         }
 
@@ -116,7 +148,7 @@ dashboard "database_cluster_detail" {
         width = 6
 
         table {
-          title = "Maintenance Window Details"
+          title = "Maintenance Window"
           query = query.database_cluster_maintenance_window
           args = [self.input.database_cluster_urn.value]
         }
@@ -128,8 +160,17 @@ dashboard "database_cluster_detail" {
     container {
 
       table {
-        title = "Private Connection Details"
+        title = "Connection Details"
         query = query.database_cluster_private_connection
+        args  = [self.input.database_cluster_urn.value]
+      }
+    }
+
+    container {
+
+      table {
+        title = "Firewall Rules"
+        query = query.database_cluster_firewall_rules
         args  = [self.input.database_cluster_urn.value]
       }
     }
@@ -156,6 +197,36 @@ query "database_cluster_input" {
 
 # # With queries
 
+query "droplet_droplets_for_database_cluster" {
+  sql = <<-EOQ
+    select
+      d.urn as droplet_urn
+    from
+      digitalocean_database as db,
+      jsonb_array_elements(firewall_rules) as fr,
+      digitalocean_droplet as d
+    where
+      fr ->> 'type' = 'droplet'
+      and d.id::text = fr ->> 'value'
+      and db.urn = $1;
+  EOQ
+}
+
+query "kubernetes_clusters_for_database_cluster" {
+  sql = <<-EOQ
+    select
+      k.urn as cluster_urn
+    from
+      digitalocean_database as d,
+      jsonb_array_elements(firewall_rules) as fr,
+      digitalocean_kubernetes_cluster as k
+    where
+      fr ->> 'type' = 'k8s'
+      and k.id::text = fr ->> 'value'
+      and d.urn = $1;
+  EOQ
+}
+
 query "network_vpcs_for_database_cluster" {
   sql = <<-EOQ
     select
@@ -171,11 +242,11 @@ query "network_vpcs_for_database_cluster" {
 
 # # Card queries
 
-query "database_cluster_node_count" {
+query "database_cluster_status" {
   sql = <<-EOQ
     select
-      'Nodes' as label,
-      num_nodes as value
+      'Status' as label,
+      initcap(status) as value
     from
       digitalocean_database
     where
@@ -183,10 +254,11 @@ query "database_cluster_node_count" {
   EOQ
 }
 
-query "database_cluster_connection_port" {
+query "database_cluster_node_count" {
   sql = <<-EOQ
     select
-      connection_port as "Connection Port"
+      'Nodes' as label,
+      num_nodes as value
     from
       digitalocean_database
     where
@@ -220,24 +292,11 @@ query "database_cluster_firewall_enabled" {
   EOQ
 }
 
-query "database_cluster_maintenance_window_pending" {
-  sql = <<-EOQ
-    select
-      'Maintenance Window' as label,
-      case when maintenance_window_pending then 'Not Pending' else 'Pending' end as value,
-      case when maintenance_window_pending then 'ok' else 'alert' end as type
-    from
-      digitalocean_database
-    where
-      urn = $1;
-  EOQ
-}
-
 query "database_cluster_engine_version" {
   sql = <<-EOQ
     select
       'Engine Version' as label,
-      version as value
+      engine || ' ' || version as value
     from
       digitalocean_database
     where
@@ -301,6 +360,20 @@ query "database_cluster_private_connection" {
       private_connection_uri as "URI"
     from
       digitalocean_database
+    where
+      urn = $1;
+  EOQ
+}
+
+query "database_cluster_firewall_rules" {
+  sql = <<-EOQ
+    select
+      fr->> 'uuid' as "UUID",
+      fr->> 'type' as "Type",
+      fr->> 'value' as "Value"
+    from
+      digitalocean_database,
+      jsonb_array_elements(firewall_rules) as fr
     where
       urn = $1;
   EOQ

@@ -23,7 +23,7 @@ node "kubernetes_cluster" {
 }
 
 node "kubernetes_cluster_node" {
-  category = category.kubernetes_cluster_node
+  category = category.droplet_droplet
 
   sql = <<-EOQ
     select

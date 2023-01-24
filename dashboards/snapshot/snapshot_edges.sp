@@ -10,7 +10,7 @@ edge "snapshot_snapshot_to_droplet_droplet" {
         digitalocean_droplet
     )
     select
-      s.akas::text as from_id,
+      s.id as from_id,
       d.urn as to_id
     from
       digitalocean_image as i,
@@ -19,35 +19,27 @@ edge "snapshot_snapshot_to_droplet_droplet" {
     where
       i.id::text = iid
       and i.id::text = s.id
-      and s.akas::text = any($1);
+      and s.id = any($1);
   EOQ
 
   param "snapshot_snapshot_urns" {}
 }
 
-# edge "snapshot_snapshot_to_blockstorage_volume" {
-#   title = "droplet"
+edge "snapshot_snapshot_to_network_floating_ip" {
+  title = "floating ip"
 
-#   sql = <<-EOQ
-#     with droplet_images as (
-#       select
-#         image->>'id' as iid,
-#         urn
-#       from
-#         digitalocean_droplet
-#     )
-#     select
-#       s.akas::text as from_id,
-#       d.urn as to_id
-#     from
-#       digitalocean_image as i,
-#       digitalocean_snapshot as s,
-#       droplet_images as d
-#     where
-#       i.id::text = iid
-#       and i.id::text = s.id
-#       and s.akas::text = any($1);
-#   EOQ
+  sql = <<-EOQ
+    select
+      s.id as from_id,
+      f.urn as to_id
+    from
+      digitalocean_floating_ip as f,
+      jsonb_array_elements(droplet -> 'snapshot_ids') as sid,
+      digitalocean_snapshot as s
+    where
+      s.id = sid::text
+      and s.id = any($1);
+  EOQ
 
-#   param "snapshot_snapshot_urns" {}
-# }
+  param "snapshot_snapshot_urns" {}
+}

@@ -18,30 +18,35 @@ dashboard "blockstorage_volume_detail" {
     card {
       width = 2
       query = query.blockstorage_volume_storage
-      args = [self.input.volume_urn.value]
+      args  = [self.input.volume_urn.value]
     }
 
     card {
       width = 2
       query = query.blockstorage_volume_filesystem_type
-      args = [self.input.volume_urn.value]
+      args  = [self.input.volume_urn.value]
     }
 
     card {
       width = 2
       query = query.blockstorage_volume_attached_droplets_count
-      args = [self.input.volume_urn.value]
+      args  = [self.input.volume_urn.value]
     }
   }
 
   with "droplet_droplets_for_blockstorage_volume" {
-      query = query.droplet_droplets_for_blockstorage_volume
-      args  = [self.input.volume_urn.value]
+    query = query.droplet_droplets_for_blockstorage_volume
+    args  = [self.input.volume_urn.value]
+  }
+
+  with "network_floating_ips_for_blockstorage_volume" {
+    query = query.network_floating_ips_for_blockstorage_volume
+    args  = [self.input.volume_urn.value]
   }
 
   with "target_snapshot_snapshots_for_blockstorage_volume" {
-      query = query.target_snapshot_snapshots_for_blockstorage_volume
-      args  = [self.input.volume_urn.value]
+    query = query.target_snapshot_snapshots_for_blockstorage_volume
+    args  = [self.input.volume_urn.value]
   }
 
   container {
@@ -66,6 +71,13 @@ dashboard "blockstorage_volume_detail" {
       }
 
       node {
+        base = node.network_floating_ip
+        args = {
+          network_floating_ip_urns = with.network_floating_ips_for_blockstorage_volume.rows[*].floating_ip_urn
+        }
+      }
+
+      node {
         base = node.snapshot_snapshot
         args = {
           snapshot_snapshot_urns = with.target_snapshot_snapshots_for_blockstorage_volume.rows[*].snapshot_urn
@@ -74,6 +86,13 @@ dashboard "blockstorage_volume_detail" {
 
       edge {
         base = edge.blockstorage_volume_to_snapshot_snapshot
+        args = {
+          blockstorage_volume_urns = [self.input.volume_urn.value]
+        }
+      }
+
+      edge {
+        base = edge.blockstorage_volume_to_network_floating_ip
         args = {
           blockstorage_volume_urns = [self.input.volume_urn.value]
         }
@@ -100,14 +119,14 @@ dashboard "blockstorage_volume_detail" {
         type  = "line"
         width = 6
         query = query.blockstorage_volume_overview
-        args = [self.input.volume_urn.value]
+        args  = [self.input.volume_urn.value]
       }
 
       table {
         title = "Tags"
         width = 6
         query = query.blockstorage_volume_tags
-        args = [self.input.volume_urn.value]
+        args  = [self.input.volume_urn.value]
       }
     }
 
@@ -118,7 +137,7 @@ dashboard "blockstorage_volume_detail" {
       table {
         title = "Attached Droplet"
         query = query.blockstorage_volume_attached_droplets
-        args = [self.input.volume_urn.value]
+        args  = [self.input.volume_urn.value]
 
         column "Droplet URN" {
           display = "none"
@@ -167,10 +186,24 @@ query "droplet_droplets_for_blockstorage_volume" {
   EOQ
 }
 
+query "network_floating_ips_for_blockstorage_volume" {
+  sql = <<-EOQ
+    select
+      f.urn as floating_ip_urn
+    from
+      digitalocean_floating_ip as f,
+      jsonb_array_elements_text(droplet -> 'volume_ids') as vid,
+      digitalocean_volume as v
+    where
+      v.id = vid
+      and v.urn = $1;
+  EOQ
+}
+
 query "target_snapshot_snapshots_for_blockstorage_volume" {
   sql = <<-EOQ
     select
-      s.akas::text as snapshot_urn
+      s.id as snapshot_urn
     from
       digitalocean_volume as v,
       digitalocean_snapshot as s

@@ -1,3 +1,23 @@
+edge "kubernetes_cluster_to_database_cluster" {
+  title = "database cluster"
+
+  sql = <<-EOQ
+    select
+      k.urn as from_id,
+      d.urn as to_id
+    from
+      digitalocean_database as d,
+      jsonb_array_elements(firewall_rules) as fr,
+      digitalocean_kubernetes_cluster as k
+    where
+      fr ->> 'type' = 'k8s'
+      and k.id::text = fr ->> 'value'
+      and k.urn = any($1);
+  EOQ
+
+  param "kubernetes_cluster_urns" {}
+}
+
 edge "kubernetes_cluster_to_kubernetes_cluster_node" {
   title = "node"
 

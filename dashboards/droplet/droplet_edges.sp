@@ -23,6 +23,26 @@ edge "droplet_droplet_to_blockstorage_volume" {
   param "droplet_droplet_urns" {}
 }
 
+edge "droplet_droplet_to_database_cluster" {
+  title = "database cluster"
+
+  sql = <<-EOQ
+    select
+      d.urn as from_id,
+      db.urn as to_id
+    from
+      digitalocean_database as db,
+      jsonb_array_elements(firewall_rules) as fr,
+      digitalocean_droplet as d
+    where
+      fr ->> 'type' = 'droplet'
+      and d.id::text = fr ->> 'value'
+      and d.urn = any($1);
+  EOQ
+
+  param "droplet_droplet_urns" {}
+}
+
 edge "droplet_droplet_to_network_firewall" {
   title = "firewall"
 
@@ -96,13 +116,16 @@ edge "droplet_droplet_to_network_vpc" {
 
   sql = <<-EOQ
     select
-      d.urn as from_id,
+      coalesce(f.urn, d.urn) as from_id,
       v.urn as to_id
     from
       digitalocean_droplet as d,
-      digitalocean_vpc as v
+      digitalocean_vpc as v,
+      digitalocean_firewall as f,
+      jsonb_array_elements(droplet_ids) as did
     where
-      v.id = d.vpc_uuid
+      did::text = d.id::text
+      and v.id = d.vpc_uuid
       and d.urn = any($1);
   EOQ
 
@@ -115,7 +138,7 @@ edge "droplet_droplet_to_snapshot_snapshot" {
   sql = <<-EOQ
     select
       d.urn as from_id,
-      s.akas::text as to_id
+      s.id as to_id
     from
       digitalocean_droplet as d,
       jsonb_array_elements(snapshot_ids) as sid,

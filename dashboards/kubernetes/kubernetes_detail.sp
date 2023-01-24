@@ -34,10 +34,10 @@ dashboard "kubernetes_cluster_detail" {
     }
   }
 
-  # with "kubernetes_cluster_node_pools_for_kubernetes_cluster" {
-  #   query = query.kubernetes_cluster_node_pools_for_kubernetes_cluster
-  #   args  = [self.input.cluster_urn.value]
-  # }
+  with "database_clusters_for_kubernetes_cluster" {
+    query = query.database_clusters_for_kubernetes_cluster
+    args  = [self.input.cluster_urn.value]
+  }
 
   with "kubernetes_cluster_nodes_for_kubernetes_cluster" {
       query = query.kubernetes_cluster_nodes_for_kubernetes_cluster
@@ -57,6 +57,13 @@ dashboard "kubernetes_cluster_detail" {
       direction = "TD"
 
       node {
+        base = node.database_cluster
+        args = {
+          database_cluster_urns = with.database_clusters_for_kubernetes_cluster.rows[*].cluster_urn
+        }
+      }
+
+      node {
         base = node.kubernetes_cluster
         args = {
           kubernetes_cluster_urns = [self.input.cluster_urn.value]
@@ -74,6 +81,13 @@ dashboard "kubernetes_cluster_detail" {
         base = node.network_vpc
         args = {
           network_vpc_urns = with.network_vpcs_for_kubernetes_cluster.rows[*].vpc_urn
+        }
+      }
+
+      edge {
+        base = edge.kubernetes_cluster_to_database_cluster
+        args = {
+          kubernetes_cluster_urns = [self.input.cluster_urn.value]
         }
       }
 
@@ -176,6 +190,21 @@ query "kubernetes_cluster_input" {
 }
 
 # With queries
+
+query "database_clusters_for_kubernetes_cluster" {
+  sql = <<-EOQ
+    select
+      d.urn as cluster_urn
+    from
+      digitalocean_database as d,
+      jsonb_array_elements(firewall_rules) as fr,
+      digitalocean_kubernetes_cluster as k
+    where
+      fr ->> 'type' = 'k8s'
+      and k.id::text = fr ->> 'value'
+      and k.urn = $1;
+  EOQ
+}
 
 query "kubernetes_cluster_nodes_for_kubernetes_cluster" {
   sql = <<-EOQ

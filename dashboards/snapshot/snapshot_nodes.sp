@@ -3,7 +3,7 @@ node "snapshot_snapshot" {
 
   sql = <<-EOQ
     select
-      akas::text as id,
+      id as id,
       title as title,
       jsonb_build_object(
         'Name', name,
@@ -12,12 +12,12 @@ node "snapshot_snapshot" {
         'Minimum Disk Size', min_disk_size,
         'Resource Type', resource_type,
         'Region', regions,
-        'URN', akas::text
+        'URN', id
       ) as properties
     from
       digitalocean_snapshot
     where
-      akas::text = any($1);
+      id = any($1);
   EOQ
 
   param "snapshot_snapshot_urns" {}

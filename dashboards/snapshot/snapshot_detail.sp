@@ -18,19 +18,19 @@ dashboard "snapshot_detail" {
     card {
       width = 2
       query = query.snapshot_resource_type
-      args = [self.input.snapshot_urn.value]
+      args  = [self.input.snapshot_urn.value]
     }
 
     card {
       width = 2
       query = query.snapshot_size
-      args = [self.input.snapshot_urn.value]
+      args  = [self.input.snapshot_urn.value]
     }
 
     card {
       width = 2
       query = query.snapshot_minimum_disk_size
-      args = [self.input.snapshot_urn.value]
+      args  = [self.input.snapshot_urn.value]
     }
 
     card {
@@ -40,19 +40,24 @@ dashboard "snapshot_detail" {
     }
   }
 
+  with "network_floating_ips_for_snapshot_snapshot" {
+    query = query.network_floating_ips_for_snapshot_snapshot
+    args  = [self.input.snapshot_urn.value]
+  }
+
   with "source_droplet_droplets_for_snapshot_snapshot" {
-      query = query.source_droplet_droplets_for_snapshot_snapshot
-      args  = [self.input.snapshot_urn.value]
+    query = query.source_droplet_droplets_for_snapshot_snapshot
+    args  = [self.input.snapshot_urn.value]
   }
 
   with "source_blockstorage_volumes_for_snapshot_snapshot" {
-      query = query.source_blockstorage_volumes_for_snapshot_snapshot
-      args  = [self.input.snapshot_urn.value]
+    query = query.source_blockstorage_volumes_for_snapshot_snapshot
+    args  = [self.input.snapshot_urn.value]
   }
 
   with "target_droplet_droplets_for_snapshot_snapshot" {
-      query = query.target_droplet_droplets_for_snapshot_snapshot
-      args  = [self.input.snapshot_urn.value]
+    query = query.target_droplet_droplets_for_snapshot_snapshot
+    args  = [self.input.snapshot_urn.value]
   }
 
   container {
@@ -69,13 +74,6 @@ dashboard "snapshot_detail" {
         }
       }
 
-      # node {
-      #   base = node.blockstorage_volume
-      #   args = {
-      #     blockstorage_volume_urns = with.target_blockstorage_volumes_for_snapshot_snapshot.rows[*].target_volume_urn
-      #   }
-      # }
-
       node {
         base = node.droplet_droplet
         args = {
@@ -87,6 +85,13 @@ dashboard "snapshot_detail" {
         base = node.droplet_droplet
         args = {
           droplet_droplet_urns = with.target_droplet_droplets_for_snapshot_snapshot.rows[*].target_droplet_urn
+        }
+      }
+
+      node {
+        base = node.network_floating_ip
+        args = {
+          network_floating_ip_urns = with.network_floating_ips_for_snapshot_snapshot.rows[*].floating_ip_urn
         }
       }
 
@@ -118,12 +123,12 @@ dashboard "snapshot_detail" {
         }
       }
 
-      # edge {
-      #   base = edge.snapshot_snapshot_to_blockstorage_volume
-      #   args = {
-      #     snapshot_snapshot_urns = [self.input.snapshot_urn.value]
-      #   }
-      # }
+      edge {
+        base = edge.snapshot_snapshot_to_network_floating_ip
+        args = {
+          snapshot_snapshot_urns = [self.input.snapshot_urn.value]
+        }
+      }
 
     }
   }
@@ -139,14 +144,14 @@ dashboard "snapshot_detail" {
         type  = "line"
         width = 6
         query = query.snapshot_overview
-        args = [self.input.snapshot_urn.value]
+        args  = [self.input.snapshot_urn.value]
       }
 
       table {
         title = "Tags"
         width = 6
         query = query.snapshot_tags
-        args = [self.input.snapshot_urn.value]
+        args  = [self.input.snapshot_urn.value]
       }
     }
 
@@ -157,7 +162,7 @@ dashboard "snapshot_detail" {
       table {
         title = "Source Droplet"
         query = query.snapshot_source_droplet
-        args = [self.input.snapshot_urn.value]
+        args  = [self.input.snapshot_urn.value]
 
         column "Droplet URN" {
           display = "none"
@@ -168,10 +173,10 @@ dashboard "snapshot_detail" {
         }
       }
 
-        table {
+      table {
         title = "Source Volume"
         query = query.snapshot_source_blockstorage_volume
-        args = [self.input.snapshot_urn.value]
+        args  = [self.input.snapshot_urn.value]
 
         column "Volume URN" {
           display = "none"
@@ -192,7 +197,7 @@ query "snapshot_input" {
   sql = <<-EOQ
     select
       title as label,
-      akas::text as value,
+      id as value,
       json_build_object(
         'id', id
       ) as tags
@@ -205,6 +210,20 @@ query "snapshot_input" {
 
 # With queries
 
+query "network_floating_ips_for_snapshot_snapshot" {
+  sql = <<-EOQ
+    select
+      f.urn as floating_ip_urn
+    from
+      digitalocean_floating_ip as f,
+      jsonb_array_elements(droplet -> 'snapshot_ids') as sid,
+      digitalocean_snapshot as s
+    where
+      s.id = sid::text
+      and s.id = $1;
+  EOQ
+}
+
 query "source_droplet_droplets_for_snapshot_snapshot" {
   sql = <<-EOQ
     select
@@ -215,7 +234,7 @@ query "source_droplet_droplets_for_snapshot_snapshot" {
       digitalocean_snapshot as s
     where
       s.id = sid::text
-      and s.akas::text = $1;
+      and s.id = $1;
   EOQ
 }
 
@@ -237,7 +256,7 @@ query "target_droplet_droplets_for_snapshot_snapshot" {
     where
       i.id::text = iid
       and i.id::text = s.id
-      and s.akas::text = $1;
+      and s.id = $1;
   EOQ
 }
 
@@ -251,7 +270,7 @@ query "source_blockstorage_volumes_for_snapshot_snapshot" {
     where
       s.resource_id = v.id
       and s.resource_type = 'volume'
-      and s.akas::text = $1;
+      and s.id = $1;
   EOQ
 }
 
@@ -261,11 +280,11 @@ query "snapshot_resource_type" {
   sql = <<-EOQ
     select
       'Source Resource' as label,
-      resource_type as value
+      initcap(resource_type) as value
     from
       digitalocean_snapshot
     where
-      akas::text = $1;
+      id = $1;
   EOQ
 }
 
@@ -277,7 +296,7 @@ query "snapshot_size" {
     from
       digitalocean_snapshot
     where
-      akas::text = $1;
+      id = $1;
   EOQ
 }
 
@@ -289,7 +308,7 @@ query "snapshot_minimum_disk_size" {
     from
       digitalocean_snapshot
     where
-      akas::text = $1;
+      id = $1;
   EOQ
 }
 
@@ -301,7 +320,7 @@ query "snapshot_age" {
       from
         digitalocean_snapshot
       where
-        akas::text = $1
+        id = $1
     )
     select
       'Age (in Days)' as label,
@@ -321,12 +340,11 @@ query "snapshot_overview" {
       id as "ID",
       created_at as "Create Time",
       title as "Title",
-      regions as "Regions",
-      akas::text as "URN"
+      regions as "Regions"
     from
       digitalocean_snapshot
     where
-      akas::text = $1
+      id = $1
   EOQ
 }
 
@@ -339,7 +357,7 @@ query "snapshot_tags" {
       digitalocean_snapshot
       join jsonb_each_text(tags) tag on true
     where
-      akas::text = $1
+      id = $1
     order by
       tag.key;
   EOQ
@@ -358,7 +376,7 @@ query "snapshot_source_droplet" {
       digitalocean_snapshot as s
     where
       s.id = sid::text
-      and s.akas::text = $1;
+      and s.id = $1;
   EOQ
 }
 
@@ -375,7 +393,7 @@ query "snapshot_source_blockstorage_volume" {
     where
       s.resource_id = v.id
       and s.resource_type = 'volume'
-      and s.akas::text = $1;
+      and s.id = $1;
   EOQ
 }
 

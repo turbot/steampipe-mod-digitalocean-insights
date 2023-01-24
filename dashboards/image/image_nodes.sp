@@ -9,9 +9,10 @@ node "image_image" {
         'Name', name,
         'ID', id,
         'URN', urn,
+        'Slug', slug,
         'Created At', created_at,
         'Minimum Disk Size', min_disk_size,
-        'Region', regions
+        'Distribution', distribution
       ) as properties
     from
       digitalocean_image
