@@ -4,3 +4,4 @@ This dashboard answers the following questions for each volume:
 - What tags are applied?
 - Which droplet is it attached to?
 - Which type of filesystem has been configured?
+- What relationships does the volume have with other resources?
