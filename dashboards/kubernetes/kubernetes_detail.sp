@@ -16,19 +16,19 @@ dashboard "kubernetes_cluster_detail" {
   container {
 
     card {
-      width = 2
+      width = 3
       query = query.kubernetes_cluster_detail_status
       args = [self.input.cluster_urn.value]
     }
 
     card {
-      width = 2
+      width = 3
       query = query.kubernetes_cluster_auto_upgrade_status
       args = [self.input.cluster_urn.value]
     }
 
     card {
-      width = 2
+      width = 3
       query = query.kubernetes_cluster_surge_upgrade_status
       args = [self.input.cluster_urn.value]
     }

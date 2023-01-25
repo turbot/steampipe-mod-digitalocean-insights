@@ -16,25 +16,25 @@ dashboard "snapshot_detail" {
   container {
 
     card {
-      width = 2
+      width = 3
       query = query.snapshot_resource_type
       args  = [self.input.snapshot_urn.value]
     }
 
     card {
-      width = 2
+      width = 3
       query = query.snapshot_size
       args  = [self.input.snapshot_urn.value]
     }
 
     card {
-      width = 2
+      width = 3
       query = query.snapshot_minimum_disk_size
       args  = [self.input.snapshot_urn.value]
     }
 
     card {
-      width = 2
+      width = 3
       query = query.snapshot_age
       args  = [self.input.snapshot_urn.value]
     }

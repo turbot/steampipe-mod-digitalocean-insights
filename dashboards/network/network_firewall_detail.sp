@@ -16,19 +16,19 @@ dashboard "network_firewall_detail" {
   container {
 
     card {
-      width = 2
+      width = 3
       query = query.network_firewall_status
       args  = [self.input.firewall_urn.value]
     }
 
     card {
-      width = 2
+      width = 3
       query = query.network_firewall_unrestricted_inbound_rules
       args  = [self.input.firewall_urn.value]
     }
 
     card {
-      width = 2
+      width = 3
       query = query.network_firewall_unrestricted_outbound_rules
       args  = [self.input.firewall_urn.value]
     }
@@ -40,45 +40,11 @@ dashboard "network_firewall_detail" {
     args  = [self.input.firewall_urn.value]
   }
 
-  with "droplet_droplets_for_inbound_network_firewall" {
-    query = query.droplet_droplets_for_inbound_network_firewall
+  with "network_vpcs_for_network_firewall" {
+    query = query.network_vpcs_for_network_firewall
     args  = [self.input.firewall_urn.value]
   }
 
-  with "droplet_droplets_for_outbound_network_firewall" {
-    query = query.droplet_droplets_for_outbound_network_firewall
-    args  = [self.input.firewall_urn.value]
-  }
-
-  with "kubernetes_clusters_for_inbound_network_firewall" {
-    query = query.kubernetes_clusters_for_inbound_network_firewall
-    args  = [self.input.firewall_urn.value]
-  }
-
-  with "kubernetes_clusters_for_outbound_network_firewall" {
-    query = query.kubernetes_clusters_for_outbound_network_firewall
-    args  = [self.input.firewall_urn.value]
-  }
-
-  with "network_load_balancers_for_inbound_network_firewall" {
-    query = query.network_load_balancers_for_inbound_network_firewall
-    args  = [self.input.firewall_urn.value]
-  }
-
-  with "network_load_balancers_for_outbound_network_firewall" {
-    query = query.network_load_balancers_for_outbound_network_firewall
-    args  = [self.input.firewall_urn.value]
-  }
-
-  # with "network_vpcs_for_outbound_network_firewall" {
-  #   query = query.network_vpcs_for_outbound_network_firewall
-  #   args  = [self.input.firewall_urn.value]
-  # }
-
-  # with "network_vpcs_for_outbound_network_firewall" {
-  #   query = query.network_vpcs_for_outbound_network_firewall
-  #   args  = [self.input.firewall_urn.value]
-  # }
 
   container {
 
@@ -95,34 +61,6 @@ dashboard "network_firewall_detail" {
       }
 
       node {
-        base = node.droplet_droplet
-        args = {
-          droplet_droplet_urns = with.droplet_droplets_for_inbound_network_firewall.rows[*].droplet_urn
-        }
-      }
-
-      node {
-        base = node.droplet_droplet
-        args = {
-          droplet_droplet_urns = with.droplet_droplets_for_outbound_network_firewall.rows[*].droplet_urn
-        }
-      }
-
-      node {
-        base = node.kubernetes_cluster
-        args = {
-          kubernetes_cluster_urns = with.kubernetes_clusters_for_inbound_network_firewall.rows[*].cluster_urn
-        }
-      }
-
-      node {
-        base = node.kubernetes_cluster
-        args = {
-          kubernetes_cluster_urns = with.kubernetes_clusters_for_outbound_network_firewall.rows[*].cluster_urn
-        }
-      }
-
-      node {
         base = node.network_firewall
         args = {
           network_firewall_urns = [self.input.firewall_urn.value]
@@ -130,26 +68,25 @@ dashboard "network_firewall_detail" {
       }
 
       node {
-        base = node.network_load_balancer
+        base = node.network_vpc
         args = {
-          network_load_balancer_urns = with.network_load_balancers_for_inbound_network_firewall.rows[*].lb_urn
-        }
-      }
-
-      node {
-        base = node.network_load_balancer
-        args = {
-          network_load_balancer_urns = with.network_load_balancers_for_outbound_network_firewall.rows[*].lb_urn
+          network_vpc_urns = with.network_vpcs_for_network_firewall.rows[*].vpc_urn
         }
       }
 
       edge {
-        base = edge.network_firewall_to_droplet_droplet
+        base = edge.droplet_droplet_to_network_firewall
+        args = {
+          droplet_droplet_urns = with.droplet_droplets_for_network_firewall.rows[*].droplet_urn
+        }
+      }
+
+      edge {
+        base = edge.network_firewall_to_network_vpc
         args = {
           network_firewall_urns = [self.input.firewall_urn.value]
         }
       }
-
 
     }
   }
@@ -216,6 +153,38 @@ dashboard "network_firewall_detail" {
 
   }
 
+  container {
+    table {
+        title = "Inbound Rules"
+        width = 6
+        query = query.network_firewall_inbound_rules
+        args  = [self.input.firewall_urn.value]
+
+        column "URN" {
+          display = "none"
+        }
+
+        column "Droplet Name" {
+          href = "${dashboard.droplet_detail.url_path}?input.droplet_urn={{.'URN' | @uri}}"
+        }
+      }
+
+      table {
+        title = "Outbound Rules"
+        width = 6
+        query = query.network_firewall_outbound_rules
+        args  = [self.input.firewall_urn.value]
+
+        column "URN" {
+          display = "none"
+        }
+
+        column "Droplet Name" {
+          href = "${dashboard.droplet_detail.url_path}?input.droplet_urn={{.'URN' | @uri}}"
+        }
+      }
+  }
+
 }
 
 # Input queries
@@ -237,96 +206,6 @@ query "network_firewall_input" {
 
 # With queries
 
-query "network_load_balancers_for_inbound_network_firewall" {
-  sql = <<-EOQ
-    select
-      l.urn as lb_urn
-    from
-      digitalocean_load_balancer as l,
-      digitalocean_firewall as f,
-      jsonb_array_elements(inbound_rules) as i,
-      jsonb_array_elements_text(i -> 'sources' -> 'load_balancer_uids') as lb
-    where
-      lb = l.id
-      and f.urn = $1;
-  EOQ
-}
-
-query "network_load_balancers_for_outbound_network_firewall" {
-  sql = <<-EOQ
-    select
-      l.urn as lb_urn
-    from
-      digitalocean_load_balancer as l,
-      digitalocean_firewall as f,
-      jsonb_array_elements(outbound_rules) as o,
-      jsonb_array_elements_text(o -> 'destinations' -> 'load_balancer_uids') as lb
-    where
-      lb = l.id
-      and f.urn = $1;
-  EOQ
-}
-
-query "kubernetes_clusters_for_inbound_network_firewall" {
-  sql = <<-EOQ
-    select
-      k.urn as cluster_urn
-    from
-      digitalocean_kubernetes_cluster as k,
-      digitalocean_firewall as f,
-      jsonb_array_elements(inbound_rules) as i,
-      jsonb_array_elements_text(i -> 'sources' -> 'kubernetes_ids') as kid
-    where
-      kid = k.id
-      and f.urn = $1;
-  EOQ
-}
-
-query "kubernetes_clusters_for_outbound_network_firewall" {
-  sql = <<-EOQ
-    select
-      k.urn as cluster_urn
-    from
-      digitalocean_kubernetes_cluster as k,
-      digitalocean_firewall as f,
-      jsonb_array_elements(outbound_rules) as o,
-      jsonb_array_elements_text(o -> 'destinations' -> 'kubernetes_ids') as kid
-    where
-      kid = k.id
-      and f.urn = $1;
-  EOQ
-}
-
-query "droplet_droplets_for_inbound_network_firewall" {
-  sql = <<-EOQ
-    select
-      d.urn as droplet_urn
-    from
-      digitalocean_droplet as d,
-      digitalocean_firewall as f,
-      jsonb_array_elements(inbound_rules) as i,
-      jsonb_array_elements_text(i -> 'sources' -> 'droplet_ids') as did
-    where
-      did = d.id::text
-      and f.urn = $1;
-  EOQ
-}
-
-query "droplet_droplets_for_outbound_network_firewall" {
-  sql = <<-EOQ
-    select
-      d.urn as droplet_urn
-    from
-      digitalocean_droplet as d,
-      digitalocean_firewall as f,
-      jsonb_array_elements(outbound_rules) as o,
-      jsonb_array_elements_text(o -> 'destinations' -> 'droplet_ids') as did
-    where
-      did = d.id::text
-      and f.urn = $1;
-  EOQ
-}
-
 query "droplet_droplets_for_network_firewall" {
   sql = <<-EOQ
     with firewall_droplet_ids as (
@@ -343,6 +222,22 @@ query "droplet_droplets_for_network_firewall" {
       digitalocean_droplet as d
     where
       d.id::text = did::text
+      and f.urn = $1;
+  EOQ
+}
+
+query "network_vpcs_for_network_firewall" {
+  sql = <<-EOQ
+    select
+      v.urn as vpc_urn
+    from
+      digitalocean_firewall as f,
+      jsonb_array_elements_text(droplet_ids) as did,
+      digitalocean_droplet as d,
+      digitalocean_vpc as v
+    where
+      d.vpc_uuid = v.id
+      and did = d.id::text
       and f.urn = $1;
   EOQ
 }
@@ -610,6 +505,114 @@ query "network_firewall_outbound_analysis" {
       null as depth
     from rules
 
+  EOQ
+}
+
+query "network_firewall_inbound_rules" {
+  sql = <<-EOQ
+    select
+      i ->> 'ports' as "Ports",
+      i ->> 'protocol' as "Protocol",
+      a as "Addresses"
+    from
+      digitalocean_firewall,
+      jsonb_array_elements(inbound_rules) as i,
+      jsonb_array_elements_text(i -> 'sources' -> 'addresses') as a
+    where
+      urn = $1
+
+    -- Droplets
+    union all
+    select
+      i ->> 'ports' as "Ports",
+      i ->> 'protocol' as "Protocol",
+      d as "Addresses"
+    from
+      digitalocean_firewall,
+      jsonb_array_elements(inbound_rules) as i,
+      jsonb_array_elements_text(i -> 'sources' -> 'droplet_ids') as d
+    where
+      urn = $1
+
+    -- Kubernetes
+    union all
+    select
+      i ->> 'ports' as "Ports",
+      i ->> 'protocol' as "Protocol",
+      k as "Addresses"
+    from
+      digitalocean_firewall,
+      jsonb_array_elements(inbound_rules) as i,
+      jsonb_array_elements_text(i -> 'sources' -> 'k8s_ids') as k
+    where
+      urn = $1
+
+    -- Load Balancers
+    union all
+    select
+      i ->> 'ports' as "Ports",
+      i ->> 'protocol' as "Protocol",
+      l as "Addresses"
+    from
+      digitalocean_firewall,
+      jsonb_array_elements(inbound_rules) as i,
+      jsonb_array_elements_text(i -> 'sources' -> 'load_balancer_uids') as l
+    where
+      urn = $1
+  EOQ
+}
+
+query "network_firewall_outbound_rules" {
+  sql = <<-EOQ
+    select
+      o ->> 'ports' as "Ports",
+      o ->> 'protocol' as "Protocol",
+      a as "Address"
+    from
+      digitalocean_firewall,
+      jsonb_array_elements(outbound_rules) as o,
+      jsonb_array_elements_text(o -> 'destinations' -> 'addresses') as a
+    where
+      urn = $1
+
+    -- Droplets
+    union all
+    select
+      o ->> 'ports' as "Ports",
+      o ->> 'protocol' as "Protocol",
+      d as "Address"
+    from
+      digitalocean_firewall,
+      jsonb_array_elements(outbound_rules) as o,
+      jsonb_array_elements_text(o -> 'destinations' -> 'droplet_ids') as d
+    where
+      urn = $1
+
+    -- Kubernetes
+    union all
+    select
+      o ->> 'ports' as "Ports",
+      o ->> 'protocol' as "Protocol",
+      k as "Address"
+    from
+      digitalocean_firewall,
+      jsonb_array_elements(outbound_rules) as o,
+      jsonb_array_elements_text(o -> 'destinations' -> 'k8s_ids') as k
+    where
+      urn = $1
+
+    -- Load Balancers
+    union all
+    select
+      o ->> 'ports' as "Ports",
+      o ->> 'protocol' as "Protocol",
+      l as "Address"
+    from
+      digitalocean_firewall,
+      jsonb_array_elements(outbound_rules) as o,
+      jsonb_array_elements_text(o -> 'destinations' -> 'load_balancer_uids') as l
+    where
+      urn = $1;
   EOQ
 }
 

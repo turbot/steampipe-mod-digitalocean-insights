@@ -16,13 +16,13 @@ dashboard "network_vpc_detail" {
   container {
 
     card {
-      width = 2
+      width = 3
       query = query.network_vpc_ip_range
       args  = [self.input.vpc_urn.value]
     }
 
     card {
-      width = 2
+      width = 3
       query = query.network_vpc_is_default
       args  = [self.input.vpc_urn.value]
     }
@@ -179,13 +179,6 @@ dashboard "network_vpc_detail" {
           column "Title" {
             href = "{{ .link }}"
           }
-
-        }
-
-        table {
-          title = "Network Details"
-          query = query.network_vpc_network_details
-          args  = [self.input.vpc_urn.value]
 
         }
 
@@ -368,17 +361,15 @@ query "network_vpc_association" {
       digitalocean_vpc as v
     where
       v.id = d.private_network_uuid
-      and v.urn = $1;
-  EOQ
-}
+      and v.urn = $1
 
-query "network_vpc_network_details" {
-  sql = <<-EOQ
     -- Load Balancers
+    union all
     select
       l.title as "Title",
       'digitalocean_load_balancer' as "Type",
-      l.urn as "URN"
+      l.urn as "URN",
+      null as link
     from
       digitalocean_load_balancer as l,
       digitalocean_vpc as v
@@ -391,12 +382,20 @@ query "network_vpc_network_details" {
     select
       f.title as "Title",
       'digitalocean_floating_ip' as "Type",
-      f.urn as "URN"
+      f.urn as "URN",
+      null as link
     from
       digitalocean_vpc as v,
       digitalocean_floating_ip as f
     where
       v.id = droplet ->> 'vpc_uuid'
       and v.urn = $1;
+
+  EOQ
+}
+
+query "network_vpc_network_details" {
+  sql = <<-EOQ
+
   EOQ
 }
