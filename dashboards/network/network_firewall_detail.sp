@@ -75,16 +75,16 @@ dashboard "network_firewall_detail" {
       }
 
       edge {
-        base = edge.droplet_droplet_to_network_firewall
+        base = edge.network_firewall_to_droplet_droplet
         args = {
-          droplet_droplet_urns = with.droplet_droplets_for_network_firewall.rows[*].droplet_urn
+          network_firewall_urns = [self.input.firewall_urn.value]
         }
       }
 
       edge {
-        base = edge.network_firewall_to_network_vpc
+        base = edge.network_vpc_to_network_firewall
         args = {
-          network_firewall_urns = [self.input.firewall_urn.value]
+          network_vpc_urns = with.network_vpcs_for_network_firewall.rows[*].vpc_urn
         }
       }
 

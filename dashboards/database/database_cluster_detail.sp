@@ -160,17 +160,16 @@ dashboard "database_cluster_detail" {
     container {
 
       table {
-        title = "Connection Details"
-        query = query.database_cluster_private_connection
+        title = "Firewall Rules"
+        width = 6
+        query = query.database_cluster_firewall_rules
         args  = [self.input.database_cluster_urn.value]
       }
-    }
-
-    container {
 
       table {
-        title = "Firewall Rules"
-        query = query.database_cluster_firewall_rules
+        title = "Connection Details"
+        width = 6
+        query = query.database_cluster_private_connection
         args  = [self.input.database_cluster_urn.value]
       }
     }

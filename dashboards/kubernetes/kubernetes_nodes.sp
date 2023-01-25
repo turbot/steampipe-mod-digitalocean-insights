@@ -50,3 +50,28 @@ node "kubernetes_cluster_node" {
 
   param "kubernetes_cluster_node_urns" {}
 }
+
+node "kubernetes_node_pool" {
+  category = category.kubernetes_node_pool
+
+  sql = <<-EOQ
+    select
+      urn as id,
+      title as title,
+      jsonb_build_object(
+        'URN', urn,
+        'Name', name,
+        'Title', title,
+        'Cluster ID', cluster_id,
+        'Size', size,
+        'Node Count', count,
+        'Autoscaling Enabled', auto_scale
+      ) as properties
+    from
+      digitalocean_kubernetes_node_pool
+    where
+      urn = any($1);
+  EOQ
+
+  param "kubernetes_node_pool_urns" {}
+}

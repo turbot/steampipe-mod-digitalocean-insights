@@ -44,8 +44,8 @@ dashboard "network_vpc_detail" {
     args  = [self.input.vpc_urn.value]
   }
 
-  with "network_floating_ips_for_network_vpc" {
-    query = query.network_floating_ips_for_network_vpc
+  with "network_firewalls_for_network_vpc" {
+    query = query.network_firewalls_for_network_vpc
     args  = [self.input.vpc_urn.value]
   }
 
@@ -83,9 +83,9 @@ dashboard "network_vpc_detail" {
       }
 
       node {
-        base = node.network_floating_ip
+        base = node.network_firewall
         args = {
-          network_floating_ip_urns = with.network_floating_ips_for_network_vpc.rows[*].floating_ip_urn
+          network_firewall_urns = with.network_firewalls_for_network_vpc.rows[*].firewall_urn
         }
       }
 
@@ -100,6 +100,13 @@ dashboard "network_vpc_detail" {
         base = node.network_vpc
         args = {
           network_vpc_urns = [self.input.vpc_urn.value]
+        }
+      }
+
+      edge {
+        base = edge.network_firewall_to_droplet_droplet
+        args = {
+          network_firewall_urns = with.network_firewalls_for_network_vpc.rows[*].firewall_urn
         }
       }
 
@@ -125,7 +132,7 @@ dashboard "network_vpc_detail" {
       }
 
       edge {
-        base = edge.network_vpc_to_network_floating_ip
+        base = edge.network_vpc_to_network_firewall
         args = {
           network_vpc_urns = [self.input.vpc_urn.value]
         }
@@ -247,15 +254,18 @@ query "kubernetes_clusters_for_network_vpc" {
   EOQ
 }
 
-query "network_floating_ips_for_network_vpc" {
+query "network_firewalls_for_network_vpc" {
   sql = <<-EOQ
     select
-      f.urn as floating_ip_urn
+      f.urn as firewall_urn
     from
-      digitalocean_vpc as v,
-      digitalocean_floating_ip as f
+      digitalocean_firewall as f,
+      jsonb_array_elements_text(droplet_ids) as did,
+      digitalocean_droplet as d,
+      digitalocean_vpc as v
     where
-      v.id = droplet ->> 'vpc_uuid'
+      d.vpc_uuid = v.id
+      and did = d.id::text
       and v.urn = $1;
   EOQ
 }
@@ -376,20 +386,5 @@ query "network_vpc_association" {
     where
       v.id = l.vpc_uuid
       and v.urn = $1
-
-    -- Floating IPs
-    union all
-    select
-      f.title as "Title",
-      'digitalocean_floating_ip' as "Type",
-      f.urn as "URN",
-      null as link
-    from
-      digitalocean_vpc as v,
-      digitalocean_floating_ip as f
-    where
-      v.id = droplet ->> 'vpc_uuid'
-      and v.urn = $1;
-
   EOQ
 }

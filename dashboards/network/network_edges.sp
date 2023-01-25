@@ -1,18 +1,18 @@
-edge "network_firewall_to_network_vpc" {
-  title = "vpc"
+edge "network_firewall_to_droplet_droplet" {
+  title = "droplet"
 
   sql = <<-EOQ
     select
       f.urn as from_id,
-      v.urn as to_id
+      d.urn as to_id
     from
-      digitalocean_firewall as f,
-      jsonb_array_elements_text(droplet_ids) as did,
       digitalocean_droplet as d,
-      digitalocean_vpc as v
+      digitalocean_vpc as v,
+      digitalocean_firewall as f,
+      jsonb_array_elements(droplet_ids) as did
     where
-      d.vpc_uuid = v.id
-      and did = d.id::text
+      did::text = d.id::text
+      and v.id = d.vpc_uuid
       and f.urn = any($1);
   EOQ
 
@@ -46,9 +46,12 @@ edge "network_vpc_to_droplet_droplet" {
       d.urn as to_id
     from
       digitalocean_droplet as d,
-      digitalocean_vpc as v
+      digitalocean_vpc as v,
+      digitalocean_firewall as f,
+      jsonb_array_elements(droplet_ids) as did
     where
-      v.id = d.vpc_uuid
+      did::text != d.id::text
+      and v.id = d.vpc_uuid
       and v.urn = any($1);
   EOQ
 
@@ -73,20 +76,21 @@ edge "network_vpc_to_kubernetes_cluster" {
   param "network_vpc_urns" {}
 }
 
-edge "network_vpc_to_network_floating_ip" {
-  title = "floating ip"
+edge "network_vpc_to_network_firewall" {
+  title = "firewall"
 
   sql = <<-EOQ
     select
-      d.urn as from_id,
+      v.urn as from_id,
       f.urn as to_id
     from
-      digitalocean_vpc as v,
+      digitalocean_firewall as f,
+      jsonb_array_elements_text(droplet_ids) as did,
       digitalocean_droplet as d,
-      digitalocean_floating_ip as f
+      digitalocean_vpc as v
     where
-      v.id = droplet ->> 'vpc_uuid'
-      and d.id = f.droplet_id
+      d.vpc_uuid = v.id
+      and did = d.id::text
       and v.urn = any($1);
   EOQ
 

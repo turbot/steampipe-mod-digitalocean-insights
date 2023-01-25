@@ -45,6 +45,11 @@ dashboard "kubernetes_cluster_detail" {
     args  = [self.input.cluster_urn.value]
   }
 
+  with "kubernetes_node_pools_for_kubernetes_cluster" {
+      query = query.kubernetes_node_pools_for_kubernetes_cluster
+      args  = [self.input.cluster_urn.value]
+  }
+
   with "kubernetes_cluster_nodes_for_kubernetes_cluster" {
       query = query.kubernetes_cluster_nodes_for_kubernetes_cluster
       args  = [self.input.cluster_urn.value]
@@ -84,6 +89,13 @@ dashboard "kubernetes_cluster_detail" {
       }
 
       node {
+        base = node.kubernetes_node_pool
+        args = {
+          kubernetes_node_pool_urns = with.kubernetes_node_pools_for_kubernetes_cluster.rows[*].node_pool_urn
+        }
+      }
+
+      node {
         base = node.network_vpc
         args = {
           network_vpc_urns = with.network_vpcs_for_kubernetes_cluster.rows[*].vpc_urn
@@ -98,7 +110,7 @@ dashboard "kubernetes_cluster_detail" {
       }
 
       edge {
-        base = edge.kubernetes_cluster_to_kubernetes_cluster_node
+        base = edge.kubernetes_cluster_to_kubernetes_node_pool
         args = {
           kubernetes_cluster_urns = [self.input.cluster_urn.value]
         }
@@ -108,6 +120,13 @@ dashboard "kubernetes_cluster_detail" {
         base = edge.kubernetes_cluster_to_network_vpc
         args = {
           kubernetes_cluster_urns = [self.input.cluster_urn.value]
+        }
+      }
+
+      edge {
+        base = edge.kubernetes_node_pool_to_kubernetes_cluster_node
+        args = {
+          kubernetes_node_pool_urns = with.kubernetes_node_pools_for_kubernetes_cluster.rows[*].node_pool_urn
         }
       }
 
@@ -209,6 +228,19 @@ query "database_clusters_for_kubernetes_cluster" {
       fr ->> 'type' = 'k8s'
       and k.id::text = fr ->> 'value'
       and k.urn = $1;
+  EOQ
+}
+
+query "kubernetes_node_pools_for_kubernetes_cluster" {
+  sql = <<-EOQ
+    select
+      p.urn as node_pool_urn
+    from
+      digitalocean_kubernetes_node_pool as p,
+      digitalocean_kubernetes_cluster as c
+    where
+      p.cluster_id = c.id
+      and c.urn = $1;
   EOQ
 }
 
