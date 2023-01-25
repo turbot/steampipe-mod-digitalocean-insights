@@ -153,38 +153,6 @@ dashboard "network_firewall_detail" {
 
   }
 
-  container {
-    table {
-        title = "Inbound Rules"
-        width = 6
-        query = query.network_firewall_inbound_rules
-        args  = [self.input.firewall_urn.value]
-
-        column "URN" {
-          display = "none"
-        }
-
-        column "Droplet Name" {
-          href = "${dashboard.droplet_detail.url_path}?input.droplet_urn={{.'URN' | @uri}}"
-        }
-      }
-
-      table {
-        title = "Outbound Rules"
-        width = 6
-        query = query.network_firewall_outbound_rules
-        args  = [self.input.firewall_urn.value]
-
-        column "URN" {
-          display = "none"
-        }
-
-        column "Droplet Name" {
-          href = "${dashboard.droplet_detail.url_path}?input.droplet_urn={{.'URN' | @uri}}"
-        }
-      }
-  }
-
 }
 
 # Input queries
@@ -381,6 +349,72 @@ query "network_firewall_inbound_analysis" {
         jsonb_array_elements_text(i -> 'sources' -> 'addresses') as cidr
       where
         urn = $1
+      union
+      select
+        urn,
+        title,
+        id,
+        i ->> 'protocol' as protocol_number,
+        cidr as cidr_block,
+        i ->> 'ports' as ports,
+        case
+          when i->>'protocol' = 'icmp' and i ->> 'ports' = '0' then 'All ICMP'
+          when i->>'protocol' = 'tcp' and i ->> 'ports' = '0' then 'All TCP'
+          when i->>'protocol' = 'udp' and i ->> 'ports' = '0' then 'All UDP'
+          when i->>'protocol' = 'tcp' and i ->> 'ports' <> '0' then concat(i ->> 'ports', '/TCP')
+          when i->>'protocol' = 'udp' and i ->> 'ports' <> '0' then concat(i ->> 'ports', '/UDP')
+            else concat('Procotol: ', i->>'protocol')
+        end as rule_description
+      from
+        digitalocean_firewall,
+        jsonb_array_elements(inbound_rules) as i,
+        jsonb_array_elements_text(i -> 'sources' -> 'droplet_ids') as cidr
+      where
+        urn = $1
+      union
+      select
+        urn,
+        title,
+        id,
+        i ->> 'protocol' as protocol_number,
+        cidr as cidr_block,
+        i ->> 'ports' as ports,
+        case
+          when i->>'protocol' = 'icmp' and i ->> 'ports' = '0' then 'All ICMP'
+          when i->>'protocol' = 'tcp' and i ->> 'ports' = '0' then 'All TCP'
+          when i->>'protocol' = 'udp' and i ->> 'ports' = '0' then 'All UDP'
+          when i->>'protocol' = 'tcp' and i ->> 'ports' <> '0' then concat(i ->> 'ports', '/TCP')
+          when i->>'protocol' = 'udp' and i ->> 'ports' <> '0' then concat(i ->> 'ports', '/UDP')
+            else concat('Procotol: ', i->>'protocol')
+        end as rule_description
+      from
+        digitalocean_firewall,
+        jsonb_array_elements(inbound_rules) as i,
+        jsonb_array_elements_text(i -> 'sources' -> 'kubernetes_ids') as cidr
+      where
+        urn = $1
+      union
+      select
+        urn,
+        title,
+        id,
+        i ->> 'protocol' as protocol_number,
+        cidr as cidr_block,
+        i ->> 'ports' as ports,
+        case
+          when i->>'protocol' = 'icmp' and i ->> 'ports' = '0' then 'All ICMP'
+          when i->>'protocol' = 'tcp' and i ->> 'ports' = '0' then 'All TCP'
+          when i->>'protocol' = 'udp' and i ->> 'ports' = '0' then 'All UDP'
+          when i->>'protocol' = 'tcp' and i ->> 'ports' <> '0' then concat(i ->> 'ports', '/TCP')
+          when i->>'protocol' = 'udp' and i ->> 'ports' <> '0' then concat(i ->> 'ports', '/UDP')
+            else concat('Procotol: ', i->>'protocol')
+        end as rule_description
+      from
+        digitalocean_firewall,
+        jsonb_array_elements(inbound_rules) as i,
+        jsonb_array_elements_text(i -> 'sources' -> 'load_balancer_uids') as cidr
+      where
+        urn = $1
     )
 
     -- CIDR Nodes
@@ -454,6 +488,72 @@ query "network_firewall_outbound_analysis" {
         jsonb_array_elements_text(r -> 'destinations' -> 'addresses') as cidr
       where
         urn = $1
+      union
+      select
+        urn,
+        title,
+        id,
+        r ->> 'protocol' as protocol_number,
+        cidr as cidr_block,
+        r ->> 'ports' as ports,
+        case
+          when r->>'protocol' = 'icmp' and r ->> 'ports' = '0' then 'All ICMP'
+          when r->>'protocol' = 'tcp' and r ->> 'ports' = '0' then 'All TCP'
+          when r->>'protocol' = 'udp' and r ->> 'ports' = '0' then 'All UDP'
+          when r->>'protocol' = 'tcp' and r ->> 'ports' <> '0' then concat(r ->> 'ports', '/TCP')
+          when r->>'protocol' = 'udp' and r ->> 'ports' <> '0' then concat(r ->> 'ports', '/UDP')
+            else concat('Procotol: ', r->>'protocol')
+        end as rule_description
+      from
+        digitalocean_firewall,
+        jsonb_array_elements(outbound_rules) as r,
+        jsonb_array_elements_text(r -> 'destinations' -> 'droplet_ids') as cidr
+      where
+        urn = $1
+      union
+      select
+        urn,
+        title,
+        id,
+        r ->> 'protocol' as protocol_number,
+        cidr as cidr_block,
+        r ->> 'ports' as ports,
+        case
+          when r->>'protocol' = 'icmp' and r ->> 'ports' = '0' then 'All ICMP'
+          when r->>'protocol' = 'tcp' and r ->> 'ports' = '0' then 'All TCP'
+          when r->>'protocol' = 'udp' and r ->> 'ports' = '0' then 'All UDP'
+          when r->>'protocol' = 'tcp' and r ->> 'ports' <> '0' then concat(r ->> 'ports', '/TCP')
+          when r->>'protocol' = 'udp' and r ->> 'ports' <> '0' then concat(r ->> 'ports', '/UDP')
+            else concat('Procotol: ', r->>'protocol')
+        end as rule_description
+      from
+        digitalocean_firewall,
+        jsonb_array_elements(outbound_rules) as r,
+        jsonb_array_elements_text(r -> 'destinations' -> 'kubernetes_ids') as cidr
+      where
+        urn = $1
+      union
+      select
+        urn,
+        title,
+        id,
+        r ->> 'protocol' as protocol_number,
+        cidr as cidr_block,
+        r ->> 'ports' as ports,
+        case
+          when r->>'protocol' = 'icmp' and r ->> 'ports' = '0' then 'All ICMP'
+          when r->>'protocol' = 'tcp' and r ->> 'ports' = '0' then 'All TCP'
+          when r->>'protocol' = 'udp' and r ->> 'ports' = '0' then 'All UDP'
+          when r->>'protocol' = 'tcp' and r ->> 'ports' <> '0' then concat(r ->> 'ports', '/TCP')
+          when r->>'protocol' = 'udp' and r ->> 'ports' <> '0' then concat(r ->> 'ports', '/UDP')
+            else concat('Procotol: ', r->>'protocol')
+        end as rule_description
+      from
+        digitalocean_firewall,
+        jsonb_array_elements(outbound_rules) as r,
+        jsonb_array_elements_text(r -> 'destinations' -> 'load_balancer_uids') as cidr
+      where
+        urn = $1
     )
 
     select
@@ -508,112 +608,5 @@ query "network_firewall_outbound_analysis" {
   EOQ
 }
 
-query "network_firewall_inbound_rules" {
-  sql = <<-EOQ
-    select
-      i ->> 'ports' as "Ports",
-      i ->> 'protocol' as "Protocol",
-      a as "Addresses"
-    from
-      digitalocean_firewall,
-      jsonb_array_elements(inbound_rules) as i,
-      jsonb_array_elements_text(i -> 'sources' -> 'addresses') as a
-    where
-      urn = $1
-
-    -- Droplets
-    union all
-    select
-      i ->> 'ports' as "Ports",
-      i ->> 'protocol' as "Protocol",
-      d as "Addresses"
-    from
-      digitalocean_firewall,
-      jsonb_array_elements(inbound_rules) as i,
-      jsonb_array_elements_text(i -> 'sources' -> 'droplet_ids') as d
-    where
-      urn = $1
-
-    -- Kubernetes
-    union all
-    select
-      i ->> 'ports' as "Ports",
-      i ->> 'protocol' as "Protocol",
-      k as "Addresses"
-    from
-      digitalocean_firewall,
-      jsonb_array_elements(inbound_rules) as i,
-      jsonb_array_elements_text(i -> 'sources' -> 'k8s_ids') as k
-    where
-      urn = $1
-
-    -- Load Balancers
-    union all
-    select
-      i ->> 'ports' as "Ports",
-      i ->> 'protocol' as "Protocol",
-      l as "Addresses"
-    from
-      digitalocean_firewall,
-      jsonb_array_elements(inbound_rules) as i,
-      jsonb_array_elements_text(i -> 'sources' -> 'load_balancer_uids') as l
-    where
-      urn = $1
-  EOQ
-}
-
-query "network_firewall_outbound_rules" {
-  sql = <<-EOQ
-    select
-      o ->> 'ports' as "Ports",
-      o ->> 'protocol' as "Protocol",
-      a as "Address"
-    from
-      digitalocean_firewall,
-      jsonb_array_elements(outbound_rules) as o,
-      jsonb_array_elements_text(o -> 'destinations' -> 'addresses') as a
-    where
-      urn = $1
-
-    -- Droplets
-    union all
-    select
-      o ->> 'ports' as "Ports",
-      o ->> 'protocol' as "Protocol",
-      d as "Address"
-    from
-      digitalocean_firewall,
-      jsonb_array_elements(outbound_rules) as o,
-      jsonb_array_elements_text(o -> 'destinations' -> 'droplet_ids') as d
-    where
-      urn = $1
-
-    -- Kubernetes
-    union all
-    select
-      o ->> 'ports' as "Ports",
-      o ->> 'protocol' as "Protocol",
-      k as "Address"
-    from
-      digitalocean_firewall,
-      jsonb_array_elements(outbound_rules) as o,
-      jsonb_array_elements_text(o -> 'destinations' -> 'k8s_ids') as k
-    where
-      urn = $1
-
-    -- Load Balancers
-    union all
-    select
-      o ->> 'ports' as "Ports",
-      o ->> 'protocol' as "Protocol",
-      l as "Address"
-    from
-      digitalocean_firewall,
-      jsonb_array_elements(outbound_rules) as o,
-      jsonb_array_elements_text(o -> 'destinations' -> 'load_balancer_uids') as l
-    where
-      urn = $1;
-  EOQ
-}
 
 
