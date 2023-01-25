@@ -13,19 +13,19 @@ dashboard "database_cluster_dashboard" {
 
     card {
       query = query.database_cluster_count
-      width = 2
+      width = 3
     }
 
     # Assessment
 
     card {
       query = query.database_cluster_ssl_enabled_count
-      width = 2
+      width = 3
     }
 
     card {
       query = query.database_cluster_firewall_enabled_count
-      width = 2
+      width = 3
     }
 
   }

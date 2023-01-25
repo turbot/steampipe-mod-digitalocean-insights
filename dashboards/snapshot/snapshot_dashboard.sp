@@ -12,12 +12,12 @@ dashboard "snapshot_dashboard" {
     # Analysis
     card {
       query = query.snapshot_count
-      width = 2
+      width = 3
     }
 
     card {
       query = query.snapshot_total_storage
-      width = 2
+      width = 3
     }
 
   }

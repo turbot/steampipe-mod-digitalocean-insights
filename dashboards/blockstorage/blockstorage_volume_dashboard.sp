@@ -12,19 +12,19 @@ dashboard "blockstorage_volume_dashboard" {
     # Analysis
     card {
       query = query.blockstorage_volume_count
-      width = 2
+      width = 3
     }
 
     card {
       query = query.blockstorage_volume_total_storage
-      width = 2
+      width = 3
     }
 
     # Assessment
 
     card {
       query = query.blockstorage_volume_droplet_attached_count
-      width = 2
+      width = 3
     }
 
   }

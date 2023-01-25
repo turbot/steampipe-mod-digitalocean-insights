@@ -12,12 +12,12 @@ dashboard "network_vpc_dashboard" {
 
     card {
       query = query.network_vpc_count
-      width = 2
+      width = 3
     }
 
     card {
       query = query.network_vpc_default_count
-      width = 2
+      width = 3
     }
 
   }

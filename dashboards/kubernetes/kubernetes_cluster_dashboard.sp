@@ -12,24 +12,24 @@ dashboard "kubernetes_cluster_dashboard" {
 
     card {
       query = query.kubernetes_cluster_count
-      width = 2
+      width = 3
     }
 
     # Assessments
 
     card {
       query = query.kubernetes_cluster_degraded_count
-      width = 2
+      width = 3
     }
 
     card {
       query = query.kubernetes_auto_upgrade_count
-      width = 2
+      width = 3
     }
 
     card {
       query = query.kubernetes_surge_upgrade_count
-      width = 2
+      width = 3
     }
 
 

@@ -12,17 +12,17 @@ dashboard "network_firewall_dashboard" {
 
     card {
       query = query.network_firewall_count
-      width = 2
+      width = 3
     }
 
     card {
       query = query.network_firewall_unrestricted_inbound_rules_count
-      width = 2
+      width = 3
     }
 
     card {
       query = query.network_firewall_unrestricted_outbound_rules_count
-      width = 2
+      width = 3
     }
 
   }
