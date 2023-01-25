@@ -10,9 +10,3 @@ category "kubernetes_cluster" {
   href  = "/digitalocean_insights.dashboard.kubernetes_detail?input.cluster_urn={{.properties.'URN' | @uri}}"
   icon  = "view_in_ar"
 }
-
-category "kubernetes_cluster_node" {
-  title = "Kubernetes Cluster Node"
-  color = local.containers_color
-  icon  = "memory"
-}

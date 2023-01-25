@@ -393,9 +393,3 @@ query "network_vpc_association" {
 
   EOQ
 }
-
-query "network_vpc_network_details" {
-  sql = <<-EOQ
-
-  EOQ
-}
