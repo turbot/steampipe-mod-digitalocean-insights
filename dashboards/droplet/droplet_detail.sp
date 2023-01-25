@@ -53,38 +53,38 @@ dashboard "droplet_detail" {
 
   }
 
-  with "blockstorage_volumes_for_droplet_droplet" {
-    query = query.blockstorage_volumes_for_droplet_droplet
+  with "blockstorage_volumes_for_droplet" {
+    query = query.blockstorage_volumes_for_droplet
     args  = [self.input.droplet_urn.value]
   }
 
-  with "image_images_for_droplet_droplet" {
-    query = query.image_images_for_droplet_droplet
+  with "image_images_for_droplet" {
+    query = query.image_images_for_droplet
     args  = [self.input.droplet_urn.value]
   }
 
-  with "network_firewalls_for_droplet_droplet" {
-    query = query.network_firewalls_for_droplet_droplet
+  with "network_firewalls_for_droplet" {
+    query = query.network_firewalls_for_droplet
     args  = [self.input.droplet_urn.value]
   }
 
-  with "network_floating_ips_for_droplet_droplet" {
-    query = query.network_floating_ips_for_droplet_droplet
+  with "network_floating_ips_for_droplet" {
+    query = query.network_floating_ips_for_droplet
     args  = [self.input.droplet_urn.value]
   }
 
-  with "network_load_balancers_for_droplet_droplet" {
-    query = query.network_load_balancers_for_droplet_droplet
+  with "network_load_balancers_for_droplet" {
+    query = query.network_load_balancers_for_droplet
     args  = [self.input.droplet_urn.value]
   }
 
-  with "network_vpcs_for_droplet_droplet" {
-    query = query.network_vpcs_for_droplet_droplet
+  with "network_vpcs_for_droplet" {
+    query = query.network_vpcs_for_droplet
     args  = [self.input.droplet_urn.value]
   }
 
-  with "snapshot_snapshots_for_droplet_droplet" {
-    query = query.snapshot_snapshots_for_droplet_droplet
+  with "snapshot_snapshots_for_droplet" {
+    query = query.snapshot_snapshots_for_droplet
     args  = [self.input.droplet_urn.value]
   }
 
@@ -98,7 +98,7 @@ dashboard "droplet_detail" {
       node {
         base = node.blockstorage_volume
         args = {
-          blockstorage_volume_urns = with.blockstorage_volumes_for_droplet_droplet.rows[*].volume_urn
+          blockstorage_volume_urns = with.blockstorage_volumes_for_droplet.rows[*].volume_urn
         }
       }
 
@@ -112,42 +112,42 @@ dashboard "droplet_detail" {
       node {
         base = node.image_image
         args = {
-          image_image_urns = with.image_images_for_droplet_droplet.rows[*].image_urn
+          image_image_urns = with.image_images_for_droplet.rows[*].image_urn
         }
       }
 
       node {
         base = node.network_firewall
         args = {
-          network_firewall_urns = with.network_firewalls_for_droplet_droplet.rows[*].firewall_urn
+          network_firewall_urns = with.network_firewalls_for_droplet.rows[*].firewall_urn
         }
       }
 
       node {
         base = node.network_floating_ip
         args = {
-          network_floating_ip_urns = with.network_floating_ips_for_droplet_droplet.rows[*].floating_ip_urn
+          network_floating_ip_urns = with.network_floating_ips_for_droplet.rows[*].floating_ip_urn
         }
       }
 
       node {
         base = node.network_load_balancer
         args = {
-          network_load_balancer_urns = with.network_load_balancers_for_droplet_droplet.rows[*].lb_urn
+          network_load_balancer_urns = with.network_load_balancers_for_droplet.rows[*].lb_urn
         }
       }
 
       node {
         base = node.network_vpc
         args = {
-          network_vpc_urns = with.network_vpcs_for_droplet_droplet.rows[*].vpc_urn
+          network_vpc_urns = with.network_vpcs_for_droplet.rows[*].vpc_urn
         }
       }
 
       node {
         base = node.snapshot_snapshot
         args = {
-          snapshot_snapshot_urns = with.snapshot_snapshots_for_droplet_droplet.rows[*].snapshot_urn
+          snapshot_snapshot_urns = with.snapshot_snapshots_for_droplet.rows[*].snapshot_urn
         }
       }
 
@@ -196,7 +196,7 @@ dashboard "droplet_detail" {
       edge {
         base = edge.image_image_to_droplet_droplet
         args = {
-          image_image_urns = with.image_images_for_droplet_droplet.rows[*].image_urn
+          image_image_urns = with.image_images_for_droplet.rows[*].image_urn
         }
       }
 
@@ -312,7 +312,7 @@ query "droplet_input" {
 
 # With queries
 
-query "blockstorage_volumes_for_droplet_droplet" {
+query "blockstorage_volumes_for_droplet" {
   sql = <<-EOQ
     select
       v.urn as volume_urn
@@ -326,7 +326,7 @@ query "blockstorage_volumes_for_droplet_droplet" {
   EOQ
 }
 
-query "image_images_for_droplet_droplet" {
+query "image_images_for_droplet" {
   sql = <<-EOQ
     select
       i.urn as image_urn
@@ -339,7 +339,7 @@ query "image_images_for_droplet_droplet" {
   EOQ
 }
 
-query "network_firewalls_for_droplet_droplet" {
+query "network_firewalls_for_droplet" {
   sql = <<-EOQ
     select
       f.urn as firewall_urn
@@ -353,7 +353,7 @@ query "network_firewalls_for_droplet_droplet" {
   EOQ
 }
 
-query "network_floating_ips_for_droplet_droplet" {
+query "network_floating_ips_for_droplet" {
   sql = <<-EOQ
     select
       f.urn as floating_ip_urn
@@ -366,7 +366,7 @@ query "network_floating_ips_for_droplet_droplet" {
   EOQ
 }
 
-query "network_load_balancers_for_droplet_droplet" {
+query "network_load_balancers_for_droplet" {
   sql = <<-EOQ
     select
       l.urn as lb_urn
@@ -380,7 +380,7 @@ query "network_load_balancers_for_droplet_droplet" {
   EOQ
 }
 
-query "network_vpcs_for_droplet_droplet" {
+query "network_vpcs_for_droplet" {
   sql = <<-EOQ
     select
       v.urn as vpc_urn
@@ -393,7 +393,7 @@ query "network_vpcs_for_droplet_droplet" {
   EOQ
 }
 
-query "snapshot_snapshots_for_droplet_droplet" {
+query "snapshot_snapshots_for_droplet" {
   sql = <<-EOQ
     select
       s.id as snapshot_urn

@@ -40,23 +40,23 @@ dashboard "snapshot_detail" {
     }
   }
 
-  with "network_floating_ips_for_snapshot_snapshot" {
-    query = query.network_floating_ips_for_snapshot_snapshot
+  with "network_floating_ips_for_snapshot" {
+    query = query.network_floating_ips_for_snapshot
     args  = [self.input.snapshot_urn.value]
   }
 
-  with "source_droplet_droplets_for_snapshot_snapshot" {
-    query = query.source_droplet_droplets_for_snapshot_snapshot
+  with "source_droplet_droplets_for_snapshot" {
+    query = query.source_droplet_droplets_for_snapshot
     args  = [self.input.snapshot_urn.value]
   }
 
-  with "source_blockstorage_volumes_for_snapshot_snapshot" {
-    query = query.source_blockstorage_volumes_for_snapshot_snapshot
+  with "source_blockstorage_volumes_for_snapshot" {
+    query = query.source_blockstorage_volumes_for_snapshot
     args  = [self.input.snapshot_urn.value]
   }
 
-  with "target_droplet_droplets_for_snapshot_snapshot" {
-    query = query.target_droplet_droplets_for_snapshot_snapshot
+  with "target_droplet_droplets_for_snapshot" {
+    query = query.target_droplet_droplets_for_snapshot
     args  = [self.input.snapshot_urn.value]
   }
 
@@ -70,28 +70,28 @@ dashboard "snapshot_detail" {
       node {
         base = node.blockstorage_volume
         args = {
-          blockstorage_volume_urns = with.source_blockstorage_volumes_for_snapshot_snapshot.rows[*].source_volume_urn
+          blockstorage_volume_urns = with.source_blockstorage_volumes_for_snapshot.rows[*].source_volume_urn
         }
       }
 
       node {
         base = node.droplet_droplet
         args = {
-          droplet_droplet_urns = with.source_droplet_droplets_for_snapshot_snapshot.rows[*].source_droplet_urn
+          droplet_droplet_urns = with.source_droplet_droplets_for_snapshot.rows[*].source_droplet_urn
         }
       }
 
       node {
         base = node.droplet_droplet
         args = {
-          droplet_droplet_urns = with.target_droplet_droplets_for_snapshot_snapshot.rows[*].target_droplet_urn
+          droplet_droplet_urns = with.target_droplet_droplets_for_snapshot.rows[*].target_droplet_urn
         }
       }
 
       node {
         base = node.network_floating_ip
         args = {
-          network_floating_ip_urns = with.network_floating_ips_for_snapshot_snapshot.rows[*].floating_ip_urn
+          network_floating_ip_urns = with.network_floating_ips_for_snapshot.rows[*].floating_ip_urn
         }
       }
 
@@ -105,7 +105,7 @@ dashboard "snapshot_detail" {
       edge {
         base = edge.droplet_droplet_to_snapshot_snapshot
         args = {
-          droplet_droplet_urns = with.source_droplet_droplets_for_snapshot_snapshot.rows[*].source_droplet_urn
+          droplet_droplet_urns = with.source_droplet_droplets_for_snapshot.rows[*].source_droplet_urn
         }
       }
 
@@ -119,7 +119,7 @@ dashboard "snapshot_detail" {
       edge {
         base = edge.blockstorage_volume_to_snapshot_snapshot
         args = {
-          blockstorage_volume_urns = with.source_blockstorage_volumes_for_snapshot_snapshot.rows[*].source_volume_urn
+          blockstorage_volume_urns = with.source_blockstorage_volumes_for_snapshot.rows[*].source_volume_urn
         }
       }
 
@@ -210,7 +210,7 @@ query "snapshot_input" {
 
 # With queries
 
-query "network_floating_ips_for_snapshot_snapshot" {
+query "network_floating_ips_for_snapshot" {
   sql = <<-EOQ
     select
       f.urn as floating_ip_urn
@@ -224,7 +224,7 @@ query "network_floating_ips_for_snapshot_snapshot" {
   EOQ
 }
 
-query "source_droplet_droplets_for_snapshot_snapshot" {
+query "source_droplet_droplets_for_snapshot" {
   sql = <<-EOQ
     select
       d.urn as source_droplet_urn
@@ -238,7 +238,7 @@ query "source_droplet_droplets_for_snapshot_snapshot" {
   EOQ
 }
 
-query "target_droplet_droplets_for_snapshot_snapshot" {
+query "target_droplet_droplets_for_snapshot" {
   sql = <<-EOQ
     select
       d.urn as target_droplet_urn
@@ -253,7 +253,7 @@ query "target_droplet_droplets_for_snapshot_snapshot" {
   EOQ
 }
 
-query "source_blockstorage_volumes_for_snapshot_snapshot" {
+query "source_blockstorage_volumes_for_snapshot" {
   sql = <<-EOQ
     select
       v.urn as source_volume_urn
