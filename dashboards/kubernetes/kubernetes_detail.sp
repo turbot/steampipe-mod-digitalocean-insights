@@ -32,6 +32,12 @@ dashboard "kubernetes_cluster_detail" {
       query = query.kubernetes_cluster_surge_upgrade_status
       args = [self.input.cluster_urn.value]
     }
+
+    card {
+      width = 3
+      query = query.kubernetes_cluster_registry_enabled
+      args = [self.input.cluster_urn.value]
+    }
   }
 
   with "database_clusters_for_kubernetes_cluster" {
@@ -279,6 +285,21 @@ query "kubernetes_cluster_surge_upgrade_status" {
         when surge_upgrade then 'ok'
         else 'alert'
       end as "type"
+    from
+      digitalocean_kubernetes_cluster
+    where
+      urn = $1;
+  EOQ
+}
+
+query "kubernetes_cluster_registry_enabled" {
+  sql = <<-EOQ
+    select
+      'Container Registry' as label,
+      case
+        when registry_enabled then 'Enabled' else 'Disabled' end as value,
+      case
+        when registry_enabled then 'ok' else 'alert' end as "type"
     from
       digitalocean_kubernetes_cluster
     where
