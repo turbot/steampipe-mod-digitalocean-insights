@@ -240,21 +240,14 @@ query "source_droplet_droplets_for_snapshot_snapshot" {
 
 query "target_droplet_droplets_for_snapshot_snapshot" {
   sql = <<-EOQ
-    with droplet_images as (
-      select
-        image->>'id' as iid,
-        urn
-      from
-        digitalocean_droplet
-    )
     select
       d.urn as target_droplet_urn
     from
       digitalocean_image as i,
       digitalocean_snapshot as s,
-      droplet_images as d
+      digitalocean_droplet as d
     where
-      i.id::text = iid
+      i.id::text = image->>'id'
       and i.id::text = s.id
       and s.id = $1;
   EOQ

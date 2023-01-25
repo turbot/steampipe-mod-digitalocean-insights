@@ -85,14 +85,14 @@ dashboard "blockstorage_volume_detail" {
       }
 
       edge {
-        base = edge.blockstorage_volume_to_snapshot_snapshot
+        base = edge.blockstorage_volume_to_network_floating_ip
         args = {
           blockstorage_volume_urns = [self.input.volume_urn.value]
         }
       }
 
       edge {
-        base = edge.blockstorage_volume_to_network_floating_ip
+        base = edge.blockstorage_volume_to_snapshot_snapshot
         args = {
           blockstorage_volume_urns = [self.input.volume_urn.value]
         }

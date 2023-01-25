@@ -2,22 +2,15 @@ edge "snapshot_snapshot_to_droplet_droplet" {
   title = "droplet"
 
   sql = <<-EOQ
-    with droplet_images as (
-      select
-        image->>'id' as iid,
-        urn
-      from
-        digitalocean_droplet
-    )
     select
       s.id as from_id,
       d.urn as to_id
     from
       digitalocean_image as i,
       digitalocean_snapshot as s,
-      droplet_images as d
+      digitalocean_droplet as d
     where
-      i.id::text = iid
+      i.id::text = image->>'id'
       and i.id::text = s.id
       and s.id = any($1);
   EOQ

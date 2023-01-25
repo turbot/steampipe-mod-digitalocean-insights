@@ -2,21 +2,15 @@ edge "droplet_droplet_to_blockstorage_volume" {
   title = "mounts"
 
   sql = <<-EOQ
-    with volume_droplet_ids as (
-      select
-        jsonb_array_elements(droplet_ids) as d,
-        urn
-      from
-        digitalocean_volume
-    )
     select
       d.urn as from_id,
       v.urn as to_id
     from
       digitalocean_droplet as d,
-      volume_droplet_ids as v
+      digitalocean_volume as v,
+      jsonb_array_elements(droplet_ids) as did
     where
-      d.id::int = d::int
+      d.id::int = did::int
       and d.urn = any($1);
   EOQ
 
@@ -47,19 +41,13 @@ edge "droplet_droplet_to_network_firewall" {
   title = "firewall"
 
   sql = <<-EOQ
-    with firewall_droplet_ids as (
-      select
-        jsonb_array_elements(droplet_ids) as did,
-        urn
-      from
-        digitalocean_firewall
-    )
     select
       d.urn as from_id,
       f.urn as to_id
     from
-      firewall_droplet_ids as f,
-      digitalocean_droplet as d
+      digitalocean_droplet as d,
+      digitalocean_firewall as f,
+      jsonb_array_elements(droplet_ids) as did
     where
       d.id::text = did::text
       and d.urn = any($1);
@@ -90,19 +78,13 @@ edge "droplet_droplet_to_network_load_balancer" {
   title = "load balancer"
 
   sql = <<-EOQ
-    with lb_droplet_ids as (
-      select
-        jsonb_array_elements(droplet_ids) as did,
-        urn
-      from
-        digitalocean_load_balancer
-    )
     select
       d.urn as from_id,
       l.urn as to_id
     from
-      lb_droplet_ids as l,
-      digitalocean_droplet as d
+      digitalocean_droplet as d,
+      digitalocean_load_balancer as l,
+      jsonb_array_elements(droplet_ids) as did
     where
       d.id::text = did::text
       and d.urn = any($1);

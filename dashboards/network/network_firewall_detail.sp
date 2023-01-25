@@ -176,18 +176,12 @@ query "network_firewall_input" {
 
 query "droplet_droplets_for_network_firewall" {
   sql = <<-EOQ
-    with firewall_droplet_ids as (
-      select
-        jsonb_array_elements(droplet_ids) as did,
-        urn
-      from
-        digitalocean_firewall
-    )
     select
       d.urn as droplet_urn
     from
-      firewall_droplet_ids as f,
-      digitalocean_droplet as d
+      digitalocean_droplet as d,
+      digitalocean_firewall as f,
+      jsonb_array_elements(droplet_ids) as did
     where
       d.id::text = did::text
       and f.urn = $1;

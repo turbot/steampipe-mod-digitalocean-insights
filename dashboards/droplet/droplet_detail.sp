@@ -314,58 +314,39 @@ query "droplet_input" {
 
 query "blockstorage_volumes_for_droplet_droplet" {
   sql = <<-EOQ
-    with volume_droplet_ids as (
-      select
-        jsonb_array_elements(droplet_ids) as d,
-        urn
-      from
-        digitalocean_volume
-    )
     select
       v.urn as volume_urn
     from
       digitalocean_droplet as d,
-      volume_droplet_ids as v
+      digitalocean_volume as v,
+      jsonb_array_elements(droplet_ids) as did
     where
-      d.id::int = d::int
+      d.id::int = did::int
       and d.urn = $1;
   EOQ
 }
 
 query "image_images_for_droplet_droplet" {
   sql = <<-EOQ
-    with droplet_images as (
-      select
-        image->>'id' as iid,
-        urn
-      from
-        digitalocean_droplet
-    )
     select
       i.urn as image_urn
     from
       digitalocean_image as i,
-      droplet_images as d
+      digitalocean_droplet as d
     where
-      i.id::text = iid
+      i.id::text = image->>'id'
       and d.urn = $1;
   EOQ
 }
 
 query "network_firewalls_for_droplet_droplet" {
   sql = <<-EOQ
-    with firewall_droplet_ids as (
-      select
-        jsonb_array_elements(droplet_ids) as did,
-        urn
-      from
-        digitalocean_firewall
-    )
     select
       f.urn as firewall_urn
     from
-      firewall_droplet_ids as f,
-      digitalocean_droplet as d
+      digitalocean_droplet as d,
+      digitalocean_firewall as f,
+      jsonb_array_elements(droplet_ids) as did
     where
       d.id::text = did::text
       and d.urn = $1;
@@ -387,18 +368,12 @@ query "network_floating_ips_for_droplet_droplet" {
 
 query "network_load_balancers_for_droplet_droplet" {
   sql = <<-EOQ
-    with lb_droplet_ids as (
-      select
-        jsonb_array_elements(droplet_ids) as did,
-        urn
-      from
-        digitalocean_load_balancer
-    )
     select
       l.urn as lb_urn
     from
-      lb_droplet_ids as l,
-      digitalocean_droplet as d
+      digitalocean_droplet as d,
+      digitalocean_load_balancer as l,
+      jsonb_array_elements(droplet_ids) as did
     where
       d.id::text = did::text
       and d.urn = $1;
