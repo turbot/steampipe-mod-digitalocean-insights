@@ -56,6 +56,27 @@ edge "droplet_droplet_to_network_firewall" {
   param "droplet_droplet_urns" {}
 }
 
+edge "droplet_droplet_to_network_vpc" {
+  title = "vpc"
+
+  sql = <<-EOQ
+    select
+      d.urn as from_id,
+      v.urn as to_id
+    from
+      digitalocean_droplet as d,
+      digitalocean_vpc as v,
+      digitalocean_firewall as f,
+      jsonb_array_elements(droplet_ids) as did
+    where
+      did::text != d.id::text
+      and v.id = d.vpc_uuid
+      and d.urn = any($1);
+  EOQ
+
+  param "droplet_droplet_urns" {}
+}
+
 edge "droplet_droplet_to_network_floating_ip" {
   title = "floating ip"
 
@@ -87,27 +108,6 @@ edge "droplet_droplet_to_network_load_balancer" {
       jsonb_array_elements(droplet_ids) as did
     where
       d.id::text = did::text
-      and d.urn = any($1);
-  EOQ
-
-  param "droplet_droplet_urns" {}
-}
-
-edge "droplet_droplet_to_network_vpc" {
-  title = "vpc"
-
-  sql = <<-EOQ
-    select
-      coalesce(f.urn, d.urn) as from_id,
-      v.urn as to_id
-    from
-      digitalocean_droplet as d,
-      digitalocean_vpc as v,
-      digitalocean_firewall as f,
-      jsonb_array_elements(droplet_ids) as did
-    where
-      did::text = d.id::text
-      and v.id = d.vpc_uuid
       and d.urn = any($1);
   EOQ
 

@@ -187,6 +187,13 @@ dashboard "droplet_detail" {
       }
 
       edge {
+        base = edge.network_firewall_to_network_vpc
+        args = {
+          droplet_droplet_urns = [self.input.droplet_urn.value]
+        }
+      }
+
+      edge {
         base = edge.droplet_droplet_to_snapshot_snapshot
         args = {
           droplet_droplet_urns = [self.input.droplet_urn.value]

@@ -19,6 +19,27 @@ edge "network_firewall_to_droplet_droplet" {
   param "network_firewall_urns" {}
 }
 
+edge "network_firewall_to_network_vpc" {
+  title = "vpc"
+
+  sql = <<-EOQ
+    select
+      f.urn as from_id,
+      v.urn as to_id
+    from
+      digitalocean_droplet as d,
+      digitalocean_vpc as v,
+      digitalocean_firewall as f,
+      jsonb_array_elements(droplet_ids) as did
+    where
+      did::text = d.id::text
+      and v.id = d.vpc_uuid
+      and d.urn = any($1);
+  EOQ
+
+  param "droplet_droplet_urns" {}
+}
+
 edge "network_vpc_to_database_cluster" {
   title = "database cluster"
 
