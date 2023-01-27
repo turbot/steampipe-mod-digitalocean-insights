@@ -8,8 +8,10 @@ Create dashboards and reports for your DigitalOcean resources using Steampipe.
 
 <img src="https://raw.githubusercontent.com/turbot/steampipe-mod-digitalocean-insights/main/docs/images/digitalocean_blockstorage_volume_age_report.png" width="50%" type="thumbnail"/>
 <img src="https://raw.githubusercontent.com/turbot/steampipe-mod-digitalocean-insights/main/docs/images/digitalocean_droplet_dashboard.png" width="50%" type="thumbnail"/>
+<img src="https://raw.githubusercontent.com/turbot/steampipe-mod-digitalocean-insights/main/docs/images/digitalocean_droplet_detail.png" width="50%" type="thumbnail"/>
 <img src="https://raw.githubusercontent.com/turbot/steampipe-mod-digitalocean-insights/main/docs/images/digitalocean_network_firewall_detail.png" width="50%" type="thumbnail"/>
 <img src="https://raw.githubusercontent.com/turbot/steampipe-mod-digitalocean-insights/main/docs/images/digitalocean_kubernetes_dashboard.png" width="50%" type="thumbnail"/>
+<img src="https://raw.githubusercontent.com/turbot/steampipe-mod-digitalocean-insights/main/docs/images/digitalocean_vpc_detail.png" width="50%" type="thumbnail"/>
 
 ## Overview
 
@@ -18,6 +20,7 @@ Dashboards can help answer questions like:
 - How many resources do I have?
 - How old are my resources?
 - Are there any publicly accessible resources?
+- What are the relationships between closely connected resources like droplets, volumes, network firewalls, load balancers and vpcs?
 
 Dashboards are available for BlockStorage, Database, Droplet, Firewall, Kubernetes and Snapshot services.
 
