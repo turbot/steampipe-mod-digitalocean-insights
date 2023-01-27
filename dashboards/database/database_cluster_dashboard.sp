@@ -38,7 +38,7 @@ dashboard "database_cluster_dashboard" {
       title = "SSL Status"
       query = query.droplet_by_ssl_status
       type  = "donut"
-      width = 3
+      width = 4
 
       series "Clusters" {
         point "enabled" {
@@ -54,7 +54,7 @@ dashboard "database_cluster_dashboard" {
       title = "Firewall Status"
       query = query.droplet_by_firewall_status
       type  = "donut"
-      width = 3
+      width = 4
 
       series "Clusters" {
         point "enabled" {

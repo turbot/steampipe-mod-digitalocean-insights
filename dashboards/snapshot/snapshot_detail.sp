@@ -33,11 +33,6 @@ dashboard "snapshot_detail" {
       args  = [self.input.snapshot_urn.value]
     }
 
-    card {
-      width = 3
-      query = query.snapshot_age
-      args  = [self.input.snapshot_urn.value]
-    }
   }
 
   with "network_floating_ips_for_snapshot" {
@@ -305,25 +300,6 @@ query "snapshot_minimum_disk_size" {
   EOQ
 }
 
-query "snapshot_age" {
-  sql = <<-EOQ
-    with data as (
-      select
-        (extract(epoch from (select (now() - created_at)))/86400)::int as age
-      from
-        digitalocean_snapshot
-      where
-        id = $1
-    )
-    select
-      'Age (in Days)' as label,
-      age as value,
-      case when age<35 then 'ok' else 'alert' end as type
-    from
-      data;
-  EOQ
-}
-
 # Other detail page queries
 
 query "snapshot_overview" {
@@ -359,10 +335,10 @@ query "snapshot_tags" {
 query "snapshot_source_droplet" {
   sql = <<-EOQ
     select
-      d.urn as "Droplet URN",
-      d.name as "Droplet Name",
-      d.id as "Droplet ID",
-      d.status as "Droplet Status"
+      d.urn as "URN",
+      d.name as "Name",
+      d.id as "ID",
+      d.status as "Status"
     from
       digitalocean_droplet as d,
       jsonb_array_elements(snapshot_ids) as sid,
@@ -376,10 +352,10 @@ query "snapshot_source_droplet" {
 query "snapshot_source_blockstorage_volume" {
   sql = <<-EOQ
     select
-      v.urn as "Volume URN",
-      v.name as "Volume Name",
-      v.id as "Volume ID",
-      v.size_gigabytes as "Volume Size (GB)"
+      v.urn as "URN",
+      v.name as "Name",
+      v.id as "ID",
+      v.size_gigabytes as "Size (GB)"
     from
       digitalocean_volume as v,
       digitalocean_snapshot as s

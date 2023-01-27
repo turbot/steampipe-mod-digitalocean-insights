@@ -48,7 +48,7 @@ dashboard "droplet_dashboard" {
       title = "Public/Private"
       query = query.droplet_by_public_access
       type  = "donut"
-      width = 3
+      width = 4
 
       series "Droplets" {
         point "private" {
@@ -64,7 +64,7 @@ dashboard "droplet_dashboard" {
       title = "Backups Status"
       query = query.droplet_by_backup_status
       type  = "donut"
-      width = 3
+      width = 4
 
       series "Droplets" {
         point "enabled" {
@@ -80,7 +80,7 @@ dashboard "droplet_dashboard" {
       title = "Monitoring Status"
       query = query.droplet_by_monitoring_status
       type  = "donut"
-      width = 3
+      width = 4
 
       series "Droplets" {
         point "enabled" {

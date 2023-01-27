@@ -40,7 +40,6 @@ dashboard "network_vpc_dashboard" {
         }
       }
     }
-
   }
 
   container {

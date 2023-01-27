@@ -33,7 +33,7 @@ dashboard "network_firewall_dashboard" {
     chart {
       title = "With Unrestricted Inbound (Excludes ICMP)"
       type  = "donut"
-      width = 3
+      width = 4
       query = query.network_firewall_unrestricted_inbound_status
 
       series "Firewalls" {
@@ -49,7 +49,7 @@ dashboard "network_firewall_dashboard" {
     chart {
       title = "With Unrestricted Outbound (Excludes ICMP)"
       type  = "donut"
-      width = 3
+      width = 4
       query = query.network_firewall_unrestricted_outbound_status
 
       series "Firewalls" {
@@ -72,14 +72,14 @@ dashboard "network_firewall_dashboard" {
       title = "Firewalls by Status"
       query = query.network_firewall_by_status
       type  = "column"
-      width = 6
+      width = 4
     }
 
     chart {
       title = "Firewalls by Age"
       query = query.network_firewall_creation_month
       type  = "column"
-      width = 6
+      width = 4
     }
 
   }

@@ -23,12 +23,12 @@ dashboard "kubernetes_cluster_dashboard" {
     }
 
     card {
-      query = query.kubernetes_auto_upgrade_count
+      query = query.kubernetes_cluster_auto_upgrade_count
       width = 3
     }
 
     card {
-      query = query.kubernetes_surge_upgrade_count
+      query = query.kubernetes_cluster_surge_upgrade_count
       width = 3
     }
 
@@ -41,9 +41,9 @@ dashboard "kubernetes_cluster_dashboard" {
 
     chart {
       title = "Cluster Status"
-      query = query.kubernetes_status
+      query = query.kubernetes_cluster_status
       type  = "donut"
-      width = 2
+      width = 4
 
       series "Clusters" {
         point "ok" {
@@ -57,9 +57,9 @@ dashboard "kubernetes_cluster_dashboard" {
 
     chart {
       title = "Automatic Upgrades Status"
-      query = query.kubernetes_by_auto_upgrade_status
+      query = query.kubernetes_cluster_by_auto_upgrade_status
       type  = "donut"
-      width = 2
+      width = 4
 
       series "Clusters" {
         point "enabled" {
@@ -73,9 +73,9 @@ dashboard "kubernetes_cluster_dashboard" {
 
     chart {
       title = "Surge Upgrades Status"
-      query = query.kubernetes_by_surge_upgrade_status
+      query = query.kubernetes_cluster_by_surge_upgrade_status
       type  = "donut"
-      width = 2
+      width = 4
 
       series "Clusters" {
         point "enabled" {
@@ -95,23 +95,23 @@ dashboard "kubernetes_cluster_dashboard" {
 
     chart {
       title = "Kubernetes Cluster by Region"
-      query = query.kubernetes_by_region
+      query = query.kubernetes_cluster_by_region
       type  = "column"
-      width = 3
+      width = 4
     }
 
     chart {
       title = "Kubernetes Cluster by Status"
-      query = query.kubernetes_by_status
+      query = query.kubernetes_cluster_by_status
       type  = "column"
-      width = 3
+      width = 4
     }
 
     chart {
       title = "Kubernetes Cluster by Age"
-      query = query.kubernetes_creation_month
+      query = query.kubernetes_cluster_creation_month
       type  = "column"
-      width = 3
+      width = 4
     }
 
   }
@@ -140,7 +140,7 @@ query "kubernetes_cluster_degraded_count" {
 }
 
 
-query "kubernetes_auto_upgrade_count" {
+query "kubernetes_cluster_auto_upgrade_count" {
   sql = <<-EOQ
     select
       count(*) as value,
@@ -153,7 +153,7 @@ query "kubernetes_auto_upgrade_count" {
   EOQ
 }
 
-query "kubernetes_surge_upgrade_count" {
+query "kubernetes_cluster_surge_upgrade_count" {
   sql = <<-EOQ
     select
       count(*) as value,
@@ -168,7 +168,7 @@ query "kubernetes_surge_upgrade_count" {
 
 # Assessments Queries
 
-query "kubernetes_status" {
+query "kubernetes_cluster_status" {
   sql = <<-EOQ
     select
       status,
@@ -190,7 +190,7 @@ query "kubernetes_status" {
 }
 
 
-query "kubernetes_by_auto_upgrade_status" {
+query "kubernetes_cluster_by_auto_upgrade_status" {
   sql = <<-EOQ
     with cluster as (
       select
@@ -211,7 +211,7 @@ query "kubernetes_by_auto_upgrade_status" {
   EOQ
 }
 
-query "kubernetes_by_surge_upgrade_status" {
+query "kubernetes_cluster_by_surge_upgrade_status" {
   sql = <<-EOQ
     with cluster as (
       select
@@ -234,7 +234,7 @@ query "kubernetes_by_surge_upgrade_status" {
 
 # Analysis Queries
 
-query "kubernetes_by_region" {
+query "kubernetes_cluster_by_region" {
   sql = <<-EOQ
     select
       region_slug,
@@ -246,7 +246,7 @@ query "kubernetes_by_region" {
   EOQ
 }
 
-query "kubernetes_by_status" {
+query "kubernetes_cluster_by_status" {
   sql = <<-EOQ
     select
       status,
@@ -258,7 +258,7 @@ query "kubernetes_by_status" {
   EOQ
 }
 
-query "kubernetes_creation_month" {
+query "kubernetes_cluster_creation_month" {
   sql = <<-EOQ
     with kubernetes as (
       select
