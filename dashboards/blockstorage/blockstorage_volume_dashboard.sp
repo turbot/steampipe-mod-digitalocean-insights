@@ -1,4 +1,4 @@
-dashboard "digitalocean_blockstorage_volume_dashboard" {
+dashboard "blockstorage_volume_dashboard" {
 
   title         = "DigitalOcean Block Storage Volume Dashboard"
   documentation = file("./dashboards/blockstorage/docs/blockstorage_volume_dashboard.md")
@@ -11,20 +11,20 @@ dashboard "digitalocean_blockstorage_volume_dashboard" {
 
     # Analysis
     card {
-      query = query.digitalocean_volume_count
-      width = 2
+      query = query.blockstorage_volume_count
+      width = 3
     }
 
     card {
-      query = query.digitalocean_volume_total_storage
-      width = 2
+      query = query.blockstorage_volume_total_storage
+      width = 3
     }
 
     # Assessment
 
     card {
-      query = query.digitalocean_volume_droplet_attached_count
-      width = 2
+      query = query.blockstorage_volume_droplet_attached_count
+      width = 3
     }
 
   }
@@ -35,7 +35,7 @@ dashboard "digitalocean_blockstorage_volume_dashboard" {
 
     chart {
       title = "Volume State"
-      query = query.digitalocean_volume_by_droplet_attached
+      query = query.blockstorage_volume_by_droplet_attached
       type  = "donut"
       width = 4
 
@@ -57,28 +57,28 @@ dashboard "digitalocean_blockstorage_volume_dashboard" {
 
     chart {
       title = "Volumes by Region"
-      query = query.digitalocean_volume_by_region
+      query = query.blockstorage_volume_by_region
       type  = "column"
       width = 4
     }
 
     chart {
       title = "Volumes by Filesystem Type"
-      query = query.digitalocean_volume_by_filesystem_type
+      query = query.blockstorage_volume_by_filesystem_type
       type  = "column"
       width = 4
     }
 
     chart {
       title = "Volumes by Age"
-      query = query.digitalocean_volume_creation_month
+      query = query.blockstorage_volume_creation_month
       type  = "column"
       width = 4
     }
 
     chart {
       title = "Storage by Region"
-      query = query.digitalocean_storage_volume_by_region
+      query = query.blockstorage_volume_volume_by_region
       type  = "column"
       width = 4
 
@@ -89,7 +89,7 @@ dashboard "digitalocean_blockstorage_volume_dashboard" {
 
     chart {
       title = "Storage by Filesystem Type"
-      query = query.digitalocean_storage_by_filesystem_type
+      query = query.blockstorage_volume_storage_by_filesystem_type
       type  = "column"
       width = 4
 
@@ -100,7 +100,7 @@ dashboard "digitalocean_blockstorage_volume_dashboard" {
 
     chart {
       title = "Storage by Age"
-      query = query.digitalocean_storage_volume_creation_month
+      query = query.blockstorage_volume_storage_creation_month
       type  = "column"
       width = 4
 
@@ -113,7 +113,7 @@ dashboard "digitalocean_blockstorage_volume_dashboard" {
 
 # Card Queries
 
-query "digitalocean_volume_count" {
+query "blockstorage_volume_count" {
   sql = <<-EOQ
     select
       count(*) as "Volumes"
@@ -122,7 +122,7 @@ query "digitalocean_volume_count" {
   EOQ
 }
 
-query "digitalocean_volume_total_storage" {
+query "blockstorage_volume_total_storage" {
   sql = <<-EOQ
     select
       sum(size_gigabytes) as "Total Storage (GB)"
@@ -131,7 +131,7 @@ query "digitalocean_volume_total_storage" {
   EOQ
 }
 
-query "digitalocean_volume_droplet_attached_count" {
+query "blockstorage_volume_droplet_attached_count" {
   sql = <<-EOQ
     select
       count(*) as value,
@@ -146,7 +146,7 @@ query "digitalocean_volume_droplet_attached_count" {
 
 # Assessment queries
 
-query "digitalocean_volume_by_droplet_attached" {
+query "blockstorage_volume_by_droplet_attached" {
   sql = <<-EOQ
     with volume as (
       select
@@ -169,7 +169,7 @@ query "digitalocean_volume_by_droplet_attached" {
 
 # Analytics Queries
 
-query "digitalocean_volume_by_region" {
+query "blockstorage_volume_by_region" {
   sql = <<-EOQ
     select
       region_name,
@@ -181,7 +181,7 @@ query "digitalocean_volume_by_region" {
   EOQ
 }
 
-query "digitalocean_volume_by_filesystem_type" {
+query "blockstorage_volume_by_filesystem_type" {
   sql = <<-EOQ
     select
       filesystem_type,
@@ -195,7 +195,7 @@ query "digitalocean_volume_by_filesystem_type" {
   EOQ
 }
 
-query "digitalocean_volume_creation_month" {
+query "blockstorage_volume_creation_month" {
   sql = <<-EOQ
     with volumes as (
       select
@@ -240,7 +240,7 @@ query "digitalocean_volume_creation_month" {
   EOQ
 }
 
-query "digitalocean_storage_volume_by_region" {
+query "blockstorage_volume_volume_by_region" {
   sql = <<-EOQ
     select
       region_name,
@@ -252,7 +252,7 @@ query "digitalocean_storage_volume_by_region" {
   EOQ
 }
 
-query "digitalocean_storage_by_filesystem_type" {
+query "blockstorage_volume_storage_by_filesystem_type" {
   sql = <<-EOQ
     select
       filesystem_type,
@@ -266,7 +266,7 @@ query "digitalocean_storage_by_filesystem_type" {
   EOQ
 }
 
-query "digitalocean_storage_volume_creation_month" {
+query "blockstorage_volume_storage_creation_month" {
   sql = <<-EOQ
     with volumes as (
       select

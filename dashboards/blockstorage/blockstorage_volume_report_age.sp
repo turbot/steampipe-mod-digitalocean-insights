@@ -1,4 +1,4 @@
-dashboard "digitalocean_blockstorage_volume_age_report" {
+dashboard "blockstorage_volume_age_report" {
 
   title         = "DigitalOcean Block Storage Volume Age Report"
   documentation = file("./dashboards/blockstorage/docs/blockstorage_volume_report_age.md")
@@ -11,38 +11,38 @@ dashboard "digitalocean_blockstorage_volume_age_report" {
   container {
 
     card {
-      query = query.digitalocean_volume_count
+      query = query.blockstorage_volume_count
       width = 2
     }
 
     card {
       type  = "info"
       width = 2
-      query = query.digitalocean_volume_24_hours_count
+      query = query.blockstorage_volume_24_hours_count
     }
 
     card {
       type  = "info"
       width = 2
-      query = query.digitalocean_volume_30_days_count
+      query = query.blockstorage_volume_30_days_count
     }
 
     card {
       type  = "info"
       width = 2
-      query = query.digitalocean_volume_30_90_days_count
+      query = query.blockstorage_volume_30_90_days_count
     }
 
     card {
       width = 2
       type  = "info"
-      query = query.digitalocean_volume_90_365_days_count
+      query = query.blockstorage_volume_90_365_days_count
     }
 
     card {
       width = 2
       type  = "info"
-      query = query.digitalocean_volume_1_year_count
+      query = query.blockstorage_volume_1_year_count
     }
 
   }
@@ -54,15 +54,15 @@ dashboard "digitalocean_blockstorage_volume_age_report" {
     }
 
     column "Name" {
-      href = "${dashboard.digitalocean_blockstorage_volume_detail.url_path}?input.volume_urn={{.URN | @uri}}"
+      href = "${dashboard.blockstorage_volume_detail.url_path}?input.volume_urn={{.URN | @uri}}"
     }
 
-    query = query.digitalocean_volume_age_table
+    query = query.blockstorage_volume_age_table
   }
 
 }
 
-query "digitalocean_volume_24_hours_count" {
+query "blockstorage_volume_24_hours_count" {
   sql = <<-EOQ
     select
       count(*) as value,
@@ -74,7 +74,7 @@ query "digitalocean_volume_24_hours_count" {
   EOQ
 }
 
-query "digitalocean_volume_30_days_count" {
+query "blockstorage_volume_30_days_count" {
   sql = <<-EOQ
     select
       count(*) as value,
@@ -86,7 +86,7 @@ query "digitalocean_volume_30_days_count" {
   EOQ
 }
 
-query "digitalocean_volume_30_90_days_count" {
+query "blockstorage_volume_30_90_days_count" {
   sql = <<-EOQ
     select
       count(*) as value,
@@ -98,7 +98,7 @@ query "digitalocean_volume_30_90_days_count" {
   EOQ
 }
 
-query "digitalocean_volume_90_365_days_count" {
+query "blockstorage_volume_90_365_days_count" {
   sql = <<-EOQ
     select
       count(*) as value,
@@ -110,7 +110,7 @@ query "digitalocean_volume_90_365_days_count" {
   EOQ
 }
 
-query "digitalocean_volume_1_year_count" {
+query "blockstorage_volume_1_year_count" {
   sql = <<-EOQ
     select
       count(*) as value,
@@ -122,7 +122,7 @@ query "digitalocean_volume_1_year_count" {
   EOQ
 }
 
-query "digitalocean_volume_age_table" {
+query "blockstorage_volume_age_table" {
   sql = <<-EOQ
     select
       name as "Name",

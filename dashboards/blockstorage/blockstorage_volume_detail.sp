@@ -1,4 +1,4 @@
-dashboard "digitalocean_blockstorage_volume_detail" {
+dashboard "blockstorage_volume_detail" {
 
   title         = "DigitalOcean Block Storage Volume Detail"
   documentation = file("./dashboards/blockstorage/docs/blockstorage_volume_detail.md")
@@ -9,34 +9,102 @@ dashboard "digitalocean_blockstorage_volume_detail" {
 
   input "volume_urn" {
     title = "Select a volume:"
-    query = query.digitalocean_volume_input
+    query = query.blockstorage_volume_input
     width = 4
   }
 
   container {
 
     card {
-      width = 2
-      query = query.digitalocean_volume_storage
-      args = {
-        urn = self.input.volume_urn.value
-      }
+      width = 3
+      query = query.blockstorage_volume_storage
+      args  = [self.input.volume_urn.value]
     }
 
     card {
-      width = 2
-      query = query.digitalocean_volume_filesystem_type
-      args = {
-        urn = self.input.volume_urn.value
-      }
+      width = 3
+      query = query.blockstorage_volume_filesystem_type
+      args  = [self.input.volume_urn.value]
     }
 
     card {
-      width = 2
-      query = query.digitalocean_volume_attached_droplets_count
-      args = {
-        urn = self.input.volume_urn.value
+      width = 3
+      query = query.blockstorage_volume_attached_droplets_count
+      args  = [self.input.volume_urn.value]
+    }
+  }
+
+  with "droplet_droplets_for_blockstorage_volume" {
+    query = query.droplet_droplets_for_blockstorage_volume
+    args  = [self.input.volume_urn.value]
+  }
+
+  with "network_floating_ips_for_blockstorage_volume" {
+    query = query.network_floating_ips_for_blockstorage_volume
+    args  = [self.input.volume_urn.value]
+  }
+
+  with "target_snapshot_snapshots_for_blockstorage_volume" {
+    query = query.target_snapshot_snapshots_for_blockstorage_volume
+    args  = [self.input.volume_urn.value]
+  }
+
+  container {
+
+    graph {
+      title     = "Relationships"
+      type      = "graph"
+      direction = "TD"
+
+      node {
+        base = node.blockstorage_volume
+        args = {
+          blockstorage_volume_urns = [self.input.volume_urn.value]
+        }
       }
+
+      node {
+        base = node.droplet_droplet
+        args = {
+          droplet_droplet_urns = with.droplet_droplets_for_blockstorage_volume.rows[*].droplet_urn
+        }
+      }
+
+      node {
+        base = node.network_floating_ip
+        args = {
+          network_floating_ip_urns = with.network_floating_ips_for_blockstorage_volume.rows[*].floating_ip_urn
+        }
+      }
+
+      node {
+        base = node.snapshot_snapshot
+        args = {
+          snapshot_snapshot_urns = with.target_snapshot_snapshots_for_blockstorage_volume.rows[*].snapshot_urn
+        }
+      }
+
+      edge {
+        base = edge.blockstorage_volume_to_network_floating_ip
+        args = {
+          blockstorage_volume_urns = [self.input.volume_urn.value]
+        }
+      }
+
+      edge {
+        base = edge.blockstorage_volume_to_snapshot_snapshot
+        args = {
+          blockstorage_volume_urns = [self.input.volume_urn.value]
+        }
+      }
+
+      edge {
+        base = edge.droplet_droplet_to_blockstorage_volume
+        args = {
+          droplet_droplet_urns = with.droplet_droplets_for_blockstorage_volume.rows[*].droplet_urn
+        }
+      }
+
     }
   }
 
@@ -50,19 +118,15 @@ dashboard "digitalocean_blockstorage_volume_detail" {
         title = "Overview"
         type  = "line"
         width = 6
-        query = query.digitalocean_volume_overview
-        args = {
-          urn = self.input.volume_urn.value
-        }
+        query = query.blockstorage_volume_overview
+        args  = [self.input.volume_urn.value]
       }
 
       table {
         title = "Tags"
         width = 6
-        query = query.digitalocean_volume_tags
-        args = {
-          urn = self.input.volume_urn.value
-        }
+        query = query.blockstorage_volume_tags
+        args  = [self.input.volume_urn.value]
       }
     }
 
@@ -71,22 +135,16 @@ dashboard "digitalocean_blockstorage_volume_detail" {
       width = 6
 
       table {
-        title = "Attached To"
-        query = query.digitalocean_volume_attached_droplets
-        args = {
-          urn = self.input.volume_urn.value
-        }
+        title = "Attached Droplet"
+        query = query.blockstorage_volume_attached_droplets
+        args  = [self.input.volume_urn.value]
 
         column "Droplet URN" {
           display = "none"
         }
 
         column "Droplet Name" {
-
-          # href = "${dashboard.digitalocean_droplet_detail.url_path}?input.droplet_urn={{.'Droplet URN' | @uri}}"
-          // cyclic dependency prevents use of url_path, hardcode for now
-
-          href = "/digitalocean_insights.dashboard.digitalocean_droplet_detail?input.droplet_urn={{.'Droplet URN' | @uri}}"
+          href = "/digitalocean_insights.dashboard.droplet_detail?input.droplet_urn={{.'Droplet URN' | @uri}}"
         }
       }
     }
@@ -94,7 +152,9 @@ dashboard "digitalocean_blockstorage_volume_detail" {
 
 }
 
-query "digitalocean_volume_input" {
+# Input queries
+
+query "blockstorage_volume_input" {
   sql = <<-EOQ
     select
       title as label,
@@ -110,35 +170,53 @@ query "digitalocean_volume_input" {
   EOQ
 }
 
-query "digitalocean_volume_storage" {
+# With queries
+
+query "droplet_droplets_for_blockstorage_volume" {
   sql = <<-EOQ
     select
-      'Storage (GB)' as label,
-      sum(size_gigabytes) as value
+      d.urn as droplet_urn
     from
-      digitalocean_volume
+      digitalocean_volume as v,
+      jsonb_array_elements(v.droplet_ids) as droplet_id,
+      digitalocean_droplet as d
     where
-      urn = $1;
+      d.id = droplet_id::bigint
+      and v.urn = $1;
   EOQ
-
-  param "urn" {}
 }
 
-query "digitalocean_volume_filesystem_type" {
+query "network_floating_ips_for_blockstorage_volume" {
   sql = <<-EOQ
     select
-      'Filesystem Type' as label,
-      filesystem_type as value
+      f.urn as floating_ip_urn
     from
-      digitalocean_volume
+      digitalocean_floating_ip as f,
+      jsonb_array_elements_text(droplet -> 'volume_ids') as vid,
+      digitalocean_volume as v
     where
-      urn = $1;
+      v.id = vid
+      and v.urn = $1;
   EOQ
-
-  param "urn" {}
 }
 
-query "digitalocean_volume_attached_droplets_count" {
+query "target_snapshot_snapshots_for_blockstorage_volume" {
+  sql = <<-EOQ
+    select
+      s.id as snapshot_urn
+    from
+      digitalocean_volume as v,
+      digitalocean_snapshot as s
+    where
+      s.resource_id = v.id
+      and s.resource_type = 'volume'
+      and v.urn = $1;
+  EOQ
+}
+
+# Card queries
+
+query "blockstorage_volume_attached_droplets_count" {
   sql = <<-EOQ
     select
       'Attached Droplets' as label,
@@ -155,11 +233,35 @@ query "digitalocean_volume_attached_droplets_count" {
     where
       urn = $1;
   EOQ
-
-  param "urn" {}
 }
 
-query "digitalocean_volume_overview" {
+query "blockstorage_volume_filesystem_type" {
+  sql = <<-EOQ
+    select
+      'Filesystem Type' as label,
+      filesystem_type as value
+    from
+      digitalocean_volume
+    where
+      urn = $1;
+  EOQ
+}
+
+query "blockstorage_volume_storage" {
+  sql = <<-EOQ
+    select
+      'Storage (GB)' as label,
+      sum(size_gigabytes) as value
+    from
+      digitalocean_volume
+    where
+      urn = $1;
+  EOQ
+}
+
+# Other detail page queries
+
+query "blockstorage_volume_overview" {
   sql = <<-EOQ
     select
       name as "Name",
@@ -173,11 +275,9 @@ query "digitalocean_volume_overview" {
     where
       urn = $1
   EOQ
-
-  param "urn" {}
 }
 
-query "digitalocean_volume_tags" {
+query "blockstorage_volume_tags" {
   sql = <<-EOQ
     select
       tag.key as "Key",
@@ -190,11 +290,9 @@ query "digitalocean_volume_tags" {
     order by
       tag.key;
   EOQ
-
-  param "urn" {}
 }
 
-query "digitalocean_volume_attached_droplets" {
+query "blockstorage_volume_attached_droplets" {
   sql = <<-EOQ
     select
       d.name as "Droplet Name",
@@ -212,6 +310,4 @@ query "digitalocean_volume_attached_droplets" {
     order by
       d.name;
   EOQ
-
-  param "urn" {}
 }

@@ -1,4 +1,4 @@
-dashboard "digitalocean_database_cluster_dashboard" {
+dashboard "database_cluster_dashboard" {
 
   title         = "DigitalOcean Database Cluster Dashboard"
   documentation = file("./dashboards/database/docs/database_cluster_dashboard.md")
@@ -12,20 +12,20 @@ dashboard "digitalocean_database_cluster_dashboard" {
     # Analysis
 
     card {
-      query = query.digitalocean_database_cluster_count
-      width = 2
+      query = query.database_cluster_count
+      width = 3
     }
 
     # Assessment
 
     card {
-      query = query.digitalocean_database_cluster_ssl_enabled_count
-      width = 2
+      query = query.database_cluster_ssl_enabled_count
+      width = 3
     }
 
     card {
-      query = query.digitalocean_database_cluster_firewall_enabled_count
-      width = 2
+      query = query.database_cluster_firewall_enabled_count
+      width = 3
     }
 
   }
@@ -36,7 +36,7 @@ dashboard "digitalocean_database_cluster_dashboard" {
 
     chart {
       title = "SSL Status"
-      query = query.digitalocean_droplet_by_ssl_status
+      query = query.droplet_by_ssl_status
       type  = "donut"
       width = 3
 
@@ -44,7 +44,7 @@ dashboard "digitalocean_database_cluster_dashboard" {
         point "enabled" {
           color = "ok"
         }
-        point "disbled" {
+        point "disabled" {
           color = "alert"
         }
       }
@@ -52,7 +52,7 @@ dashboard "digitalocean_database_cluster_dashboard" {
 
     chart {
       title = "Firewall Status"
-      query = query.digitalocean_droplet_by_firewall_status
+      query = query.droplet_by_firewall_status
       type  = "donut"
       width = 3
 
@@ -60,7 +60,7 @@ dashboard "digitalocean_database_cluster_dashboard" {
         point "enabled" {
           color = "ok"
         }
-        point "disbled" {
+        point "disabled" {
           color = "alert"
         }
       }
@@ -74,28 +74,28 @@ dashboard "digitalocean_database_cluster_dashboard" {
 
     chart {
       title = "Database Clusters by Region"
-      query = query.digitalocean_database_cluster_by_region
+      query = query.database_cluster_by_region
       type  = "column"
       width = 3
     }
 
     chart {
       title = "Database Clusters by DB Engine"
-      query = query.digitalocean_database_cluster_by_engine
+      query = query.database_cluster_by_engine
       type  = "column"
       width = 3
     }
 
     chart {
       title = "Database Clusters by Age"
-      query = query.digitalocean_database_cluster_by_creation_month
+      query = query.database_cluster_by_creation_month
       type  = "column"
       width = 3
     }
 
     chart {
       title = "Database Clusters by Status"
-      query = query.digitalocean_database_cluster_by_status
+      query = query.database_cluster_by_status
       type  = "column"
       width = 3
     }
@@ -105,16 +105,16 @@ dashboard "digitalocean_database_cluster_dashboard" {
 
 # Card Queries
 
-query "digitalocean_database_cluster_count" {
+query "database_cluster_count" {
   sql = <<-EOQ
-    select 
-      count(*) as "Clusters" 
-    from 
+    select
+      count(*) as "Clusters"
+    from
       digitalocean_database;
   EOQ
 }
 
-query "digitalocean_database_cluster_ssl_enabled_count" {
+query "database_cluster_ssl_enabled_count" {
   sql = <<-EOQ
     select
       count(*) as value,
@@ -127,7 +127,7 @@ query "digitalocean_database_cluster_ssl_enabled_count" {
   EOQ
 }
 
-query "digitalocean_database_cluster_firewall_enabled_count" {
+query "database_cluster_firewall_enabled_count" {
   sql = <<-EOQ
     select
       count(*) as value,
@@ -142,7 +142,7 @@ query "digitalocean_database_cluster_firewall_enabled_count" {
 
 # Assessment queries
 
-query "digitalocean_droplet_by_ssl_status" {
+query "droplet_by_ssl_status" {
   sql = <<-EOQ
     with database as (
       select
@@ -163,7 +163,7 @@ query "digitalocean_droplet_by_ssl_status" {
   EOQ
 }
 
-query "digitalocean_droplet_by_firewall_status" {
+query "droplet_by_firewall_status" {
   sql = <<-EOQ
     with database as (
       select
@@ -186,7 +186,7 @@ query "digitalocean_droplet_by_firewall_status" {
 
 # Analytics Queries
 
-query "digitalocean_database_cluster_by_region" {
+query "database_cluster_by_region" {
   sql = <<-EOQ
     select
       region_slug,
@@ -198,7 +198,7 @@ query "digitalocean_database_cluster_by_region" {
   EOQ
 }
 
-query "digitalocean_database_cluster_by_engine" {
+query "database_cluster_by_engine" {
   sql = <<-EOQ
     select
       engine,
@@ -210,7 +210,7 @@ query "digitalocean_database_cluster_by_engine" {
   EOQ
 }
 
-query "digitalocean_database_cluster_by_creation_month" {
+query "database_cluster_by_creation_month" {
   sql = <<-EOQ
     with databases as (
       select
@@ -255,7 +255,7 @@ query "digitalocean_database_cluster_by_creation_month" {
   EOQ
 }
 
-query "digitalocean_database_cluster_by_status" {
+query "database_cluster_by_status" {
   sql = <<-EOQ
     select
       status,

@@ -1,4 +1,4 @@
-dashboard "digitalocean_droplet_dashboard" {
+dashboard "droplet_dashboard" {
   title         = "DigitalOcean Droplet Dashboard"
   documentation = file("./dashboards/droplet/docs/droplet_dashboard.md")
 
@@ -9,31 +9,31 @@ dashboard "digitalocean_droplet_dashboard" {
   container {
 
     #Analysis
-    
+
     card {
-      query = query.digitalocean_droplet_count
+      query = query.droplet_count
       width = 2
     }
 
     card {
-      query = query.digitalocean_droplet_total_size
+      query = query.droplet_total_size
       width = 2
     }
 
     # Assessments
 
     card {
-      query = query.digitalocean_droplet_publicly_accessible
+      query = query.droplet_publicly_accessible
       width = 2
     }
 
     card {
-      query = query.digitalocean_droplet_backup_disabled
+      query = query.droplet_backup_disabled
       width = 2
     }
 
     card {
-      query = query.digitalocean_droplet_monitoring_status_count
+      query = query.droplet_monitoring_status_count
       width = 2
     }
 
@@ -46,7 +46,7 @@ dashboard "digitalocean_droplet_dashboard" {
 
     chart {
       title = "Public/Private"
-      query = query.digitalocean_droplet_by_public_access
+      query = query.droplet_by_public_access
       type  = "donut"
       width = 3
 
@@ -62,7 +62,7 @@ dashboard "digitalocean_droplet_dashboard" {
 
     chart {
       title = "Backups Status"
-      query = query.digitalocean_droplet_by_backup_status
+      query = query.droplet_by_backup_status
       type  = "donut"
       width = 3
 
@@ -78,7 +78,7 @@ dashboard "digitalocean_droplet_dashboard" {
 
     chart {
       title = "Monitoring Status"
-      query = query.digitalocean_droplet_by_monitoring_status
+      query = query.droplet_by_monitoring_status
       type  = "donut"
       width = 3
 
@@ -100,28 +100,28 @@ dashboard "digitalocean_droplet_dashboard" {
 
     chart {
       title = "Droplets by Region"
-      query = query.digitalocean_droplet_by_region
+      query = query.droplet_by_region
       type  = "column"
       width = 3
     }
 
     chart {
       title = "Droplets by Status"
-      query = query.digitalocean_droplet_by_status
+      query = query.droplet_by_status
       type  = "column"
       width = 3
     }
 
     chart {
       title = "Droplets by Age"
-      query = query.digitalocean_droplet_creation_month
+      query = query.droplet_creation_month
       type  = "column"
       width = 3
     }
 
     chart {
       title = "Droplets by Distribution Type"
-      query = query.digitalocean_droplet_by_distribution_type
+      query = query.droplet_by_distribution_type
       type  = "column"
       width = 3
     }
@@ -132,19 +132,19 @@ dashboard "digitalocean_droplet_dashboard" {
 
 # Card Queries
 
-query "digitalocean_droplet_count" {
+query "droplet_count" {
   sql = <<-EOQ
     select count(*) as "Droplets" from digitalocean_droplet;
   EOQ
 }
 
-query "digitalocean_droplet_total_size" {
+query "droplet_total_size" {
   sql = <<-EOQ
     select sum(disk) as "Total Storage (GB)" from digitalocean_droplet;
   EOQ
 }
 
-query "digitalocean_droplet_publicly_accessible" {
+query "droplet_publicly_accessible" {
   sql = <<-EOQ
     select
       count(*) as value,
@@ -157,7 +157,7 @@ query "digitalocean_droplet_publicly_accessible" {
   EOQ
 }
 
-query "digitalocean_droplet_backup_disabled" {
+query "droplet_backup_disabled" {
   sql = <<-EOQ
     select
       count(*) as value,
@@ -170,7 +170,7 @@ query "digitalocean_droplet_backup_disabled" {
   EOQ
 }
 
-query "digitalocean_droplet_monitoring_status_count" {
+query "droplet_monitoring_status_count" {
   sql = <<-EOQ
     select
       count(*) as value,
@@ -185,7 +185,7 @@ query "digitalocean_droplet_monitoring_status_count" {
 
 # Assessment Queries
 
-query "digitalocean_droplet_by_public_access" {
+query "droplet_by_public_access" {
   sql = <<-EOQ
     with droplets as (
       select
@@ -206,7 +206,7 @@ query "digitalocean_droplet_by_public_access" {
   EOQ
 }
 
-query "digitalocean_droplet_by_backup_status" {
+query "droplet_by_backup_status" {
   sql = <<-EOQ
     with droplets as (
       select
@@ -227,7 +227,7 @@ query "digitalocean_droplet_by_backup_status" {
   EOQ
 }
 
-query "digitalocean_droplet_by_monitoring_status" {
+query "droplet_by_monitoring_status" {
   sql = <<-EOQ
     with droplets as (
       select
@@ -250,7 +250,7 @@ query "digitalocean_droplet_by_monitoring_status" {
 
 # Analytics Queries
 
-query "digitalocean_droplet_by_region" {
+query "droplet_by_region" {
   sql = <<-EOQ
     select
       region ->> 'name',
@@ -262,7 +262,7 @@ query "digitalocean_droplet_by_region" {
   EOQ
 }
 
-query "digitalocean_droplet_by_status" {
+query "droplet_by_status" {
   sql = <<-EOQ
     select
       status,
@@ -274,7 +274,7 @@ query "digitalocean_droplet_by_status" {
   EOQ
 }
 
-query "digitalocean_droplet_creation_month" {
+query "droplet_creation_month" {
   sql = <<-EOQ
     with droplets as (
       select
@@ -319,7 +319,7 @@ query "digitalocean_droplet_creation_month" {
   EOQ
 }
 
-query "digitalocean_droplet_by_distribution_type" {
+query "droplet_by_distribution_type" {
   sql = <<-EOQ
     select
       image ->> 'distribution',

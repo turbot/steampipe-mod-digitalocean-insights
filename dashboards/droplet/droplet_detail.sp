@@ -1,4 +1,4 @@
-dashboard "digitalocean_droplet_detail" {
+dashboard "droplet_detail" {
 
   title         = "DigitalOcean Droplet Detail"
   documentation = file("./dashboards/droplet/docs/droplet_detail.md")
@@ -9,7 +9,7 @@ dashboard "digitalocean_droplet_detail" {
 
   input "droplet_urn" {
     title = "Select a droplet:"
-    query = query.digitalocean_droplet_input
+    query = query.droplet_input
     width = 4
   }
 
@@ -17,52 +17,198 @@ dashboard "digitalocean_droplet_detail" {
 
     card {
       width = 2
-      query = query.digitalocean_droplet_status
-      args = {
-        urn = self.input.droplet_urn.value
-      }
+      query = query.droplet_status
+      args  = [self.input.droplet_urn.value]
     }
 
     card {
       width = 2
-      query = query.digitalocean_droplet_vcpus
-      args = {
-        urn = self.input.droplet_urn.value
-      }
+      query = query.droplet_vcpus
+      args  = [self.input.droplet_urn.value]
     }
 
     card {
       width = 2
-      query = query.digitalocean_droplet_storage
-      args = {
-        urn = self.input.droplet_urn.value
-      }
+      query = query.droplet_storage
+      args  = [self.input.droplet_urn.value]
     }
 
     card {
       width = 2
-      query = query.digitalocean_droplet_public_access
-      args = {
-        urn = self.input.droplet_urn.value
-      }
+      query = query.droplet_public_access
+      args  = [self.input.droplet_urn.value]
     }
 
     card {
       width = 2
-      query = query.digitalocean_droplet_backup_status
-      args = {
-        urn = self.input.droplet_urn.value
-      }
+      query = query.droplet_backup_status
+      args  = [self.input.droplet_urn.value]
     }
 
     card {
       width = 2
-      query = query.digitalocean_droplet_monitoring_status
-      args = {
-        urn = self.input.droplet_urn.value
-      }
+      query = query.droplet_monitoring_status
+      args  = [self.input.droplet_urn.value]
     }
 
+  }
+
+  with "blockstorage_volumes_for_droplet" {
+    query = query.blockstorage_volumes_for_droplet
+    args  = [self.input.droplet_urn.value]
+  }
+
+  with "image_images_for_droplet" {
+    query = query.image_images_for_droplet
+    args  = [self.input.droplet_urn.value]
+  }
+
+  with "network_firewalls_for_droplet" {
+    query = query.network_firewalls_for_droplet
+    args  = [self.input.droplet_urn.value]
+  }
+
+  with "network_floating_ips_for_droplet" {
+    query = query.network_floating_ips_for_droplet
+    args  = [self.input.droplet_urn.value]
+  }
+
+  with "network_load_balancers_for_droplet" {
+    query = query.network_load_balancers_for_droplet
+    args  = [self.input.droplet_urn.value]
+  }
+
+  with "network_vpcs_for_droplet" {
+    query = query.network_vpcs_for_droplet
+    args  = [self.input.droplet_urn.value]
+  }
+
+  with "snapshot_snapshots_for_droplet" {
+    query = query.snapshot_snapshots_for_droplet
+    args  = [self.input.droplet_urn.value]
+  }
+
+  container {
+
+    graph {
+      title     = "Relationships"
+      type      = "graph"
+      direction = "TD"
+
+      node {
+        base = node.blockstorage_volume
+        args = {
+          blockstorage_volume_urns = with.blockstorage_volumes_for_droplet.rows[*].volume_urn
+        }
+      }
+
+      node {
+        base = node.droplet_droplet
+        args = {
+          droplet_droplet_urns = [self.input.droplet_urn.value]
+        }
+      }
+
+      node {
+        base = node.image_image
+        args = {
+          image_image_urns = with.image_images_for_droplet.rows[*].image_urn
+        }
+      }
+
+      node {
+        base = node.network_firewall
+        args = {
+          network_firewall_urns = with.network_firewalls_for_droplet.rows[*].firewall_urn
+        }
+      }
+
+      node {
+        base = node.network_floating_ip
+        args = {
+          network_floating_ip_urns = with.network_floating_ips_for_droplet.rows[*].floating_ip_urn
+        }
+      }
+
+      node {
+        base = node.network_load_balancer
+        args = {
+          network_load_balancer_urns = with.network_load_balancers_for_droplet.rows[*].lb_urn
+        }
+      }
+
+      node {
+        base = node.network_vpc
+        args = {
+          network_vpc_urns = with.network_vpcs_for_droplet.rows[*].vpc_urn
+        }
+      }
+
+      node {
+        base = node.snapshot_snapshot
+        args = {
+          snapshot_snapshot_urns = with.snapshot_snapshots_for_droplet.rows[*].snapshot_urn
+        }
+      }
+
+      edge {
+        base = edge.droplet_droplet_to_blockstorage_volume
+        args = {
+          droplet_droplet_urns = [self.input.droplet_urn.value]
+        }
+      }
+
+      edge {
+        base = edge.droplet_droplet_to_network_firewall
+        args = {
+          droplet_droplet_urns = [self.input.droplet_urn.value]
+        }
+      }
+
+      edge {
+        base = edge.droplet_droplet_to_network_floating_ip
+        args = {
+          droplet_droplet_urns = [self.input.droplet_urn.value]
+        }
+      }
+
+      edge {
+        base = edge.droplet_droplet_to_network_load_balancer
+        args = {
+          droplet_droplet_urns = [self.input.droplet_urn.value]
+        }
+      }
+
+      edge {
+        base = edge.droplet_droplet_to_network_vpc
+        args = {
+          droplet_droplet_urns = [self.input.droplet_urn.value]
+        }
+      }
+
+      edge {
+        base = edge.network_firewall_to_network_vpc
+        args = {
+          droplet_droplet_urns = [self.input.droplet_urn.value]
+        }
+      }
+
+      edge {
+        base = edge.droplet_droplet_to_snapshot_snapshot
+        args = {
+          droplet_droplet_urns = [self.input.droplet_urn.value]
+        }
+      }
+
+      edge {
+        base = edge.image_image_to_droplet_droplet
+        args = {
+          image_image_urns = with.image_images_for_droplet.rows[*].image_urn
+        }
+      }
+
+
+    }
   }
 
   container {
@@ -75,19 +221,15 @@ dashboard "digitalocean_droplet_detail" {
         title = "Overview"
         type  = "line"
         width = 6
-        query = query.digitalocean_droplet_overview
-        args = {
-          urn = self.input.droplet_urn.value
-        }
+        query = query.droplet_overview
+        args  = [self.input.droplet_urn.value]
       }
 
       table {
         title = "Tags"
         width = 6
-        query = query.digitalocean_droplet_tags
-        args = {
-          urn = self.input.droplet_urn.value
-        }
+        query = query.droplet_tags
+        args  = [self.input.droplet_urn.value]
       }
     }
 
@@ -97,17 +239,15 @@ dashboard "digitalocean_droplet_detail" {
 
       table {
         title = "Attached Volumes"
-        query = query.digitalocean_droplet_attached_volumes
-        args = {
-          urn = self.input.droplet_urn.value
-        }
+        query = query.droplet_attached_volumes
+        args  = [self.input.droplet_urn.value]
 
         column "Volume URN" {
           display = "none"
         }
 
         column "Volume Name" {
-          href = "${dashboard.digitalocean_blockstorage_volume_detail.url_path}?input.volume_urn={{.'Volume URN' | @uri}}"
+          href = "/digitalocean_insights.dashboard.blockstorage_volume_detail?input.volume_urn={{.'Volume URN' | @uri}}"
         }
       }
 
@@ -122,20 +262,15 @@ dashboard "digitalocean_droplet_detail" {
 
       table {
         title = "Firewall Details"
-        query = query.digitalocean_droplet_firewall_configuration
-        args = {
-          urn = self.input.droplet_urn.value
-        }
+        query = query.droplet_firewall_configuration
+        args  = [self.input.droplet_urn.value]
 
-        column "URN" {
+        column "Firewall URN" {
           display = "none"
         }
 
-        column "Name" {
-
-          # href = "${dashboard.digitalocean_droplet_detail.url_path}?input.droplet_urn={{.'Droplet URN' | @uri}}"
-          // cyclic dependency prevents use of url_path, hardcode for now
-          href = "/digitalocean_insights.dashboard.digitalocean_firewall_detail?input.firewall_urn={{.'URN' | @uri}}"
+        column "Firewall Name" {
+          href = "/digitalocean_insights.dashboard.network_firewall_detail?input.firewall_urn={{.'Firewall URN' | @uri}}"
         }
       }
 
@@ -147,9 +282,15 @@ dashboard "digitalocean_droplet_detail" {
 
       table {
         title = "VPC Details"
-        query = query.digitalocean_droplet_vpc_details
-        args = {
-          urn = self.input.droplet_urn.value
+        query = query.droplet_network_vpc_details
+        args  = [self.input.droplet_urn.value]
+
+        column "VPC URN" {
+          display = "none"
+        }
+
+        column "VPC Name" {
+          href = "/digitalocean_insights.dashboard.network_vpc_detail?input.vpc_urn={{.'VPC URN' | @uri}}"
         }
       }
     }
@@ -158,7 +299,9 @@ dashboard "digitalocean_droplet_detail" {
 
 }
 
-query "digitalocean_droplet_input" {
+# Input queries
+
+query "droplet_input" {
   sql = <<-EOQ
     select
       title as label,
@@ -174,7 +317,106 @@ query "digitalocean_droplet_input" {
   EOQ
 }
 
-query "digitalocean_droplet_status" {
+# With queries
+
+query "blockstorage_volumes_for_droplet" {
+  sql = <<-EOQ
+    select
+      v.urn as volume_urn
+    from
+      digitalocean_droplet as d,
+      digitalocean_volume as v,
+      jsonb_array_elements(droplet_ids) as did
+    where
+      d.id::int = did::int
+      and d.urn = $1;
+  EOQ
+}
+
+query "image_images_for_droplet" {
+  sql = <<-EOQ
+    select
+      i.urn as image_urn
+    from
+      digitalocean_image as i,
+      digitalocean_droplet as d
+    where
+      i.id::text = image->>'id'
+      and d.urn = $1;
+  EOQ
+}
+
+query "network_firewalls_for_droplet" {
+  sql = <<-EOQ
+    select
+      f.urn as firewall_urn
+    from
+      digitalocean_droplet as d,
+      digitalocean_firewall as f,
+      jsonb_array_elements(droplet_ids) as did
+    where
+      d.id::text = did::text
+      and d.urn = $1;
+  EOQ
+}
+
+query "network_floating_ips_for_droplet" {
+  sql = <<-EOQ
+    select
+      f.urn as floating_ip_urn
+    from
+      digitalocean_floating_ip as f,
+      digitalocean_droplet as d
+    where
+      d.id = f.droplet_id
+      and d.urn = $1;
+  EOQ
+}
+
+query "network_load_balancers_for_droplet" {
+  sql = <<-EOQ
+    select
+      l.urn as lb_urn
+    from
+      digitalocean_droplet as d,
+      digitalocean_load_balancer as l,
+      jsonb_array_elements(droplet_ids) as did
+    where
+      d.id::text = did::text
+      and d.urn = $1;
+  EOQ
+}
+
+query "network_vpcs_for_droplet" {
+  sql = <<-EOQ
+    select
+      v.urn as vpc_urn
+    from
+      digitalocean_vpc as v,
+      digitalocean_droplet as d
+    where
+      d.vpc_uuid = v.id
+      and d.urn = $1;
+  EOQ
+}
+
+query "snapshot_snapshots_for_droplet" {
+  sql = <<-EOQ
+    select
+      s.id as snapshot_urn
+    from
+      digitalocean_droplet as d,
+      jsonb_array_elements(snapshot_ids) as sid,
+      digitalocean_snapshot as s
+    where
+      s.id = sid::text
+      and d.urn = $1;
+  EOQ
+}
+
+# Card queries
+
+query "droplet_status" {
   sql = <<-EOQ
     select
       'Status' as label,
@@ -184,11 +426,9 @@ query "digitalocean_droplet_status" {
     where
       urn = $1;
   EOQ
-
-  param "urn" {}
 }
 
-query "digitalocean_droplet_storage" {
+query "droplet_storage" {
   sql = <<-EOQ
     select
       disk as "Disk Storage (GB)"
@@ -197,11 +437,9 @@ query "digitalocean_droplet_storage" {
     where
       urn = $1;
   EOQ
-
-  param "urn" {}
 }
 
-query "digitalocean_droplet_vcpus" {
+query "droplet_vcpus" {
   sql = <<-EOQ
     select
       'vCPUs' as label,
@@ -211,11 +449,9 @@ query "digitalocean_droplet_vcpus" {
     where
       urn = $1;
   EOQ
-
-  param "urn" {}
 }
 
-query "digitalocean_droplet_public_access" {
+query "droplet_public_access" {
   sql = <<-EOQ
     select
       'Public Access' as label,
@@ -232,11 +468,9 @@ query "digitalocean_droplet_public_access" {
     where
       urn = $1;
   EOQ
-
-  param "urn" {}
 }
 
-query "digitalocean_droplet_backup_status" {
+query "droplet_backup_status" {
   sql = <<-EOQ
     select
       'Backups' as label,
@@ -253,11 +487,9 @@ query "digitalocean_droplet_backup_status" {
     where
       urn = $1;
   EOQ
-
-  param "urn" {}
 }
 
-query "digitalocean_droplet_monitoring_status" {
+query "droplet_monitoring_status" {
   sql = <<-EOQ
     select
       'Monitoring' as label,
@@ -274,11 +506,11 @@ query "digitalocean_droplet_monitoring_status" {
     where
       urn = $1;
   EOQ
-
-  param "urn" {}
 }
 
-query "digitalocean_droplet_overview" {
+# Other detail page queries
+
+query "droplet_overview" {
   sql = <<-EOQ
     select
       name as "Name",
@@ -293,11 +525,9 @@ query "digitalocean_droplet_overview" {
     where
       urn = $1
   EOQ
-
-  param "urn" {}
 }
 
-query "digitalocean_droplet_tags" {
+query "droplet_tags" {
   sql = <<-EOQ
     select
       tag.key as "Key",
@@ -310,17 +540,15 @@ query "digitalocean_droplet_tags" {
     order by
       tag.key;
   EOQ
-
-  param "urn" {}
 }
 
-query "digitalocean_droplet_attached_volumes" {
+query "droplet_attached_volumes" {
   sql = <<-EOQ
     select
-      v.name as "Name",
-      v.id as "ID",
+      v.name as "Volume Name",
+      v.id as "Volume ID",
       v.created_at as "Create Time",
-      v.urn as "URN"
+      v.urn as "Volume URN"
     from
       digitalocean_droplet as d,
       jsonb_array_elements_text(d.volume_ids) as volume_id,
@@ -331,15 +559,14 @@ query "digitalocean_droplet_attached_volumes" {
     order by
       v.name;
   EOQ
-
-  param "urn" {}
 }
 
-query "digitalocean_droplet_vpc_details" {
+query "droplet_network_vpc_details" {
   sql = <<-EOQ
     select
-      vpc.name as "Name",
-      vpc.id as "ID",
+      vpc.name as "VPC Name",
+      vpc.urn as "VPC URN",
+      vpc.id as "VPC ID",
       vpc.ip_range as "IP Range",
       vpc.created_at as "Create Time"
     from
@@ -352,17 +579,15 @@ query "digitalocean_droplet_vpc_details" {
     order by
       vpc.name;
   EOQ
-
-  param "urn" {}
 }
 
-query "digitalocean_droplet_firewall_configuration" {
+query "droplet_firewall_configuration" {
   sql = <<-EOQ
     select
-      f.name as "Name",
-      f.id as "ID",
+      f.name as "Firewall Name",
+      f.id as "Firewall ID",
       f.created_at as "Create Time",
-      f.urn as "URN"
+      f.urn as "Firewall URN"
     from
       digitalocean_droplet dr,
       digitalocean_firewall f,
@@ -373,6 +598,4 @@ query "digitalocean_droplet_firewall_configuration" {
     order by
       f.name;
   EOQ
-
-  param "urn" {}
 }
