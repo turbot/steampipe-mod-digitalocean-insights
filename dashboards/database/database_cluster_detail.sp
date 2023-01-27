@@ -177,7 +177,7 @@ dashboard "database_cluster_detail" {
   }
 
 
-# # Input queries
+# Input queries
 
 query "database_cluster_input" {
   sql = <<-EOQ
@@ -194,7 +194,7 @@ query "database_cluster_input" {
   EOQ
 }
 
-# # With queries
+# With queries
 
 query "droplet_droplets_for_database_cluster" {
   sql = <<-EOQ
@@ -239,7 +239,7 @@ query "network_vpcs_for_database_cluster" {
   EOQ
 }
 
-# # Card queries
+# Card queries
 
 query "database_cluster_status" {
   sql = <<-EOQ

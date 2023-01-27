@@ -93,7 +93,7 @@ query "network_vpc_default_count" {
   EOQ
 }
 
-# # Assessment Queries
+# Assessment Queries
 
 query "network_vpc_default_status" {
   sql = <<-EOQ
@@ -110,7 +110,7 @@ query "network_vpc_default_status" {
   EOQ
 }
 
-# # Analysis Queries
+# Analysis Queries
 
 query "network_vpc_creation_month" {
   sql = <<-EOQ
