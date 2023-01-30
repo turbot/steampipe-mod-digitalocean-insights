@@ -125,14 +125,14 @@ query "snapshot_1_year_count" {
 query "snapshot_age_table" {
   sql = <<-EOQ
     select
-      s.name as "Name",
-      s.id as "ID",
-      now()::date - s.created_at::date as "Age in Days",
-      s.created_at as "Create Time",
-      s.regions as "Regions"
+      name as "Name",
+      id as "ID",
+      now()::date - created_at::date as "Age in Days",
+      created_at as "Create Time",
+      regions as "Regions"
     from
-      digitalocean_snapshot as s
+      digitalocean_snapshot
     order by
-      s.name;
+      name;
   EOQ
 }
