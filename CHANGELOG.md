@@ -1,3 +1,9 @@
+## v0.4 [2023-01-30]
+
+_Bug fixes_
+
+- Fix the broken image reference in `docs/index.md` file to use the correct image name in `docs/images` folder.
+
 ## v0.3 [2023-01-30]
 
 _Dependencies_
