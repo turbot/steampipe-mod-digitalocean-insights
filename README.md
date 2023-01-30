@@ -11,7 +11,7 @@ Dashboards can help answer questions like:
 - How many resources do I have?
 - How old are my resources?
 - Are there any publicly accessible resources?
-- What are the relationships between closely connected resources like droplets, volumes, network firewalls, load balancers and vpcs?
+- What are the relationships between closely connected resources like droplets, volumes, network firewalls, load balancers and VPCs?
 
 Dashboards are available for BlockStorage, Database, Droplet, Firewall, Kubernetes and Snapshot services.
 
