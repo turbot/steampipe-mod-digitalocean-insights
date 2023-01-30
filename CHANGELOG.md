@@ -1,3 +1,14 @@
+## v0.3 [2023-01-30]
+
+_Dependencies_
+
+- Steampipe `v0.18.0` or higher is now required ([#35](https://github.com/turbot/steampipe-mod-digitalocean-insights/pull/35))
+- DigitalOcean plugin `v0.11.0` or higher is now required. ([#34](https://github.com/turbot/steampipe-mod-digitalocean-insights/pull/34))
+
+_What's new?_
+
+- Added resource relationship graphs across all the detail dashboards to highlight the relationship the resource shares with other resources. ([#34](https://github.com/turbot/steampipe-mod-digitalocean-insights/pull/34))
+
 ## v0.2 [2022-05-09]
 
 _Enhancements_
