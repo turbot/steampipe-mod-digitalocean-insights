@@ -60,16 +60,21 @@ edge "droplet_droplet_to_network_vpc" {
   title = "vpc"
 
   sql = <<-EOQ
+    with firewall_droplet_ids as (
+      select
+        d as droplet_id
+      from
+        digitalocean_firewall as f,
+        jsonb_array_elements_text(droplet_ids) as d
+    )
     select
       d.urn as from_id,
       v.urn as to_id
     from
       digitalocean_droplet as d,
-      digitalocean_vpc as v,
-      digitalocean_firewall as f,
-      jsonb_array_elements(droplet_ids) as did
+      digitalocean_vpc as v
     where
-      did::text != d.id::text
+      d.id::text not in(select droplet_id from firewall_droplet_ids)
       and v.id = d.vpc_uuid
       and d.urn = any($1);
   EOQ
