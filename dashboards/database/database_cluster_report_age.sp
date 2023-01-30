@@ -1,4 +1,4 @@
-dashboard "digitalocean_database_cluster_age_report" {
+dashboard "database_cluster_age_report" {
 
   title         = "DigitalOcean Database Cluster Age Report"
   documentation = file("./dashboards/database/docs/database_cluster_report_age.md")
@@ -11,38 +11,38 @@ dashboard "digitalocean_database_cluster_age_report" {
   container {
 
     card {
-      query = query.digitalocean_database_cluster_count
+      query = query.database_cluster_count
       width = 2
     }
 
     card {
       type  = "info"
       width = 2
-      query = query.digitalocean_database_cluster_24_hours_count
+      query = query.database_cluster_24_hours_count
     }
 
     card {
       type  = "info"
       width = 2
-      query = query.digitalocean_database_cluster_30_days_count
+      query = query.database_cluster_30_days_count
     }
 
     card {
       type  = "info"
       width = 2
-      query = query.digitalocean_database_cluster_30_90_days_count
+      query = query.database_cluster_30_90_days_count
     }
 
     card {
       width = 2
       type  = "info"
-      query = query.digitalocean_database_cluster_90_365_days_count
+      query = query.database_cluster_90_365_days_count
     }
 
     card {
       width = 2
       type  = "info"
-      query = query.digitalocean_database_cluster_1_year_count
+      query = query.database_cluster_1_year_count
     }
 
   }
@@ -53,12 +53,16 @@ dashboard "digitalocean_database_cluster_age_report" {
       display = "none"
     }
 
-    query = query.digitalocean_database_cluster_age_table
+    column "Name" {
+      href = "${dashboard.database_cluster_detail.url_path}?input.cluster_urn={{.URN | @uri}}"
+    }
+
+    query = query.database_cluster_age_table
   }
 
 }
 
-query "digitalocean_database_cluster_24_hours_count" {
+query "database_cluster_24_hours_count" {
   sql = <<-EOQ
     select
       count(*) as value,
@@ -70,7 +74,7 @@ query "digitalocean_database_cluster_24_hours_count" {
   EOQ
 }
 
-query "digitalocean_database_cluster_30_days_count" {
+query "database_cluster_30_days_count" {
   sql = <<-EOQ
     select
       count(*) as value,
@@ -82,7 +86,7 @@ query "digitalocean_database_cluster_30_days_count" {
   EOQ
 }
 
-query "digitalocean_database_cluster_30_90_days_count" {
+query "database_cluster_30_90_days_count" {
   sql = <<-EOQ
     select
       count(*) as value,
@@ -94,7 +98,7 @@ query "digitalocean_database_cluster_30_90_days_count" {
   EOQ
 }
 
-query "digitalocean_database_cluster_90_365_days_count" {
+query "database_cluster_90_365_days_count" {
   sql = <<-EOQ
     select
       count(*) as value,
@@ -106,7 +110,7 @@ query "digitalocean_database_cluster_90_365_days_count" {
   EOQ
 }
 
-query "digitalocean_database_cluster_1_year_count" {
+query "database_cluster_1_year_count" {
   sql = <<-EOQ
     select
       count(*) as value,
@@ -118,7 +122,7 @@ query "digitalocean_database_cluster_1_year_count" {
   EOQ
 }
 
-query "digitalocean_database_cluster_age_table" {
+query "database_cluster_age_table" {
   sql = <<-EOQ
     select
       name as "Name",

@@ -1,8 +1,8 @@
-dashboard "digitalocean_cloud_firewall_dashboard" {
+dashboard "network_firewall_dashboard" {
   title         = "DigitalOcean Firewall Dashboard"
-  documentation = file("./dashboards/firewall/docs/firewall_dashboard.md")
+  documentation = file("./dashboards/network/docs/network_firewall_dashboard.md")
 
-  tags = merge(local.firewall_common_tags, {
+  tags = merge(local.network_common_tags, {
     type = "Dashboard"
   })
 
@@ -11,18 +11,18 @@ dashboard "digitalocean_cloud_firewall_dashboard" {
     # Analysis
 
     card {
-      query = query.digitalocean_firewall_count
-      width = 2
+      query = query.network_firewall_count
+      width = 3
     }
 
     card {
-      query = query.digitalocean_firewall_unrestricted_inbound_rules_count
-      width = 2
+      query = query.network_firewall_unrestricted_inbound_rules_count
+      width = 3
     }
 
     card {
-      query = query.digitalocean_firewall_unrestricted_outbound_rules_count
-      width = 2
+      query = query.network_firewall_unrestricted_outbound_rules_count
+      width = 3
     }
 
   }
@@ -33,8 +33,8 @@ dashboard "digitalocean_cloud_firewall_dashboard" {
     chart {
       title = "With Unrestricted Inbound (Excludes ICMP)"
       type  = "donut"
-      width = 3
-      query = query.digitalocean_firewall_unrestricted_inbound_status
+      width = 4
+      query = query.network_firewall_unrestricted_inbound_status
 
       series "Firewalls" {
         point "restricted" {
@@ -49,8 +49,8 @@ dashboard "digitalocean_cloud_firewall_dashboard" {
     chart {
       title = "With Unrestricted Outbound (Excludes ICMP)"
       type  = "donut"
-      width = 3
-      query = query.digitalocean_firewall_unrestricted_outbound_status
+      width = 4
+      query = query.network_firewall_unrestricted_outbound_status
 
       series "Firewalls" {
         point "restricted" {
@@ -70,16 +70,16 @@ dashboard "digitalocean_cloud_firewall_dashboard" {
 
     chart {
       title = "Firewalls by Status"
-      query = query.digitalocean_firewall_by_status
+      query = query.network_firewall_by_status
       type  = "column"
-      width = 6
+      width = 4
     }
 
     chart {
       title = "Firewalls by Age"
-      query = query.digitalocean_firewall_creation_month
+      query = query.network_firewall_creation_month
       type  = "column"
-      width = 6
+      width = 4
     }
 
   }
@@ -88,13 +88,13 @@ dashboard "digitalocean_cloud_firewall_dashboard" {
 
 # Card Queries
 
-query "digitalocean_firewall_count" {
+query "network_firewall_count" {
   sql = <<-EOQ
     select count(*) as "Firewalls" from digitalocean_firewall;
   EOQ
 }
 
-query "digitalocean_firewall_unrestricted_outbound_rules_count" {
+query "network_firewall_unrestricted_outbound_rules_count" {
   sql = <<-EOQ
     with outbound_fw as (
       select
@@ -119,7 +119,7 @@ query "digitalocean_firewall_unrestricted_outbound_rules_count" {
   EOQ
 }
 
-query "digitalocean_firewall_unrestricted_inbound_rules_count" {
+query "network_firewall_unrestricted_inbound_rules_count" {
   sql = <<-EOQ
     with inbound_fw as (
       select
@@ -146,7 +146,7 @@ query "digitalocean_firewall_unrestricted_inbound_rules_count" {
 
 # Assessment Queries
 
-query "digitalocean_firewall_unrestricted_outbound_status" {
+query "network_firewall_unrestricted_outbound_status" {
   sql = <<-EOQ
     with outbound_fw as (
       select
@@ -171,7 +171,7 @@ query "digitalocean_firewall_unrestricted_outbound_status" {
   EOQ
 }
 
-query "digitalocean_firewall_unrestricted_inbound_status" {
+query "network_firewall_unrestricted_inbound_status" {
   sql = <<-EOQ
     with inbound_fw as (
       select
@@ -198,7 +198,7 @@ query "digitalocean_firewall_unrestricted_inbound_status" {
 
 # Analysis Queries
 
-query "digitalocean_firewall_by_status" {
+query "network_firewall_by_status" {
   sql = <<-EOQ
     select
       status,
@@ -210,7 +210,7 @@ query "digitalocean_firewall_by_status" {
   EOQ
 }
 
-query "digitalocean_firewall_creation_month" {
+query "network_firewall_creation_month" {
   sql = <<-EOQ
     with firewalls as (
       select
