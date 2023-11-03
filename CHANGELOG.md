@@ -1,3 +1,9 @@
+## v0.5 [2023-11-03]
+
+_Breaking changes_
+
+- Updated the plugin dependency section of the mod to use `min_version` instead of `version`. ([#43](https://github.com/turbot/steampipe-mod-digitalocean-insights/pull/43))
+
 ## v0.4 [2023-01-30]
 
 _Bug fixes_
