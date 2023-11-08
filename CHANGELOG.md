@@ -4,6 +4,10 @@ _Breaking changes_
 
 - Updated the plugin dependency section of the mod to use `min_version` instead of `version`. ([#43](https://github.com/turbot/steampipe-mod-digitalocean-insights/pull/43))
 
+_Bug fixes_
+
+- Fixed dashboard localhost URLs in README and index doc. ([#39](https://github.com/turbot/steampipe-mod-digitalocean-insights/pull/39))
+
 ## v0.4 [2023-01-30]
 
 _Bug fixes_
