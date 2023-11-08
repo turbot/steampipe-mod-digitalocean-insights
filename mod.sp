@@ -14,9 +14,8 @@ mod "digitalocean_insights" {
   }
 
   require {
-    steampipe = "0.18.0"
     plugin "digitalocean" {
-      version = "0.11.0"
+      min_version = "0.11.0"
     }
   }
 }
