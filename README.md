@@ -2,11 +2,10 @@
 
 > [!IMPORTANT]
 > Steampipe mods are [migrating to Powerpipe format](https://powerpipe.io) to gain new features. This mod currently works with both Steampipe and Powerpipe, but will only support Powerpipe from v1.x onward.> [!IMPORTANT]
-> Steampipe mods are [migrating to Powerpipe format](https://powerpipe.io) to gain new features. This mod currently works with both Steampipe and Powerpipe, but will only support Powerpipe from v1.x onward.
 
 A DigitalOcean dashboarding tool that can be used to view dashboards and reports across all of your DigitalOcean projects.
 
-![image](https://raw.githubusercontent.com/turbot/steampipe-mod-digitalocean-insights/add-new-checks/docs/images/digitalocean_droplet_dashboard.png)
+![image](https://raw.githubusercontent.com/turbot/steampipe-mod-digitalocean-insights/main/docs/images/digitalocean_droplet_dashboard.png)
 
 ## Overview
 
@@ -21,9 +20,20 @@ Dashboards are available for BlockStorage, Database, Droplet, Firewall, Kubernet
 
 ## Documentation
 
-- **[Dashboards →](https://hub-powerpipe-io-git-development-turbot.vercel.app/mods/turbot/digitalocean_insights/dashboards)**
+- **[Dashboards →](https://hub.powerpipe.io/mods/turbot/digitalocean_insights/dashboards)**
 
-## Getting started
+## Overview
+
+Dashboards can help answer questions like:
+
+- How many resources do I have?
+- How old are my resources?
+- Are there any publicly accessible resources?
+- What are the relationships between closely connected resources like droplets, volumes, network firewalls, load balancers and VPCs?
+
+Dashboards are available for BlockStorage, Database, Droplet, Firewall, Kubernetes and Snapshot services.
+
+## Getting Started
 
 ### Installation
 
@@ -39,8 +49,6 @@ This mod also requires [Steampipe](https://steampipe.io) with the [DigitalOcean 
 brew install turbot/tap/steampipe
 steampipe plugin install digitalocean
 ```
-
-This mod uses the credentials configured in the [Steampipe DigitalOcean plugin](https://hub.steampipe.io/plugins/turbot/digitalocean).
 
 Finally, install the mod:
 

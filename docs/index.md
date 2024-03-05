@@ -2,16 +2,16 @@
 
 Create dashboards and reports for your DigitalOcean resources.
 
-<img src="https://raw.githubusercontent.com/turbot/steampipe-mod-digitalocean-insights/add-new-checks/docs/images/digitalocean_blockstorage_volume_age_report.png" width="50%" type="thumbnail"/>
-<img src="https://raw.githubusercontent.com/turbot/steampipe-mod-digitalocean-insights/add-new-checks/docs/images/digitalocean_droplet_dashboard.png" width="50%" type="thumbnail"/>
-<img src="https://raw.githubusercontent.com/turbot/steampipe-mod-digitalocean-insights/add-new-checks/docs/images/digitalocean_droplet_detail.png" width="50%" type="thumbnail"/>
-<img src="https://raw.githubusercontent.com/turbot/steampipe-mod-digitalocean-insights/add-new-checks/docs/images/digitalocean_network_firewall_detail.png" width="50%" type="thumbnail"/>
-<img src="https://raw.githubusercontent.com/turbot/steampipe-mod-digitalocean-insights/add-new-checks/docs/images/digitalocean_kubernetes_dashboard.png" width="50%" type="thumbnail"/>
-<img src="https://raw.githubusercontent.com/turbot/steampipe-mod-digitalocean-insights/add-new-checks/docs/images/digitalocean_vpc_detail.png" width="50%" type="thumbnail"/>
+<img src="https://raw.githubusercontent.com/turbot/steampipe-mod-digitalocean-insights/main/docs/images/digitalocean_blockstorage_volume_age_report.png" width="50%" type="thumbnail"/>
+<img src="https://raw.githubusercontent.com/turbot/steampipe-mod-digitalocean-insights/main/docs/images/digitalocean_droplet_dashboard.png" width="50%" type="thumbnail"/>
+<img src="https://raw.githubusercontent.com/turbot/steampipe-mod-digitalocean-insights/main/docs/images/digitalocean_droplet_detail.png" width="50%" type="thumbnail"/>
+<img src="https://raw.githubusercontent.com/turbot/steampipe-mod-digitalocean-insights/main/docs/images/digitalocean_network_firewall_detail.png" width="50%" type="thumbnail"/>
+<img src="https://raw.githubusercontent.com/turbot/steampipe-mod-digitalocean-insights/main/docs/images/digitalocean_kubernetes_dashboard.png" width="50%" type="thumbnail"/>
+<img src="https://raw.githubusercontent.com/turbot/steampipe-mod-digitalocean-insights/main/docs/images/digitalocean_vpc_detail.png" width="50%" type="thumbnail"/>
 
 ## Documentation
 
-- **[Dashboards →](https://hub-powerpipe-io-git-development-turbot.vercel.app/mods/turbot/digitalocean_insights/dashboards)**
+- **[Dashboards →](https://hub.powerpipe.io/mods/turbot/digitalocean_insights/dashboards)**
 
 ## Overview
 
@@ -24,7 +24,7 @@ Dashboards can help answer questions like:
 
 Dashboards are available for BlockStorage, Database, Droplet, Firewall, Kubernetes and Snapshot services.
 
-## Getting started
+## Getting Started
 
 ### Installation
 
@@ -40,8 +40,6 @@ This mod also requires [Steampipe](https://steampipe.io) with the [DigitalOcean 
 brew install turbot/tap/steampipe
 steampipe plugin install digitalocean
 ```
-
-This mod uses the credentials configured in the [Steampipe DigitalOcean plugin](https://hub.steampipe.io/plugins/turbot/digitalocean).
 
 Finally, install the mod:
 

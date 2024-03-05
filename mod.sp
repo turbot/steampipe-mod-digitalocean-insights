@@ -1,7 +1,7 @@
 mod "digitalocean_insights" {
-  # hub metadata
+  # Hub metadata
   title         = "DigitalOcean Insights"
-  description   = "Create dashboards and reports for your DigitalOcean resources using Powerpipe."
+  description   = "Create dashboards and reports for your DigitalOcean resources using Powerpipe and Steampipe."
   color         = "#008bcf"
   documentation = file("./docs/index.md")
   icon          = "/images/mods/turbot/digitalocean-insights.svg"
@@ -9,7 +9,7 @@ mod "digitalocean_insights" {
 
   opengraph {
     title       = "Powerpipe Mod for DigitalOcean Insights"
-    description = "Create dashboards and reports for your DigitalOcean resources using Powerpipe."
+    description = "Create dashboards and reports for your DigitalOcean resources using Powerpipe and Steampipe."
     image       = "/images/mods/turbot/digitalocean-insights-social-graphic.png"
   }
 
