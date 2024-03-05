@@ -6,7 +6,7 @@
 
 A DigitalOcean dashboarding tool that can be used to view dashboards and reports across all of your DigitalOcean projects.
 
-![image](https://raw.githubusercontent.com/turbot/steampipe-mod-digitalocean-insights/main/docs/images/digitalocean_droplet_dashboard.png)
+![image](https://raw.githubusercontent.com/turbot/steampipe-mod-digitalocean-insights/add-new-checks/docs/images/digitalocean_droplet_dashboard.png)
 
 ## Overview
 
@@ -21,7 +21,7 @@ Dashboards are available for BlockStorage, Database, Droplet, Firewall, Kubernet
 
 ## Documentation
 
-- **[Dashboards →](https://hub.steampipe.io/mods/turbot/digitalocean_insights/dashboards)**
+- **[Dashboards →](https://hub-powerpipe-io-git-development-turbot.vercel.app/mods/turbot/digitalocean_insights/dashboards)**
 
 ## Getting started
 
@@ -48,7 +48,7 @@ Finally, install the mod:
 mkdir dashboards
 cd dashboards
 powerpipe mod init
-powerpipe mod install github.com/turbot/powerpipe-mod-digitalocean-insights
+powerpipe mod install github.com/turbot/steampipe-mod-digitalocean-insights
 ```
 
 ### Browsing Dashboards
@@ -65,7 +65,7 @@ Start the dashboard server:
 powerpipe server
 ```
 
-Browse and view your dashboards at **https://localhost:9033**.
+Browse and view your dashboards at **http://localhost:9033**.
 
 ## Open Source & Contributing
 
