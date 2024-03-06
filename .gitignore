@@ -8,5 +8,10 @@
 # Swap files
 *.swp
 
-# Ignore Apple custom attributes file
-.DS_Store
+# Steampipe variable files
+*.spvars
+*.auto.spvars
+
+# Powerpipe variable files
+*.ppvars
+*.auto.ppvars
